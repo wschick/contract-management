@@ -1,0 +1,39 @@
+# Tasks schema
+ 
+# --- !Ups
+
+CREATE SEQUENCE currency_id_seq;
+CREATE TABLE currency (
+	    id integer NOT NULL DEFAULT nextval('currency_id_seq'),
+			label varchar(255),
+			constraint pk_currency primary key (id)
+				);
+
+
+CREATE SEQUENCE contract_id_seq;
+CREATE TABLE contract (
+	    id integer NOT NULL DEFAULT nextval('contract_id_seq'),
+		  filingId varchar(30),
+		  name varchar(200),
+		  description varchar(255),
+		  mrc float,
+			nrc float,
+			currency_id bigint,
+			constraint pk_contract primary key (id)
+	);
+
+alter table contract add constraint fk_contract_currency_1 foreign key (currency_id) references currency(id) 
+on delete restrict on update restrict;
+create index ix_contract_currency_1 on contract(currency_id);
+				 
+# --- !Downs
+ 
+SET REFERENTIAL_INTEGRITY FALSE;
+
+DROP TABLE currency;
+DROP SEQUENCE currency_id_seq;
+
+SET REFERENTIAL_INTEGRITY TRUE;
+
+DROP TABLE contract;
+DROP SEQUENCE contract_id_seq;

@@ -1,0 +1,77 @@
+package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+
+import models.Currency
+import models.Location
+import models.Contract
+
+object Application extends Controller {
+  
+	// Forms
+
+	def companyForm = Form(
+		tuple(
+			"name" -> nonEmptyText,
+			"contact name" -> nonEmptyText,
+			"contact email" -> nonEmptyText,
+			"contact phone" -> nonEmptyText
+			// TODO: do better validation of email and phone
+		)
+	)
+
+	// End Forms
+
+  def index = Action {
+    Ok(views.html.index())
+  }
+
+  def settings = Action {
+    Ok(views.html.settings())
+  }
+
+	def currencies = Action {
+    Ok(views.html.currencies(Currency.all(), Currency.currencyForm))
+	}
+
+	def newCurrency = Action { implicit request =>
+		Currency.currencyForm.bindFromRequest.fold(
+			errors => BadRequest(views.html.currencies(Currency.all(), errors)),
+			label => {
+				Currency.create(label)
+				Redirect(routes.Application.currencies)
+			}
+		)
+	}
+
+	def deleteCurrency(id: Long) = Action {
+		Currency.delete(id)
+		Redirect(routes.Application.currencies)
+	}
+
+
+
+	def locations = Action {
+    Ok(views.html.locations(Location.all(), Location.locationForm))
+	}
+
+	def newLocation = Action { implicit request =>
+		Location.locationForm.bindFromRequest.fold(
+			formWithErrors => BadRequest(views.html.locations(Location.all(), formWithErrors)),
+			locationTuple => {
+				val (code, description) = locationTuple
+				Location.create(code, description)
+				Redirect(routes.Application.locations)
+			}
+		)
+	}
+
+	def deleteLocation(id: Long) = Action {
+		Location.delete(id)
+		Redirect(routes.Application.locations)
+	}
+
+}

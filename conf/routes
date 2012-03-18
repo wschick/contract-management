@@ -1,0 +1,25 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index
+GET     /settings                   controllers.Application.settings
+
+GET			/currencies									controllers.Application.currencies
+POST		/currencies									controllers.Application.newCurrency
+GET			/currencies/:id/delete			controllers.Application.deleteCurrency(id: Long)
+
+GET			/locations									controllers.Application.locations
+POST		/locations									controllers.Application.newLocation
+GET			/locations/:id/delete				controllers.Application.deleteLocation(id: Long)
+
+GET			/contracts									controllers.Contracts.contracts
+GET			/contracts/:id/edit					controllers.Contracts.editForm(id: Long)
+GET			/contracts/new							controllers.Contracts.form
+POST		/contracts/new							controllers.Contracts.newContract
+GET			/contracts/:id/delete				controllers.Contracts.deleteContract(id: Long)
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -1,0 +1,84 @@
+@(contractForm: Form[Contract])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@*@title = {
+	Add a new contract or <small><a href="@routes.Contracts.contracts"> or see existing contract</a></small>
+}*@
+
+@contractFormHtml = {
+
+	@if(contractForm.hasErrors) {
+		<div class="alert-message error">
+			<p>Please fix all errors</p>
+		</dev>
+	}
+
+	@helper.form(action = routes.Contracts.newContract) {
+
+	`<fieldset>
+		<legend>General information</legend>
+
+		@inputText(
+			contractForm("contractId"),
+			'_label -> "Id used for filing. Must be unique"
+		)
+
+		@inputText(
+			contractForm("name"),
+			'_label -> "Name"
+		)
+
+		@inputText(
+			contractForm("description"),
+			'_label -> "Description"
+		)
+
+		@inputText(
+			contractForm("mrc"),
+			'_label -> "MRC"
+		)
+
+		@inputText(
+			contractForm("nrc"),
+			'_label -> "NRC"
+		)
+
+		@select(
+			contractForm("currency"),
+			Currency.options,
+			'_label -> "Currency", '_default -> "-- Choose a currency --",
+			'_showConstraints -> false
+		)
+
+		@select(
+			contractForm("aEnd"),
+			Location.options,
+			'_label -> "A end", '_default -> "-- Choose a location --",
+			'_showConstraints -> false
+		)
+
+		@select(
+			contractForm("zEnd"),
+			Location.options,
+			'_label -> "Z end (optional)", '_default -> "-- Choose a location --",
+			'_showConstraints -> false
+		)
+
+	</fieldset>
+
+	<div class="actions">
+		<input type="submit" class="btn primary" value="Insert">
+		<a href="@routes.Application.index" class="btn">Cancel</a>
+	</div>
+
+	}
+
+}
+
+@main("New contract", "Add a new contract", "Contract") {
+
+	@contractFormHtml
+
+}

@@ -1,0 +1,43 @@
+@(contracts: List[Contract], contractForm: Form[Contract])
+
+@import helper._
+
+@main("Contracts", "Contracts", "Contracts") {
+
+	<a href="@routes.Application.index">Home</a>
+
+	<h1>@contracts.size Contracts</h1>
+
+	<table id="contract_list">
+		<tr>
+			<th>Contract Id</td>
+			<th>Name</th>
+			<th>MRC</th>
+			<th>NRC</th>
+			<th>Currency</th>
+			<th>A End</th>
+			<th>Z End</th>
+			<th></th>
+		</tr>
+
+		@contracts.map { contract =>
+			<tr>
+				<td>@contract.contractId</td>
+				<td>@contract.name</td>
+				<td>@contract.mrc</td>
+				<td>@contract.nrc</td>
+				<td>@Currency.stringById(contract.currencyId)</td>
+				<td>@Location.codeById(contract.aEndId)</td>
+				<td>@Location.codeById(contract.zEndId)</td>
+				<td> 
+					@form(routes.Contracts.deleteContract(contract.id.get)) {
+						<input type="submit" value="Delete">
+					}
+				</td>
+			</tr>
+		}
+	</table>
+
+	<a href="@routes.Contracts.newContract">Add a new contract</a>
+
+}

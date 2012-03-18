@@ -1,0 +1,18 @@
+@(contract: Contract)
+
+@main("Contract created!", "Contract created!", nav="Contract") {
+
+	Just created the following contract
+
+	<ul>
+		<li>Name: @contract.name</li>
+		<li>Description: @contract.description</li>
+		<li>MRC: @contract.mrc</li>
+		<li>NRC: @contract.nrc</li>
+		<li>A end: @contract.aEndId</li>
+		<li>Z end: @contract.zEndId</li>
+		<li>Contract id: @contract.contractId</li>
+	</ul>
+
+	<a href="@routes.Contracts.contracts">Back to the list of contracts</a>
+}

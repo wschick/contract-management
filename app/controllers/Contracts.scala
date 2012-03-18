@@ -1,0 +1,78 @@
+package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+
+import views._
+import anorm._
+
+import models.Contract
+
+object Contracts extends Controller {
+  
+	// Forms
+
+	// TODO change mrc and nrc to BigDecimal
+
+	val contractForm: Form[Contract] = Form(
+		mapping(
+			"id" -> ignored(NotAssigned:Pk[Long]),
+			"contractId" -> nonEmptyText,
+			"name" -> nonEmptyText,
+			"description" -> optional(text),
+			"mrc" -> nonEmptyText,
+			"nrc" -> nonEmptyText,
+			"currency" -> longNumber,
+			"aEnd" -> longNumber,
+			"zEnd" -> longNumber
+		)
+		(
+			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd) => 
+				Contract(NotAssigned, contractId, name, description, mrc.toDouble, nrc.toDouble, currency, aEnd, zEnd)
+		)
+		(
+			(contract: Contract) => Some((
+				contract.id, contract.contractId, 
+				contract.name, 
+				contract.description, 
+				contract.mrc.toString, 
+				contract.nrc.toString, 
+				contract.currencyId,
+				contract.aEndId, 
+				contract.zEndId))
+		)
+	)
+
+  def form = Action {
+    Ok(html.contract.form(contractForm))
+  }
+
+  def editForm(id: Long) = Action {
+		Contract.findById(id).map { existingContract =>
+			Ok(html.contract.form(contractForm.fill(existingContract)))
+		}.getOrElse(NotFound)
+	}
+
+
+	def contracts = Action {
+    Ok(views.html.contracts(Contract.all(), contractForm))
+	}
+
+	def newContract = Action { implicit request =>
+		contractForm.bindFromRequest.fold(
+			formWithErrors => BadRequest(html.contract.form(formWithErrors)),
+			contract => {
+				Contract.create(contract)
+				Ok(html.contract.summary(contract))
+			}
+		)
+	}
+
+	def deleteContract(id: Long) = Action {
+		Contract.delete(id)
+		Redirect(routes.Contracts.contracts)
+	}
+  
+}

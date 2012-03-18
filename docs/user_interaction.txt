@@ -1,0 +1,31 @@
+When the user comes to the site, he sees a list of contracts with cancellation 
+dates in the next 60 days. They are color coded, with the near ones being red, 
+farther out orange, and the others green.
+
+The user may filter the list by
+
+- Company
+- Signing date range (start date + duration)
+- Expiration date range
+- Cancellation date range
+- A location
+- Z location
+
+Links let you edit the contract, delete the contract, make a new contract using this information.
+
+Follow a link to a page which lets you add a new contract.
+
+Follow the link to a settings page which provides links to subpages for 
+changing currency, location, company, and so on.
+
+Main page leads to 
+- New contract page. New contract page leads back to main page.
+- Settings page
+
+Setting page leads to
+- Currency settings
+- Location settings
+- Company settings
+
+Subpages provide a list of that element. Usual CRUD operations. 
+Navigation lets you go to contract or settings.
