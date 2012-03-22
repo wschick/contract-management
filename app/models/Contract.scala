@@ -82,13 +82,13 @@ object Contract {
 		DB.withConnection { implicit connection =>
 			SQL(
 				"""
-					insert into contract (contractId, name, description, mrc, nrc, 
-					currency_id, a_end_id, z_end_id, /*startDate,*/ term, termUnits, 
-					cancellationPeriod, cancellationPeriodUnits,
-					reminderPeriod, reminderPeriodUnits, 
-					lastModifyingUser, lastModifiedTime) 
+					insert into contract (contract_id, name, description, mrc, nrc, 
+					currency_id, a_end_id, z_end_id, term, term_units, 
+					cancellation_period, cancellation_period_units,
+					reminder_period, reminder_period_units, 
+					last_modifying_user, last_modified_time) 
 					values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
-					{currency_id}, {a_end_id}, {z_end_id}, /*{start_date},*/ {term}, {term_units},
+					{currency_id}, {a_end_id}, {z_end_id}, {term}, {term_units},
 					{cancellation_period}, {cancellation_period_units}, 
 					{reminder_period}, {reminder_period_units},
 					{last_modifying_user}, {last_modified_time})

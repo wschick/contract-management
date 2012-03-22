@@ -44,13 +44,13 @@ CREATE TABLE reminder_contact (
 -- 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	contract_id varchar(30),
-	name varchar(200),
+	contract_id varchar(30) NOT NULL,
+	name varchar(200) NOT NULL,
 	description varchar(255),
-	mrc float,
-	nrc float,
-	currency_id bigint, 
-	a_end_id bigint, 
+	mrc float NOT NULL,
+	nrc float NOT NULL,
+	currency_id bigint NOT NULL, 
+	a_end_id bigint NOT NULL, 
 	z_end_id bigint,
 	--start_date date,
 	term integer NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE contract (
 	reminder_period_units integer,
 	last_modifying_user varchar(40),
 	last_modified_time datetime,
-	company_id integer 
+	company_id integer NOT NULL
 );
 
 alter table contract add constraint fk_contract_currency_1 

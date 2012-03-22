@@ -1,3 +1,13 @@
+body 
+{
+	font-family: 'Droids Sans', sans-serif;
+}
+
+h1, h2, h3, h4
+{
+	font-family: 'Droid Serif', serif;
+}
+
 #container
 {
 	margin: 0 30px;
@@ -6,11 +16,35 @@
 
 #header
 {
-	background: #ccc;
+	background: white;
 	padding: 20px;
+	height: 50px;
 }
 
-#header h1 { margin: 0; }
+#header_logo
+{
+}
+
+#header_image
+{
+	position: absolute;
+	top: 15px;
+	right: 400px;
+	z-index: 1;
+}
+
+#header_text
+{
+	float: right;
+	text-align: right;	
+	z-index: 10;
+}
+
+#header h1 { margin: 0; font-size: 1.85em }
+
+#page_heading 
+{
+}
 
 #navigation
 {
@@ -96,8 +130,7 @@ dl.form dt
 {
 	background: #ccc;
 	text-align: right;
-	padding: 20px;
-	height: 1%;
+	padding: 7px;
 }
 
 table.locations { padding-bottom: 20px;}
@@ -107,3 +140,34 @@ th.inner_display_column,td.inner_display_column {
 	text-align: left; 
 	padding: 5px;
 }
+
+#contract_list
+{
+	border: 1px solid gray;
+}
+
+#contract_list th
+{
+	color: white;
+	background-color: gray;
+}
+
+#contract_list .contract_id
+{
+	width: 6em;
+	background-color: lightgray;
+}
+
+#contract_list th.contract_id
+{
+	background-color: gray;
+}
+
+#contract_list th.contract_name { width: 12em; }
+
+#contract_list th.cost { width: 4em; }
+#contract_list th.currency { width: 3em; }
+#contract_list th.location_code { width: 6em; }
+#contract_list th.links { width: 5em; }
+
+form.form { margin-top: 20px; }

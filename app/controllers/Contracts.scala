@@ -93,9 +93,15 @@ object Contracts extends Controller {
 			formWithErrors => BadRequest(html.contract.form(formWithErrors)),
 			contract => {
 				Contract.create(contract)
-				Ok(html.contract.summary(contract))
+				Ok(html.contract.summary(contract, "Contact created", "You just created a contract:"))
 			}
 		)
+	}
+
+	def viewContract(id: Long) = Action { implicit request =>
+		Contract.findById(id).map { existingContract =>
+			Ok(html.contract.summary(existingContract, "Contract " + existingContract.contractId, ""))
+		}.getOrElse(NotFound)
 	}
 
 	def deleteContract(id: Long) = Action {

@@ -2,28 +2,30 @@
 
 @import helper._
 
-@main("Contacts", "Contacts", "Settings") {
+@main("People", "People", "People") {
 
-	<h3>@contacts.size Contacts</h3>
-
-	<table class="contacts">
-		<tr>
-			<th>Name</th>
-			<th class="inner_display_column">Email</th>
-			<th class="inner_display_column">Telephone</th>
-			<th class="inner_display_column">Company
-			<th><th>
-		</tr>
-		@contacts.map { contact =>
+	@if(contacts.isEmpty) {
+		<h3>No people.</h3>
+	} else {
+		<table class="contacts">
 			<tr>
-				<td> @contact.name</td>
-				<td class="inner_display_column">@contact.email</td>
-				<td class="inner_display_column">@contact.telephone</td>
-				<td class="inner_display_column">@Company.nameById(contact.companyId)</td>
-				<td><a class="delete_link" href="@routes.Contacts.deleteContact(contact.id)">delete</a></td>
+				<th>Name</th>
+				<th class="inner_display_column">Email</th>
+				<th class="inner_display_column">Telephone</th>
+				<th class="inner_display_column">Company
+				<th><th>
 			</tr>
-		}
-	</table>
+			@contacts.map { contact =>
+				<tr>
+					<td> @contact.name</td>
+					<td class="inner_display_column">@contact.email</td>
+					<td class="inner_display_column">@contact.telephone</td>
+					<td class="inner_display_column">@Company.nameById(contact.companyId)</td>
+					<td><a class="delete_link" href="@routes.Contacts.deleteContact(contact.id)">delete</a></td>
+				</tr>
+			}
+		</table>
+	}
 
 	@form(routes.Contacts.newContact, 'class -> "form") {
 

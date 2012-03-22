@@ -4,15 +4,17 @@
 
 @main("Currencies", "Currencies", "Settings") {
 
-	<h3>@currencies.size Currencies</h3>
-
-	<ul>
-		@currencies.map { currency =>
-			<li>
-				@currency.label <a class="delete_link" href="@routes.Application.deleteCurrency(currency.id)">delete</a>
-			</li>
-		}
-	</ul>
+	@if(currencies.isEmpty) {
+		<h3>No currencies.</h3>
+	} else {
+		<ul>
+			@currencies.map { currency =>
+				<li>
+					@currency.label <a class="delete_link" href="@routes.Application.deleteCurrency(currency.id)">delete</a>
+				</li>
+			}
+		</ul>
+	}
 
 	@form(routes.Application.newCurrency, 'class -> "form") {
 

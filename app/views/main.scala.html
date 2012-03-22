@@ -8,24 +8,34 @@
 	<head>
 			<title>@title</title>
 			<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/contracts_main.css")">
-			<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+			<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon-folders.ico")">
+			<link href='http://fonts.googleapis.com/css?family=Brawler|Droid+Sans|Arimo|Droid+Serif' rel='stylesheet' types='text/css'>
 			<script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
 	</head>
 	<body>
 		<div id="container">
 			<div id="header">
-				<h1>
-					Contract Management
-				</h1>
+				<a href="@routes.Contracts.contracts">
+					<img id="header_logo" src="@routes.Assets.at("images/logo.png")">
+				</a>
+				<div id="header_text">
+					<h1>
+						Contract Management
+					</h1>
+				</div>
+				<div><img id="header_image" src="@routes.Assets.at("images/folders_70h.png")"></div>
 			</div>
 			<div id="navigation">
 				<ul>
-					<li><a href="@routes.Contracts.contracts">Home</a></li>
-					<li><a href="@routes.Application.settings">Settings</a></li>
+					<li><a href="@routes.Contracts.contracts">Contracts</a></li>
+					<li><a href="@routes.Reminders.reminders">Reminders</a></li>
+					<li><a href="@routes.Companies.companies">Companies</a></li>
+					<li><a href="@routes.Contacts.contacts">People</a></li>
+					<li><a href="@routes.Application.settings">Other Settings</a></li>
 				</ul>
 			</div>
 			<div id="content">
-				<h2>
+				<h2 id="page_heading">
 					@pageHeading
 				</h2>
 				@content

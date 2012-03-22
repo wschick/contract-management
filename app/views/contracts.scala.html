@@ -4,32 +4,28 @@
 
 @main("Contracts", "Contracts", "Contracts") {
 
-	<a href="@routes.Application.index">Home</a>
-
-	<h1>@contracts.size Contracts</h1>
-
 	<table id="contract_list">
 		<tr>
-			<th>Contract Id</td>
-			<th>Name</th>
-			<th>MRC</th>
-			<th>NRC</th>
-			<th>Currency</th>
-			<th>A End</th>
-			<th>Z End</th>
-			<th></th>
+			<th class="contract_id">Contract Id</td>
+			<th class="contract_name">Name</th>
+			<th class="cost">MRC</th>
+			<th class="cost">NRC</th>
+			<th class="currency">Currency</th>
+			<th class="location_code">Locations</th>
+			<th class="links"></th>
 		</tr>
 
 		@contracts.map { contract =>
 			<tr>
-				<td>@contract.contractId</td>
+				<td class="contract_id">@contract.contractId</td>
 				<td>@contract.name</td>
 				<td>@contract.mrc</td>
 				<td>@contract.nrc</td>
 				<td>@Currency.stringById(contract.currencyId)</td>
-				<td>@Location.codeById(contract.aEndId)</td>
-				<td>@Location.codeById(contract.zEndId)</td>
+				<td>@Location.codeById(contract.aEndId)<br/>
+				@Location.codeById(contract.zEndId)</td>
 				<td> 
+					<a href="@routes.Contracts.viewContract(contract.id.get)">See details</a>
 					@form(routes.Contracts.deleteContract(contract.id.get)) {
 						<input type="submit" value="Delete">
 					}
@@ -37,6 +33,8 @@
 			</tr>
 		}
 	</table>
+
+	<p>
 
 	<a href="@routes.Contracts.newContract">Add a new contract</a>
 

@@ -4,8 +4,9 @@
 
 @main("Locations", "Locations", "Settings") {
 
-	<h3>@locations.size Locations</h3>
-
+	@if(locations.isEmpty) {
+		<h3>No locations.</h3>
+	} else {
 	<table class="locations">
 		<tr>
 			<th>Code</th>
@@ -19,7 +20,8 @@
 				<td><a class="delete_link" href="@routes.Application.deleteLocation(location.id)">delete</a></td>
 			</tr>
 		}
-	</table>
+		</table>
+	}
 
 	@form(routes.Application.newLocation, 'class -> "form") {
 

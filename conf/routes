@@ -27,6 +27,7 @@ POST		/reminders									controllers.Reminders.newReminder
 GET			/reminders/:id/delete				controllers.Reminders.deleteReminder(id: Long)
 
 GET			/contracts									controllers.Contracts.contracts
+GET			/contracts/:id/view 				controllers.Contracts.viewContract(id: Long)
 GET			/contracts/:id/edit					controllers.Contracts.editForm(id: Long)
 GET			/contracts/new							controllers.Contracts.form
 POST		/contracts/new							controllers.Contracts.newContract

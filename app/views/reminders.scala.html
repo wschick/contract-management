@@ -2,24 +2,26 @@
 
 @import helper._
 
-@main("reminders", "reminders", "Settings") {
+@main("Reminders", "Reminders", "Reminders") {
 
-	<h3>@reminders.size reminders</h3>
-
-	<table class="reminders">
-		<tr>
-			<th>Date</th>
-			<th class="inner_display_column">Contract
-			<th><th>
-		</tr>
-		@reminders.map { reminder =>
+	@if(reminders.isEmpty) {
+		<h3>No reminders.</h3>
+	} else {
+		<table class="reminders">
 			<tr>
-				<td> @reminder.reminderDate</td>
-				<td class="inner_display_column">@Contract.nameById(reminder.contractId)</td>
-				<td><a class="delete_link" href="@routes.Reminders.deleteReminder(reminder.id)">delete</a></td>
+				<th>Date</th>
+				<th class="inner_display_column">Contract
+				<th><th>
 			</tr>
-		}
-	</table>
+			@reminders.map { reminder =>
+				<tr>
+					<td> @reminder.reminderDate</td>
+					<td class="inner_display_column">@Contract.nameById(reminder.contractId)</td>
+					<td><a class="delete_link" href="@routes.Reminders.deleteReminder(reminder.id)">delete</a></td>
+				</tr>
+			}
+		</table>
+	}
 
 	@form(routes.Reminders.newReminder, 'class -> "form") {
 

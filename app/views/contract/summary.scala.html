@@ -1,17 +1,18 @@
-@(contract: Contract)
+@(contract: Contract, title: String, heading: String)
 
-@main("Contract created!", "Contract created!", nav="Contract") {
+@main(title, title, nav="Contract") {
 
-	Just created the following contract
+	@heading
 
 	<ul>
+		<li>Company: @Company.nameById(contract.companyId)</li>
+		<li>Contract id: @contract.contractId</li>
 		<li>Name: @contract.name</li>
 		<li>Description: @contract.description</li>
 		<li>MRC: @contract.mrc</li>
 		<li>NRC: @contract.nrc</li>
 		<li>A end: @contract.aEndId</li>
 		<li>Z end: @contract.zEndId</li>
-		<li>Contract id: @contract.contractId</li>
 		<li>Term: @contract.term @contract.termUnits</li>
 		<li>CancellationPeriod: @contract.cancellationPeriod @contract.cancellationPeriodUnits</li>
 		<li>ReminderPeriod: @contract.reminderPeriod @contract.reminderPeriodUnits</li>
