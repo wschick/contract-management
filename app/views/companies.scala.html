@@ -15,7 +15,7 @@
 		@companies.map { company =>
 			<tr>
 				<td> @company.name</td>
-				<td class="inner_display_column">@company.primaryContactId</td>
+				<td class="inner_display_column">@Contact.nameById(company.primaryContactId)</td>
 				<td><a class="delete_link" href="@routes.Companies.deleteCompany(company.id)">delete</a></td>
 			</tr>
 		}

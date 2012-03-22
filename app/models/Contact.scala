@@ -44,12 +44,15 @@ object Contact {
 		}
 	}
 
-	def nameById(id: Long): String = {
-		val c = findById(id);
-
-		c match {
-			case Some(contactObj) => contactObj.name
-			case None => "None"
+	def nameById(id: Option[Long]): String = {
+		id match {
+			case Some(id) => {
+				findById(id) match {
+					case Some(contactObj) => contactObj.name
+					case None => ""
+				}
+			}
+			case None => ""
 		}
 	}
 

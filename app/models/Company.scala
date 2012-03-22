@@ -43,10 +43,16 @@ object Company {
 
 		c match {
 			case Some(companyObj) => companyObj.name
-			case None => "None"
+			case None => ""
 		}
 	}
 
+	def nameById(id: Option[Long]): String = {
+		id match {
+			case Some(id) => nameById(id)
+			case None => ""
+		}
+	}
 
 	def all(): List[Company] = DB.withConnection { implicit c =>
 		SQL("select * from company order by name").as(company *)

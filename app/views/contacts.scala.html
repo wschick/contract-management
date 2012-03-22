@@ -19,7 +19,7 @@
 				<td> @contact.name</td>
 				<td class="inner_display_column">@contact.email</td>
 				<td class="inner_display_column">@contact.telephone</td>
-				<td class="inner_display_column">@contact.companyId</td>
+				<td class="inner_display_column">@Company.nameById(contact.companyId)</td>
 				<td><a class="delete_link" href="@routes.Contacts.deleteContact(contact.id)">delete</a></td>
 			</tr>
 		}
@@ -39,7 +39,7 @@
 	'_showConstraints -> false, 'size -> 20)
 
 	@select(
-		contactForm("company"),
+		contactForm("company_id"),
 		Company.options,
 		'_label -> "Company", '_default -> "-- Choose a company --",
 		'_showConstraints -> false
