@@ -122,6 +122,10 @@ object Contract {
 		}
 	}
 							  
+	// Make Map[String, String] needed for select options in a form.
+	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
+		SQL("select * from contract order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
+	}
 
 }
 
