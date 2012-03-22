@@ -1,0 +1,43 @@
+@(reminders: List[Reminder], reminderForm: Form[(String, Long)])
+
+@import helper._
+
+@main("reminders", "reminders", "Settings") {
+
+	<h3>@reminders.size reminders</h3>
+
+	<table class="reminders">
+		<tr>
+			<th>Date</th>
+			<th class="inner_display_column">Contract
+			<th><th>
+		</tr>
+		@reminders.map { reminder =>
+			<tr>
+				<td> @reminder.reminderDate</td>
+				<td class="inner_display_column">@Contract.nameById(reminder.contractId)</td>
+				<td><a class="delete_link" href="@routes.Reminders.deleteReminder(reminder.id)">delete</a></td>
+			</tr>
+		}
+	</table>
+
+	@form(routes.Reminders.newReminder, 'class -> "form") {
+
+	<h2>Add a new reminder</h2>
+
+	@inputDate(reminderForm("reminder_date"), '_class -> "form", '_label -> "Date", 
+	'_showConstraints -> false, 'size -> 20)
+
+	@select(
+		reminderForm("contract_id"),
+		Contact.options,
+		'_label -> "Contact", '_default -> "-- Choose a contract --",
+		'_showConstraints -> false
+	)
+
+
+	<input type="submit" value="Create">
+
+	}
+
+}
