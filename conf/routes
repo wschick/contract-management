@@ -14,6 +14,18 @@ GET			/locations									controllers.Application.locations
 POST		/locations									controllers.Application.newLocation
 GET			/locations/:id/delete				controllers.Application.deleteLocation(id: Long)
 
+GET			/contacts										controllers.Contacts.contacts
+POST		/contacts										controllers.Contacts.newContact
+GET			/contacts/:id/delete				controllers.Contacts.deleteContact(id: Long)
+
+GET			/companies									controllers.Companies.companies
+POST		/companies									controllers.Companies.newCompany
+GET			/companies/:id/delete				controllers.Companies.deleteCompany(id: Long)
+
+GET			/reminders									controllers.Reminders.reminders
+POST		/reminders									controllers.Reminders.newReminder
+GET			/reminders/:id/delete				controllers.Reminders.deleteReminder(id: Long)
+
 GET			/contracts									controllers.Contracts.contracts
 GET			/contracts/:id/edit					controllers.Contracts.editForm(id: Long)
 GET			/contracts/new							controllers.Contracts.form

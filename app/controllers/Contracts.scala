@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+//import org.joda.time._
 
 import views._
 import anorm._
@@ -26,11 +27,28 @@ object Contracts extends Controller {
 			"nrc" -> nonEmptyText,
 			"currency" -> longNumber,
 			"aEnd" -> longNumber,
-			"zEnd" -> longNumber
+			"zEnd" -> longNumber,
+			//"startDate" -> nonEmptyText,
+			"term" -> number,
+			"termUnits" -> number,
+			"cancellationPeriod" -> number,
+			"cancellationPeriodUnits" -> number,
+			"reminderPeriod" -> optional(number),
+			"reminderPeriodUnits" -> optional(number),
+			"lastModifyingUser" -> optional(text),
+			"lastModifiedTime" -> optional(date),
+			"companyId" -> longNumber
 		)
 		(
-			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd) => 
-				Contract(NotAssigned, contractId, name, description, mrc.toDouble, nrc.toDouble, currency, aEnd, zEnd)
+			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
+			/*startDate,*/ term, termUnits, cancellationPeriod, cancellationPeriodUnits,
+			reminderPeriod, reminderPeriodUnits, 
+			lastModifyingUser, lastModifiedTime, companyId) => 
+				Contract(NotAssigned, contractId, name, description, mrc.toDouble, 
+				nrc.toDouble, currency, aEnd, zEnd, 
+				/*startDate,*/ term, termUnits, cancellationPeriod, cancellationPeriodUnits, 
+				reminderPeriod, reminderPeriodUnits, 
+				lastModifyingUser, lastModifiedTime, companyId)
 		)
 		(
 			(contract: Contract) => Some((
@@ -41,7 +59,17 @@ object Contracts extends Controller {
 				contract.nrc.toString, 
 				contract.currencyId,
 				contract.aEndId, 
-				contract.zEndId))
+				contract.zEndId,
+				//contract.startDate,
+				contract.term,
+				contract.termUnits,
+				contract.cancellationPeriod,
+				contract.cancellationPeriodUnits,
+				contract.reminderPeriod,
+				contract.reminderPeriodUnits,
+				contract.lastModifyingUser,
+				contract.lastModifiedTime,
+				contract.companyId))
 		)
 	)
 

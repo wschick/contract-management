@@ -13,56 +13,55 @@ CREATE TABLE location (
 	description varchar(100) NOT NULL,
 );
 
-CREATE TABLE contact_information (
+CREATE TABLE contact (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	name varchar(80) NOT NULL,
-	email varchar(80),
+	email varchar(80) NOT NULL,
 	telephone varchar(20),
-	company_id integer # Foreign key
+	company_id integer 
 );
 
 CREATE TABLE company (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	name varchar(50) NOT NULL,
-	primary_contact_id integer, # Foreign key
+	primary_contact_id integer, 
 );
 
 
 CREATE TABLE reminder (
 	id integer NOT NULL AUTO_INCREMENT,
-	reminder_date date,
-	contract_id	integer # Foreign key
+	reminder_date date NOT NULL,
+	contract_id	integer NOT NULL 
 );
 
 
-CREATE TABLE reminder_contract (
+CREATE TABLE reminder_contact (
 	reminder_id integer NOT NULL,
-	contact_information_id NOT NULL
+	contact_id integer NOT NULL
 );
 
 
+-- 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
-	id integer NOT NULL AUTO_INCREMENT,
+	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	contract_id varchar(30),
 	name varchar(200),
 	description varchar(255),
 	mrc float,
 	nrc float,
-	currency_id bigint, # Foreign key
-	a_end_id bigint, # Foreign key
-	z_end_id bigint, # Foreign key
-	start_date date,
-	term integer,
-	term_units integer,  # 0 = day, 1 = month, 2 = year
-	cancellation_period integer,
-	cancellation_period_units integer,
+	currency_id bigint, 
+	a_end_id bigint, 
+	z_end_id bigint,
+	--start_date date,
+	term integer NOT NULL,
+	term_units integer NOT NULL, 
+	cancellation_period integer NOT NULL,
+	cancellation_period_units integer NOT NULL,
 	reminder_period integer,
 	reminder_period_units integer,
-	last_modified_user varchar(40),
+	last_modifying_user varchar(40),
 	last_modified_time datetime,
-	company_id integer # Foreign key
-
-	constraint pk_contract primary key (id)
+	company_id integer 
 );
 
 alter table contract add constraint fk_contract_currency_1 

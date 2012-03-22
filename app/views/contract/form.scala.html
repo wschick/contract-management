@@ -66,6 +66,47 @@
 			'_showConstraints -> false
 		)
 
+		@inputDate(
+			contractForm("startDate"),
+			'_label -> "Starting date (yyyy-mm-dd)"
+		)
+
+		@inputText(
+			contractForm("term"),
+			'_label -> "Term"
+		)
+
+		@select(
+			contractForm("termUnits"),
+			TimePeriodUnits.options,
+			'_label -> "term units", '_default -> "-- Choose term units --",
+			'_showConstraints -> false
+		)
+
+		@inputText(
+			contractForm("cancellationPeriod"),
+			'_label -> "Term"
+		)
+
+		@select(
+			contractForm("cancellationPeriodUnits"),
+			TimePeriodUnits.options,
+			'_label -> "cancellation period units", '_default -> "-- Choose cancellation period units --",
+			'_showConstraints -> false
+		)
+
+		@inputText(
+			contractForm("reminderPeriod"),
+			'_label -> "Term"
+		)
+
+		@select(
+			contractForm("reminderPeriodUnits"),
+			TimePeriodUnits.options,
+			'_label -> "reminder period units", '_default -> "-- Choose reminder period units --",
+			'_showConstraints -> false
+		)
+
 	</fieldset>
 
 	<div class="actions">
