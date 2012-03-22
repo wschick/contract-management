@@ -1,0 +1,53 @@
+@(contacts: List[Contact], contactForm: Form[(String, String, Option[String], Option[Long])])
+
+@import helper._
+
+@main("Contacts", "Contacts", "Settings") {
+
+	<h3>@contacts.size Contacts</h3>
+
+	<table class="contacts">
+		<tr>
+			<th>Name</th>
+			<th class="inner_display_column">Email</th>
+			<th class="inner_display_column">Telephone</th>
+			<th class="inner_display_column">Company
+			<th><th>
+		</tr>
+		@contacts.map { contact =>
+			<tr>
+				<td> @contact.name</td>
+				<td class="inner_display_column">@contact.email</td>
+				<td class="inner_display_column">@contact.telephone</td>
+				<td class="inner_display_column">@contact.companyId</td>
+				<td><a class="delete_link" href="@routes.Contacts.deleteContact(contact.id)">delete</a></td>
+			</tr>
+		}
+	</table>
+
+	@form(routes.Contacts.newContact, 'class -> "form") {
+
+	<h2>Add a new contact</h2>
+
+	@inputText(contactForm("name"), '_class -> "form", '_label -> "Name", 
+	'_showConstraints -> false, 'size -> 50)
+
+	@inputText(contactForm("email"), '_class -> "form", '_label -> "Email", 
+	'_showConstraints -> false, 'size -> 50)
+
+	@inputText(contactForm("telephone"), '_class -> "form", '_label -> "Telephone (optional)", 
+	'_showConstraints -> false, 'size -> 20)
+
+	@select(
+		contactForm("company"),
+		Company.options,
+		'_label -> "Company", '_default -> "-- Choose a company --",
+		'_showConstraints -> false
+	)
+
+
+	<input type="submit" value="Create">
+
+	}
+
+}
