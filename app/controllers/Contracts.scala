@@ -10,6 +10,7 @@ import views._
 import anorm._
 
 import models.Contract
+import models.TimePeriodUnits
 
 object Contracts extends Controller {
   
@@ -28,26 +29,26 @@ object Contracts extends Controller {
 			"currency" -> longNumber,
 			"aEnd" -> longNumber,
 			"zEnd" -> longNumber,
-			//"startDate" -> nonEmptyText,
+			"startDate" -> date,
 			"term" -> number,
 			"termUnits" -> number,
 			"cancellationPeriod" -> number,
 			"cancellationPeriodUnits" -> number,
-			"reminderPeriod" -> optional(number),
-			"reminderPeriodUnits" -> optional(number),
+			//"reminderPeriod" -> optional(number),
+			//"reminderPeriodUnits" -> optional(number),
 			"lastModifyingUser" -> optional(text),
 			"lastModifiedTime" -> optional(date),
 			"companyId" -> longNumber
 		)
 		(
 			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
-			/*startDate,*/ term, termUnits, cancellationPeriod, cancellationPeriodUnits,
-			reminderPeriod, reminderPeriodUnits, 
+			startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
+			//reminderPeriod, reminderPeriodUnits, 
 			lastModifyingUser, lastModifiedTime, companyId) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble, 
 				nrc.toDouble, currency, aEnd, zEnd, 
-				/*startDate,*/ term, termUnits, cancellationPeriod, cancellationPeriodUnits, 
-				reminderPeriod, reminderPeriodUnits, 
+				startDate, term, TimePeriodUnits.create(termUnits), cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits), 
+				//reminderPeriod, reminderPeriodUnits, 
 				lastModifyingUser, lastModifiedTime, companyId)
 		)
 		(
@@ -60,13 +61,13 @@ object Contracts extends Controller {
 				contract.currencyId,
 				contract.aEndId, 
 				contract.zEndId,
-				//contract.startDate,
+				contract.startDate,
 				contract.term,
-				contract.termUnits,
+				contract.termUnits.value,
 				contract.cancellationPeriod,
-				contract.cancellationPeriodUnits,
-				contract.reminderPeriod,
-				contract.reminderPeriodUnits,
+				contract.cancellationPeriodUnits.value,
+				//contract.reminderPeriod,
+				//contract.reminderPeriodUnits,
 				contract.lastModifyingUser,
 				contract.lastModifiedTime,
 				contract.companyId))

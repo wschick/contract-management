@@ -7,11 +7,6 @@ import play.api.Play.current
 //import org.joda.time._
 import java.util.Date
 
-/*case class Contract(id: Long, company: Company, category: ContractCategory, identifier: String, name: String, 
-	description: String, location: ContractLocation, startDate: DateTime, contractTerm: Term, cancellationTerm: Term,
-	MRC: BigDecimal, NRC: BigDecimal, currency: Currency, attachments: List[Attachments]
-	*/
-
 case class Contract(
 	id: Pk[Long] = NotAssigned,
 	contractId: String, // Used for filing
@@ -20,15 +15,17 @@ case class Contract(
 	mrc: Double, 
 	nrc: Double,
 	currencyId: Long,
+	//aEndId: Location, 
+	//zEndId: Location,
 	aEndId: Long, 
 	zEndId: Long,
-	//startDate: Date,
+	startDate: Date,
 	term: Int,
-	termUnits: Int,
+	termUnits: TimePeriodUnits,
 	cancellationPeriod: Int,
-	cancellationPeriodUnits: Int,
-	reminderPeriod: Option[Int],
-	reminderPeriodUnits: Option[Int],
+	cancellationPeriodUnits: TimePeriodUnits,
+	//reminderPeriod: Option[Int],
+	//reminderPeriodUnits: Option[Int],
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
 	companyId: Long
@@ -46,52 +43,67 @@ object Contract {
 		get[Long]("currency_id") ~
 		get[Long]("a_end_id") ~
 		get[Long]("z_end_id") ~
-		//get[Date]("start_date") ~
+		get[Date]("start_date") ~
 		get[Int]("term") ~
 		get[Int]("term_units") ~
 		get[Int]("cancellation_period") ~
 		get[Int]("cancellation_period_units") ~
-		get[Option[Int]]("reminder_period") ~
-		get[Option[Int]]("reminder_period_units") ~
+		/*get[Option[Int]]("reminder_period") ~
+		get[Option[Int]]("reminder_period_units") ~*/
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~term~termUnits~cancellationPeriod~cancellationPeriodUnits~reminderPeriod~reminderPeriodUnits~lastModifyingUser~lastModifiedTime~companyId => 
+			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~/*reminderPeriod~reminderPeriodUnits~*/lastModifyingUser~lastModifiedTime~companyId => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
-					aEndId, zEndId, /*startDate,*/ term, termUnits, cancellationPeriod, 
-					cancellationPeriodUnits, reminderPeriod, reminderPeriodUnits,
+					aEndId, zEndId, startDate, term, TimePeriodUnits.create(termUnits), cancellationPeriod, 
+					TimePeriodUnits.create(cancellationPeriodUnits), /*reminderPeriod, reminderPeriodUnits,*/
 					lastModifyingUser, lastModifiedTime, companyId)
 		}
 	}	
 
+	/** Get a list of all contracts. */
 	def all(): List[Contract] = DB.withConnection { implicit connection =>
 		SQL("select * from contract").as(contract *)
 	}
 
+	/** Return a contract.
+
+		@param id the id of the contract
+		@return the contract, if it exists.
+
+		*/
 	def findById(id: Long): Option[Contract] = {
 		DB.withConnection { implicit connection =>
 			SQL("select * from contract where id = {id}").on('id -> id).as(Contract.contract.singleOpt)
 		}
 	}
 
+	/** Return the name of a contract.
+
+		@param id the id of the contract
+		@return the contract name, if the contact exists.
+
+		*/
 	def nameById(id: Long): Option[String] = {
 		findById(id).map(contract => Some(contract.name)).getOrElse(None)
 	}
 			  
+	/** Create a contract in the database.
+
+		@param contract A contract object to be persisted. The unique database key will be provided automatically.
+		*/
 	def create(contract: Contract) = {
 		DB.withConnection { implicit connection =>
 			SQL(
 				"""
 					insert into contract (contract_id, name, description, mrc, nrc, 
-					currency_id, a_end_id, z_end_id, term, term_units, 
+					currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 					cancellation_period, cancellation_period_units,
-					reminder_period, reminder_period_units, 
-					last_modifying_user, last_modified_time) 
+					last_modifying_user, last_modified_time, company_id) 
 					values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
-					{currency_id}, {a_end_id}, {z_end_id}, {term}, {term_units},
+					{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 					{cancellation_period}, {cancellation_period_units}, 
-					{reminder_period}, {reminder_period_units},
-					{last_modifying_user}, {last_modified_time})
+					{last_modifying_user}, {last_modified_time}, {companyId})
 				"""
 				).on(
 				'contractId -> contract.contractId,
@@ -102,19 +114,26 @@ object Contract {
 				'currency_id -> contract.currencyId,
 				'a_end_id -> contract.aEndId,
 				'z_end_id -> contract.zEndId,
-				//'start_date -> contract.startDate,
+				'start_date -> contract.startDate,
 				'term -> contract.term,
-				'term_units -> contract.termUnits,
+				'term_units -> contract.termUnits.value,
 				'cancellation_period -> contract.cancellationPeriod,
-				'cancellation_period_units -> contract.cancellationPeriodUnits,
-				'reminder_period -> contract.reminderPeriod,
-				'reminder_period_units -> contract.reminderPeriodUnits,
+				'cancellation_period_units -> contract.cancellationPeriodUnits.value,
+				/*'reminder_period -> contract.reminderPeriod,
+				'reminder_period_units -> contract.reminderPeriodUnits,*/
 				'last_modifying_user -> "unknown user",
-				'last_modified_time -> new Date
+				'last_modified_time -> new Date,
+				'companyId -> contract.companyId
 			).executeUpdate()
 		}
 	}
 					  
+	/** Delete a contract
+
+		@param id the id of the contract
+		@return the contract name, if the contact exists.
+
+		*/
 	def delete(id: Long) {
 		DB.withConnection { implicit connection =>
 			SQL("delete from contract where id = {id}").on(
@@ -122,7 +141,9 @@ object Contract {
 		}
 	}
 							  
-	// Make Map[String, String] needed for select options in a form.
+	/** Make Map[String, String] needed for contract select options in a form. 
+			This uses the name of the contract as the visible text.
+		*/
 	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
 		SQL("select * from contract order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
 	}

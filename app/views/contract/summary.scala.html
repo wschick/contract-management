@@ -9,13 +9,13 @@
 		<li>Contract id: @contract.contractId</li>
 		<li>Name: @contract.name</li>
 		<li>Description: @contract.description</li>
-		<li>MRC: @contract.mrc</li>
-		<li>NRC: @contract.nrc</li>
-		<li>A end: @contract.aEndId</li>
-		<li>Z end: @contract.zEndId</li>
-		<li>Term: @contract.term @contract.termUnits</li>
-		<li>CancellationPeriod: @contract.cancellationPeriod @contract.cancellationPeriodUnits</li>
-		<li>ReminderPeriod: @contract.reminderPeriod @contract.reminderPeriodUnits</li>
+		<li>MRC: @contract.mrc @Currency.stringById(contract.currencyId)</li>
+		<li>NRC: @contract.nrc @Currency.stringById(contract.currencyId)</li>
+		<li>A end: @Location.asString(contract.aEndId)</li>
+		<li>Z end: @Location.asString(contract.zEndId)</li>
+		<li>Start date: @contract.startDate</li>
+		<li>Term: @contract.term @contract.termUnits.asString(contract.term)</li>
+		<li>CancellationPeriod: @contract.cancellationPeriod @contract.cancellationPeriodUnits.asString(contract.cancellationPeriod)</li>
 		<li>Last modified by @contract.lastModifyingUser at @contract.lastModifiedTime</li>
 	</ul>
 

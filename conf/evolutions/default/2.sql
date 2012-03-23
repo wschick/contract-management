@@ -16,12 +16,12 @@ insert into contact(id, name, email, telephone, company_id) values(1, 'Abbot', '
 insert into company(id, name, primary_contact_id) values(1, 'Acme', 1);
 
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
-	a_end_id, z_end_id, term, term_units,
+	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	reminder_period, reminder_period_units, 
+	--reminder_period, reminder_period_units, 
 	last_modifying_user, last_modified_time, company_id)
 	values (1, 'Tela1', 'Telesta Singapore', 'Line between Sydney and Singapore', 
-		11000, 33.40, 1, 2, 1, 1, 1, 90, 0, 120, 0, 'wrk', '2012-03-20', 1);
+		11000, 33.40, 1, 2, 1, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1);
 
 # --- !Downs
 

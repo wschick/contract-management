@@ -10,7 +10,6 @@
 			<th class="contract_name">Name</th>
 			<th class="cost">MRC</th>
 			<th class="cost">NRC</th>
-			<th class="currency">Currency</th>
 			<th class="location_code">Locations</th>
 			<th class="links"></th>
 		</tr>
@@ -19,9 +18,8 @@
 			<tr>
 				<td class="contract_id">@contract.contractId</td>
 				<td>@contract.name</td>
-				<td>@contract.mrc</td>
-				<td>@contract.nrc</td>
-				<td>@Currency.stringById(contract.currencyId)</td>
+				<td>@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
+				<td>@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
 				<td>@Location.codeById(contract.aEndId)<br/>
 				@Location.codeById(contract.zEndId)</td>
 				<td> 

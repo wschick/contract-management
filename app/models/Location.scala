@@ -41,6 +41,15 @@ object Location {
 		}
 	}
 
+	def asString(id: Long): String = {
+		val c = findById(id);
+
+		c match {
+			case Some(locationObj) => locationObj.code + " (" + locationObj.description + ")"
+			case None => "None"
+		}
+	}
+
 
 	def all(): List[Location] = DB.withConnection { implicit c =>
 		SQL("select * from location order by code").as(location *)
