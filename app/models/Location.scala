@@ -7,7 +7,13 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
 
-case class Location(id: Long, code: String, description: String)
+case class Location(id: Long, code: String, description: String) {
+
+	def longString: String = {
+		code + " (" + description + ")"
+	}
+
+}
 
 object Location {
 	  
@@ -26,6 +32,7 @@ object Location {
 		)
 	)
 
+
 	def findById(id: Long): Option[Location] = {
 		DB.withConnection { implicit c =>
 			SQL("select * from location where id = {id}").on('id -> id).as(Location.location.singleOpt)
@@ -37,15 +44,6 @@ object Location {
 
 		c match {
 			case Some(locationObj) => locationObj.code
-			case None => "None"
-		}
-	}
-
-	def asString(id: Long): String = {
-		val c = findById(id);
-
-		c match {
-			case Some(locationObj) => locationObj.code + " (" + locationObj.description + ")"
 			case None => "None"
 		}
 	}
@@ -71,6 +69,16 @@ object Location {
 			).executeUpdate()
 		}
 	}
+
+	def asString(id: Long): String = {
+		val c = findById(id);
+
+		c match {
+			case Some(locationObj) => locationObj.longString
+			case None => "None"
+		}
+	}
+
 	
 	// Make Map[String, String] needed for select options in a form.
 	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 

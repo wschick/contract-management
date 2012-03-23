@@ -4,20 +4,23 @@
 
 	@heading
 
-	<ul>
-		<li>Company: @Company.nameById(contract.companyId)</li>
-		<li>Contract id: @contract.contractId</li>
-		<li>Name: @contract.name</li>
-		<li>Description: @contract.description</li>
-		<li>MRC: @contract.mrc @Currency.stringById(contract.currencyId)</li>
-		<li>NRC: @contract.nrc @Currency.stringById(contract.currencyId)</li>
-		<li>A end: @Location.asString(contract.aEndId)</li>
-		<li>Z end: @Location.asString(contract.zEndId)</li>
-		<li>Start date: @contract.startDate</li>
-		<li>Term: @contract.term @contract.termUnits.asString(contract.term)</li>
-		<li>CancellationPeriod: @contract.cancellationPeriod @contract.cancellationPeriodUnits.asString(contract.cancellationPeriod)</li>
-		<li>Last modified by @contract.lastModifyingUser at @contract.lastModifiedTime</li>
-	</ul>
+	<table id="contract_summary">
+		<tbody>
+			<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
+			<tr><td>Contract id</td><td>@contract.contractId</td></tr>
+			<tr><td>Name</td><td>@contract.name</td></tr>
+			<tr><td>Description</td><td>@contract.description</td></tr>
+			<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
+			<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
+			<tr><td>A end</td><td>@contract.aEnd.longString</td></tr>
+			<tr><td>Z end</td><td>@contract.zEnd.longString</td></tr>
+			<tr><td>Start date</td><td>@contract.startDate</td></tr>
+			<tr><td>Term</td><td>@contract.term</td></tr>
+			<tr><td>CancellationPeriod</td><td>@contract.cancellationPeriod</td></tr>
+			<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
+			<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
+	</tbody>
+	</table>
 
 	<a href="@routes.Contracts.contracts">Back to the list of contracts</a>
 }

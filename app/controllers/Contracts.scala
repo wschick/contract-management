@@ -10,6 +10,8 @@ import views._
 import anorm._
 
 import models.Contract
+import models.Location
+import models.Term
 import models.TimePeriodUnits
 
 object Contracts extends Controller {
@@ -46,8 +48,9 @@ object Contracts extends Controller {
 			//reminderPeriod, reminderPeriodUnits, 
 			lastModifyingUser, lastModifiedTime, companyId) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble, 
-				nrc.toDouble, currency, aEnd, zEnd, 
-				startDate, term, TimePeriodUnits.create(termUnits), cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits), 
+				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
+				startDate, Term(term, TimePeriodUnits.create(termUnits)), 
+				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 				//reminderPeriod, reminderPeriodUnits, 
 				lastModifyingUser, lastModifiedTime, companyId)
 		)
@@ -59,13 +62,13 @@ object Contracts extends Controller {
 				contract.mrc.toString, 
 				contract.nrc.toString, 
 				contract.currencyId,
-				contract.aEndId, 
-				contract.zEndId,
+				contract.aEnd.id, 
+				contract.zEnd.id,
 				contract.startDate,
-				contract.term,
-				contract.termUnits.value,
-				contract.cancellationPeriod,
-				contract.cancellationPeriodUnits.value,
+				contract.term.length,
+				contract.term.units.value,
+				contract.cancellationPeriod.length,
+				contract.cancellationPeriod.units.value,
 				//contract.reminderPeriod,
 				//contract.reminderPeriodUnits,
 				contract.lastModifyingUser,

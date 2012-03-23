@@ -15,15 +15,11 @@ case class Contract(
 	mrc: Double, 
 	nrc: Double,
 	currencyId: Long,
-	//aEndId: Location, 
-	//zEndId: Location,
-	aEndId: Long, 
-	zEndId: Long,
+	aEnd: Location, 
+	zEnd: Location,
 	startDate: Date,
-	term: Int,
-	termUnits: TimePeriodUnits,
-	cancellationPeriod: Int,
-	cancellationPeriodUnits: TimePeriodUnits,
+	term: Term,
+	cancellationPeriod: Term,
 	//reminderPeriod: Option[Int],
 	//reminderPeriodUnits: Option[Int],
 	lastModifyingUser: Option[String],
@@ -55,8 +51,11 @@ object Contract {
 		get[Long]("company_id") map {
 			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~/*reminderPeriod~reminderPeriodUnits~*/lastModifyingUser~lastModifiedTime~companyId => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
-					aEndId, zEndId, startDate, term, TimePeriodUnits.create(termUnits), cancellationPeriod, 
-					TimePeriodUnits.create(cancellationPeriodUnits), /*reminderPeriod, reminderPeriodUnits,*/
+					Location.findById(aEndId).get, Location.findById(zEndId).get, 
+					startDate, 
+					Term(term, TimePeriodUnits.create(termUnits)), 
+					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
+					/*reminderPeriod, reminderPeriodUnits,*/
 					lastModifyingUser, lastModifiedTime, companyId)
 		}
 	}	
@@ -112,13 +111,13 @@ object Contract {
 				'mrc -> contract.mrc,
 				'nrc -> contract.nrc,
 				'currency_id -> contract.currencyId,
-				'a_end_id -> contract.aEndId,
-				'z_end_id -> contract.zEndId,
+				'a_end_id -> contract.aEnd.id,
+				'z_end_id -> contract.zEnd.id,
 				'start_date -> contract.startDate,
-				'term -> contract.term,
-				'term_units -> contract.termUnits.value,
-				'cancellation_period -> contract.cancellationPeriod,
-				'cancellation_period_units -> contract.cancellationPeriodUnits.value,
+				'term -> contract.term.length,
+				'term_units -> contract.term.units.value,
+				'cancellation_period -> contract.cancellationPeriod.length,
+				'cancellation_period_units -> contract.cancellationPeriod.units.value,
 				/*'reminder_period -> contract.reminderPeriod,
 				'reminder_period_units -> contract.reminderPeriodUnits,*/
 				'last_modifying_user -> "unknown user",

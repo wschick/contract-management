@@ -20,8 +20,7 @@
 				<td>@contract.name</td>
 				<td>@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
 				<td>@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
-				<td>@Location.codeById(contract.aEndId)<br/>
-				@Location.codeById(contract.zEndId)</td>
+				<td>@contract.aEnd.code<br/>@contract.zEnd.code</td>
 				<td> 
 					<a href="@routes.Contracts.viewContract(contract.id.get)">See details</a>
 					@form(routes.Contracts.deleteContract(contract.id.get)) {

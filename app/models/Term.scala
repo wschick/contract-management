@@ -1,13 +1,16 @@
 package models
 
-case class Term(id: Long, length: Int, units: TermUnits)
+case class Term(length: Int, units: TimePeriodUnits) {
+
+	override def toString: String = {
+		length + " " + units.asString(length)
+	}
+}
 
 object Term {
 	  
-	def all(): List[Term] = Nil
-			  
-	def create(length: Int, units: TermUnits) {}
-					  
-	def delete(id: Long) {}
-							  
+	def create(length: Int, units: TimePeriodUnits) {
+		new Term(length, units)
+	}
+
 }
