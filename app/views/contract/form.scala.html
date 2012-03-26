@@ -75,7 +75,7 @@
 
 		@inputDate(
 			contractForm("startDate"),
-			'_label -> "Starting date (yyyy-mm-dd)"
+			'_label -> "Starting date"
 		)
 
 		@inputText(
@@ -100,6 +100,11 @@
 			TimePeriodUnits.options,
 			'_label -> "cancellation period units", '_default -> "-- Choose cancellation period units --",
 			'_showConstraints -> false
+		)
+
+		@inputDate(
+			contractForm("cancelledDate"),
+			'_label -> "Cancelled date"
 		)
 
 

@@ -4,7 +4,7 @@ import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
-//import org.joda.time._
+import org.joda.time._
 import java.util.Date
 
 case class Contract(
@@ -17,15 +17,49 @@ case class Contract(
 	currencyId: Long,
 	aEnd: Location, 
 	zEnd: Location,
-	startDate: Date,
+	startDate: LocalDate,
 	term: Term,
 	cancellationPeriod: Term,
+	cancelledDate: Option[LocalDate],
 	//reminderPeriod: Option[Int],
 	//reminderPeriodUnits: Option[Int],
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
 	companyId: Long
-	)
+	) {
+
+	def lastDay(): LocalDate = {
+		//val jSD = new DateTime(startDate)
+		val endDate = startDate.plus(term.period).minus(Days.ONE)
+		endDate
+	}
+
+	def cancellationDate(): LocalDate = {
+		lastDay.minus(cancellationPeriod.period)
+	}
+
+	def daysUntilCancellationDate(): Int = {
+		Days.daysBetween(new LocalDate(), cancellationDate()).getDays
+
+	}
+
+	def status(): ContractStatus = {
+		cancelledDate match {
+			case Some(x) => CANCELLED
+			case None => {
+				daysUntilCancellationDate match {
+					case x if (x <= 0) => TOOLATE
+					case x if (x < 30) => NEARWARNING
+					case x if (x < 60) => FARWARNING
+					case _ => OK
+				}
+			}
+		}
+	}
+
+
+}
+
 
 object Contract {
 
@@ -44,17 +78,19 @@ object Contract {
 		get[Int]("term_units") ~
 		get[Int]("cancellation_period") ~
 		get[Int]("cancellation_period_units") ~
+		get[Option[Date]]("cancelled_date") ~
 		/*get[Option[Int]]("reminder_period") ~
 		get[Option[Int]]("reminder_period_units") ~*/
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~/*reminderPeriod~reminderPeriodUnits~*/lastModifyingUser~lastModifiedTime~companyId => 
+			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~/*reminderPeriod~reminderPeriodUnits~*/lastModifyingUser~lastModifiedTime~companyId => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
-					startDate, 
+					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
+					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
 					/*reminderPeriod, reminderPeriodUnits,*/
 					lastModifyingUser, lastModifiedTime, companyId)
 		}
@@ -102,6 +138,7 @@ object Contract {
 					values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
 					{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 					{cancellation_period}, {cancellation_period_units}, 
+					{cancelled_date},
 					{last_modifying_user}, {last_modified_time}, {companyId})
 				"""
 				).on(
@@ -113,11 +150,12 @@ object Contract {
 				'currency_id -> contract.currencyId,
 				'a_end_id -> contract.aEnd.id,
 				'z_end_id -> contract.zEnd.id,
-				'start_date -> contract.startDate,
+				'start_date -> contract.startDate.toDate,
 				'term -> contract.term.length,
 				'term_units -> contract.term.units.value,
 				'cancellation_period -> contract.cancellationPeriod.length,
 				'cancellation_period_units -> contract.cancellationPeriod.units.value,
+				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
 				/*'reminder_period -> contract.reminderPeriod,
 				'reminder_period_units -> contract.reminderPeriodUnits,*/
 				'last_modifying_user -> "unknown user",

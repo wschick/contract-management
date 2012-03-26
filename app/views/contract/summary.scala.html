@@ -1,11 +1,35 @@
 @(contract: Contract, title: String, heading: String)
 
+@import helper._
+
 @main(title, title, nav="Contract") {
 
 	@heading
 
-	<table id="contract_summary">
+	@defining(contract.status) { cs => 
+
+	@cs match {
+
+		case models.CANCELLED => {
+			<p>Contract was cancelled on @contract.cancelledDate</p>
+		}
+		case TOOLATE => {
+			@notice(contract.status) {
+				The cancellation date @contract.cancellationDate has passed.
+			}
+		}
+		case _ => {
+			@notice(contract.status) {
+				<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
+				<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+			}
+		}
+	}
+	}
+
+	<table id="contract_summary" border=1>
 		<tbody>
+			<tr><td>Status</td><td>@contract.status.name</td></tr>
 			<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
 			<tr><td>Contract id</td><td>@contract.contractId</td></tr>
 			<tr><td>Name</td><td>@contract.name</td></tr>

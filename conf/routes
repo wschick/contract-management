@@ -26,6 +26,14 @@ GET			/reminders									controllers.Reminders.reminders
 POST		/reminders									controllers.Reminders.newReminder
 GET			/reminders/:id/delete				controllers.Reminders.deleteReminder(id: Long)
 
+GET			/contract_types							controllers.ContractTypes.contractTypes
+#GET			/contract_types/:id/view 		controllers.ContractTypes.viewContractType(id: Long)
+GET			/contract_types/:id/edit		controllers.ContractTypes.editContractType(id: Long)
+POST		/contract_types/:id/edit		controllers.ContractTypes.update(id: Long)
+#GET			/contract_types/new					controllers.ContractTypes.form
+POST		/contract_types/new					controllers.ContractTypes.newContractType
+GET			/contract_types/:id/delete	controllers.ContractTypes.deleteContractType(id: Long)
+
 GET			/contracts									controllers.Contracts.contracts
 GET			/contracts/:id/view 				controllers.Contracts.viewContract(id: Long)
 GET			/contracts/:id/edit					controllers.Contracts.editForm(id: Long)

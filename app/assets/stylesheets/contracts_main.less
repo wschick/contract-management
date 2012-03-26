@@ -1,3 +1,5 @@
+@import "table.less";
+
 body 
 {
 	font-family: 'Droids Sans', sans-serif;
@@ -141,35 +143,55 @@ th.inner_display_column,td.inner_display_column {
 	padding: 5px;
 }
 
-#contract_list
+table.contract_list
 {
 	border: 1px solid gray;
 }
 
-#contract_list th
+table.contract_list th
 {
 	color: white;
 	background-color: gray;
 }
 
-#contract_list .contract_id
+table.contract_list .contract_id
 {
 	width: 6em;
 	background-color: lightgray;
 }
 
-#contract_list th.contract_id
+table.contract_list th.contract_id
 {
 	background-color: gray;
 }
 
-#contract_list th.contract_name { width: 12em; }
+table.contract_list th.contract_name { width: 12em; }
 
-#contract_list th.cost { width: 4em; }
-#contract_list th.currency { width: 3em; }
-#contract_list th.location_code { width: 6em; }
-#contract_list th.links { width: 5em; }
+table.contract_list th.cost { width: 4em; }
+table.contract_list th.currency { width: 3em; }
+table.contract_list th.location_code { width: 6em; }
+table.contract_list th.links { width: 5em; }
 
 form.form { margin-top: 20px; }
 
-@import "table.less";
+.far-warning { padding: 5px; color: DarkOrange; font-weight: bold; }
+
+.near-warning { padding: 5px; background-color: Red; color: black; }
+
+.too-late { 
+	border: 15px solid black; 
+	padding: 5px;
+	background:
+	linear-gradient(315deg, #ECEDDC 25%, transparent 25%) -50px 0,
+	linear-gradient(225deg, #ECEDDC 25%, transparent 25%) -50px 0,
+	linear-gradient(135deg, #ECEDDC 25%, transparent 25%),
+	linear-gradient(45deg, #ECEDDC 25%, transparent 25%);	
+	background-size: 100px 100px;
+	background-color: #EC173A;
+
+}
+
+// Form actions
+div.actions {
+	margin-top: 20px;
+}

@@ -4,7 +4,7 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-//import org.joda.time._
+import org.joda.time._
 
 import views._
 import anorm._
@@ -36,6 +36,7 @@ object Contracts extends Controller {
 			"termUnits" -> number,
 			"cancellationPeriod" -> number,
 			"cancellationPeriodUnits" -> number,
+			"cancelledDate" -> optional(date),
 			//"reminderPeriod" -> optional(number),
 			//"reminderPeriodUnits" -> optional(number),
 			"lastModifyingUser" -> optional(text),
@@ -45,12 +46,14 @@ object Contracts extends Controller {
 		(
 			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
 			startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
+			cancelledDate, 
 			//reminderPeriod, reminderPeriodUnits, 
 			lastModifyingUser, lastModifiedTime, companyId) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble, 
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
-				startDate, Term(term, TimePeriodUnits.create(termUnits)), 
+				new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
 				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
+				Option(new LocalDate(cancelledDate)),
 				//reminderPeriod, reminderPeriodUnits, 
 				lastModifyingUser, lastModifiedTime, companyId)
 		)
@@ -64,11 +67,15 @@ object Contracts extends Controller {
 				contract.currencyId,
 				contract.aEnd.id, 
 				contract.zEnd.id,
-				contract.startDate,
+				contract.startDate.toDate,
 				contract.term.length,
 				contract.term.units.value,
 				contract.cancellationPeriod.length,
 				contract.cancellationPeriod.units.value,
+				contract.cancelledDate match {
+					case Some(date) => Option(date.toDate)
+					case None => None
+				},
 				//contract.reminderPeriod,
 				//contract.reminderPeriodUnits,
 				contract.lastModifyingUser,

@@ -4,23 +4,34 @@
 
 @main("Contracts", "Contracts", "Contracts") {
 
-	<table id="contract_list">
+	<table class="contract_list">
+		<thead>
 		<tr>
 			<th class="contract_id">Contract Id</td>
 			<th class="contract_name">Name</th>
 			<th class="cost">MRC</th>
 			<th class="cost">NRC</th>
 			<th class="location_code">Locations</th>
+			<th class="days_to_cancellation">Cancel in</th>
 			<th class="links"></th>
 		</tr>
+	</thead>
+	<tbody>
 
 		@contracts.map { contract =>
-			<tr>
+				@defining(contract.status.name) { status => 
+
+				<tr class="contract-@status">
 				<td class="contract_id">@contract.contractId</td>
 				<td>@contract.name</td>
 				<td>@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
 				<td>@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
 				<td>@contract.aEnd.code<br/>@contract.zEnd.code</td>
+				<td class="days-to-cancel">
+					@if(contract.status != CANCELLED) { 
+					@contract.daysUntilCancellationDate 
+					} 
+				</td>
 				<td> 
 					<a href="@routes.Contracts.viewContract(contract.id.get)">See details</a>
 					@form(routes.Contracts.deleteContract(contract.id.get)) {
@@ -28,7 +39,9 @@
 					}
 				</td>
 			</tr>
+			}
 		}
+	</tbody>
 	</table>
 
 	<p>

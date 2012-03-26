@@ -4,14 +4,20 @@
 
 CREATE TABLE currency (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	label varchar(10) NOT NULL,
+	label varchar(10) NOT NULL
 );
 
 CREATE TABLE location (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	code varchar(5) NOT NULL,
-	description varchar(100) NOT NULL,
+	description varchar(100) NOT NULL
 );
+
+CREATE TABLE contract_type (
+	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	name varchar(20) NOT NULL
+);
+
 
 CREATE TABLE contact (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -57,6 +63,7 @@ CREATE TABLE contract (
 	term_units integer NOT NULL, 
 	cancellation_period integer NOT NULL,
 	cancellation_period_units integer NOT NULL,
+	cancelled_date date,
 	--reminder_period integer,
 	--reminder_period_units integer,
 	last_modifying_user varchar(40),
