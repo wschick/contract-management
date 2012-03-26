@@ -5,6 +5,7 @@ target
 tmp
 .history
 *.swp
+*.swo
 /tmp
 /modules
 /lib

@@ -1,0 +1,9 @@
+@(contractType: ContractType, contractTypeForm: Form[ContractType])
+
+@main("Edit contract type", "Edit contract type", "Settings") {
+
+@form_html(contractTypeForm, routes.ContractTypes.update(contractType.id.get), 
+Some(routes.ContractTypes.all), formLegend = "Update " + contractType.name, 
+submitButtonName = "Update")
+
+}

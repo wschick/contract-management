@@ -2,7 +2,8 @@ Current status: Everything around contracts works, now I need to get contracts t
 
 To do:
 
-* Get contract editing working.
+* Update contract to be standard. Add contract type field.
+* Update oother objects to be standard.
 * Get file uploads working
 * Add sorting to contracts table. Sort by contract name, contract id, mcr, locations, cancel in
 * Add filtering to contracts table. Filter by status, company location.
