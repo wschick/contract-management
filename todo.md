@@ -11,4 +11,5 @@ To do:
 * Get daily alerts working.
 * Add paging to contracts table
 * Add "sent" to reminder so I won't sent it again.
+* Handle text area too big on descriptions. Better form validation.
 * Date picker?

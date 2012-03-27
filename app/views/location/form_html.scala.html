@@ -1,0 +1,35 @@
+@(locationForm: Form[(String, String)], 
+	formAction: Call, 
+	cancelAction: Option[Call] = None, 
+	formLegend: String, 
+	submitButtonName: String = "Insert")
+
+	@import helper._
+
+	@if(locationForm.hasErrors) {
+		<div class="alert-message error">
+			<p>Please fix all errors</p>
+		</dev>
+	}
+
+	@form(action=formAction, 'class -> "form") {
+
+		<fieldset>
+			<legend>@formLegend</legend>
+
+			@inputText(locationForm("code"), '_class -> "form", '_label -> "Location code", 
+			'_showConstraints -> false, 'size -> 5, 'maxlength -> 5)
+
+			@textarea(locationForm("description"), '_class -> "form", '_label -> "Description", 
+			'_showConstraints -> false, 'rows -> 2, 'cols -> 50)
+
+		</fieldset>
+
+		<div class="actions">
+			<input type="submit" class="btn primary" value="@submitButtonName">
+			@if(cancelAction != None) {
+			<a href="@cancelAction" class="btn">Cancel</a>
+			}
+		</div>
+	
+	}

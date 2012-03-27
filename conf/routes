@@ -10,9 +10,11 @@ GET			/currencies									controllers.Application.currencies
 POST		/currencies									controllers.Application.newCurrency
 GET			/currencies/:id/delete			controllers.Application.deleteCurrency(id: Long)
 
-GET			/locations									controllers.Application.locations
-POST		/locations									controllers.Application.newLocation
-GET			/locations/:id/delete				controllers.Application.deleteLocation(id: Long)
+GET			/locations									controllers.Locations.all
+POST		/locations/new							controllers.Locations.create
+GET			/locations/:id/edit					controllers.Locations.edit(id: Long)
+POST		/locations/:id/edit					controllers.Locations.update(id: Long)
+GET			/locations/:id/delete				controllers.Locations.delete(id: Long)
 
 GET			/contacts										controllers.Contacts.contacts
 POST		/contacts										controllers.Contacts.newContact

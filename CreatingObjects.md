@@ -1,5 +1,10 @@
 # Creating an Editable Object
 
+This project contains several different examples of how to create editable objects.
+
+* The Location is a simple 2-field object. The form takes a tuple of individual fields as parameter (e.g. Form[(String, String)].
+* The ContractType is a simple 1-field object. Its form takes a ContractType, rather than a tuple of fields (e.g. Form[ContractType])
+
 ## The Model
 
 In the model, create a file that defines the case class. If, as is typical, you have an

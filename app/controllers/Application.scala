@@ -52,26 +52,4 @@ object Application extends Controller {
 		Redirect(routes.Application.currencies)
 	}
 
-
-
-	def locations = Action {
-    Ok(views.html.locations(Location.all(), Location.locationForm))
-	}
-
-	def newLocation = Action { implicit request =>
-		Location.locationForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(views.html.locations(Location.all(), formWithErrors)),
-			locationTuple => {
-				val (code, description) = locationTuple
-				Location.create(code, description)
-				Redirect(routes.Application.locations)
-			}
-		)
-	}
-
-	def deleteLocation(id: Long) = Action {
-		Location.delete(id)
-		Redirect(routes.Application.locations)
-	}
-
 }
