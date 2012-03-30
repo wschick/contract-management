@@ -1,0 +1,32 @@
+@(reminders: List[Reminder], reminderForm: Form[Reminder])
+
+@import helper._
+
+@main("Reminders", "Reminders", "Reminders") {
+
+	@if(reminders.isEmpty) {
+		<h3>No reminders.</h3>
+	} else {
+		<table class="reminders">
+			<tr>
+				<th>Date</th>
+				<th class="inner_display_column">Contract</th>
+				<th class="inner_display_column">Sent</th>
+				<th><th>
+			</tr>
+			@reminders.map { reminder =>
+				<tr>
+					<td> @reminder.reminderDate</td>
+					<td class="inner_display_column">@Contract.nameById(reminder.contractId)</td>
+					<td class="inner_display_column">@reminder.sent</td>
+					<td><a class="edit_link" href="@routes.Reminders.edit(reminder.id.get)">edit</a>
+						<a class="delete_link" href="@routes.Reminders.delete(reminder.id.get)">delete</a></td>
+				</tr>
+			}
+		</table>
+	}
+
+	@form_html(reminderForm, routes.Reminders.create, formLegend = "Create a new reminder", 
+		submitButtonName = "Create")
+
+}

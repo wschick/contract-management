@@ -1,0 +1,11 @@
+@(person: Person, theForm: Form[(String, String, Option[String], Long)])
+
+@main("Edit " + person.name, "Edit " + person.name, "People") {
+
+	@form_html(theForm, 
+		routes.Persons.update(person.id), 
+		Some(routes.Persons.all), 
+		formLegend = "Update " + person.name, 
+		submitButtonName = "Update")
+
+}

@@ -7,29 +7,25 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
 
-case class Currency(id: Long, label: String)
+case class Currency(id: Long, abbreviation: String)
 
 object Currency {
 	  
 	val currency = {
 		get[Long]("id") ~ 
-		get[String]("label") map {
-			case id~label => Currency(id, label)
+		get[String]("abbreviation") map {
+			case id~abbreviation => Currency(id, abbreviation)
 		}
 	}	
 
-	def currencyForm = Form(
-		"label" -> nonEmptyText
-	)
-
 	def all(): List[Currency] = DB.withConnection { implicit c =>
-		SQL("select * from currency order by label").as(currency *)
+		SQL("select * from currency order by abbreviation").as(currency *)
 	}
 			  
-	def create(label: String) {
+	def create(abbreviation: String) {
 		DB.withConnection { implicit c =>
-			SQL("insert into currency (label) values ({label})").on(
-				'label -> label
+			SQL("insert into currency (abbreviation) values ({abbreviation})").on(
+				'abbreviation -> abbreviation
 			).executeUpdate()
 		}
 	}
@@ -44,10 +40,24 @@ object Currency {
 		val c = findById(id);
 
 		c match {
-			case Some(currencyObj) => currencyObj.label
+			case Some(currencyObj) => currencyObj.abbreviation
 			case None => "None"
 		}
 	}
+
+	def update(id: Long, abbreviation: String) {
+		DB.withConnection { implicit connection =>
+			SQL(
+				"""
+					update currency set abbreviation={abbreviation} where id={id}
+				"""
+				).on(
+				'id -> id,
+				'abbreviation -> abbreviation
+			).executeUpdate()
+		}
+	}
+					  
 
 	def delete(id: Long) {
 		DB.withConnection { implicit c =>
@@ -59,7 +69,7 @@ object Currency {
 	
 	// Make Map[String, String] needed for select options in a form.
 	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from currency order by label").as(Currency.currency *).map(c => c.id.toString -> c.label)
+		SQL("select * from currency order by abbreviation").as(Currency.currency *).map(c => c.id.toString -> c.abbreviation)
 	}
 }
 

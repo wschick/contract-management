@@ -1,0 +1,34 @@
+@(persons: List[Person], personForm: Form[(String, String, Option[String], Long)])
+
+@import helper._
+
+@main("People", "People", "People") {
+
+	@if(persons.isEmpty) {
+		<h3>No people.</h3>
+	} else {
+		<table class="persons">
+			<tr>
+				<th>Name</th>
+				<th class="inner_display_column">Email</th>
+				<th class="inner_display_column">Telephone</th>
+				<th class="inner_display_column">Company
+				<th><th>
+			</tr>
+			@persons.map { person =>
+				<tr>
+					<td> @person.name</td>
+					<td class="inner_display_column">@person.email</td>
+					<td class="inner_display_column">@person.telephone</td>
+					<td class="inner_display_column">@Company.nameById(person.companyId)</td>
+					<td><a class="edit_link" href="@routes.Persons.edit(person.id)">edit</a>
+						<a class="delete_link" href="@routes.Persons.delete(person.id)">delete</a></td>
+				</tr>
+			}
+		</table>
+	}
+
+	@form_html(personForm, routes.Persons.create, formLegend = "Create a new person", 
+		submitButtonName = "Create")
+
+}

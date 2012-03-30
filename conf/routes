@@ -6,9 +6,11 @@
 GET     /                           controllers.Application.index
 GET     /settings                   controllers.Application.settings
 
-GET			/currencies									controllers.Application.currencies
-POST		/currencies									controllers.Application.newCurrency
-GET			/currencies/:id/delete			controllers.Application.deleteCurrency(id: Long)
+GET			/currencies									controllers.Currencies.all
+POST		/currencies									controllers.Currencies.create
+GET			/currencies/:id/edit				controllers.Currencies.edit(id: Long)
+POST		/currencies/:id/edit				controllers.Currencies.update(id: Long)
+GET			/currencies/:id/delete			controllers.Currencies.delete(id: Long)
 
 GET			/locations									controllers.Locations.all
 POST		/locations/new							controllers.Locations.create
@@ -16,32 +18,38 @@ GET			/locations/:id/edit					controllers.Locations.edit(id: Long)
 POST		/locations/:id/edit					controllers.Locations.update(id: Long)
 GET			/locations/:id/delete				controllers.Locations.delete(id: Long)
 
-GET			/contacts										controllers.Contacts.contacts
-POST		/contacts										controllers.Contacts.newContact
-GET			/contacts/:id/delete				controllers.Contacts.deleteContact(id: Long)
+GET			/persons										controllers.Persons.all
+POST		/persons										controllers.Persons.create
+GET			/persons/:id/edit						controllers.Persons.edit(id: Long)
+POST		/persons/:id/edit						controllers.Persons.update(id: Long)
+GET			/persons/:id/delete					controllers.Persons.delete(id: Long)
 
-GET			/companies									controllers.Companies.companies
-POST		/companies									controllers.Companies.newCompany
-GET			/companies/:id/delete				controllers.Companies.deleteCompany(id: Long)
+GET			/companies									controllers.Companies.all
+POST		/companies									controllers.Companies.create
+GET			/companies/:id/edit					controllers.Companies.edit(id: Long)
+POST		/companies/:id/edit					controllers.Companies.update(id: Long)
+GET			/companies/:id/delete				controllers.Companies.delete(id: Long)
 
-GET			/reminders									controllers.Reminders.reminders
-POST		/reminders									controllers.Reminders.newReminder
-GET			/reminders/:id/delete				controllers.Reminders.deleteReminder(id: Long)
+GET			/reminders									controllers.Reminders.all
+POST		/reminders									controllers.Reminders.create
+GET			/reminders/:id/edit					controllers.Reminders.edit(id: Long)
+POST		/reminders/:id/edit					controllers.Reminders.update(id: Long)
+GET			/reminders/:id/delete				controllers.Reminders.delete(id: Long)
 
 GET			/contract_types							controllers.ContractTypes.all
-#GET			/contract_types/:id/view 		controllers.ContractTypes.viewContractType(id: Long)
 GET			/contract_types/:id/edit		controllers.ContractTypes.edit(id: Long)
 POST		/contract_types/:id/edit		controllers.ContractTypes.update(id: Long)
-#GET			/contract_types/new					controllers.ContractTypes.form
 POST		/contract_types/new					controllers.ContractTypes.create
 GET			/contract_types/:id/delete	controllers.ContractTypes.delete(id: Long)
 
-GET			/contracts									controllers.Contracts.contracts
-GET			/contracts/:id/view 				controllers.Contracts.viewContract(id: Long)
-GET			/contracts/:id/edit					controllers.Contracts.editForm(id: Long)
-GET			/contracts/new							controllers.Contracts.form
-POST		/contracts/new							controllers.Contracts.newContract
-GET			/contracts/:id/delete				controllers.Contracts.deleteContract(id: Long)
+GET			/contracts									controllers.Contracts.all
+POST		/contracts									controllers.Contracts.filtered
+GET			/contracts/:id/view 				controllers.Contracts.view(id: Long)
+GET			/contracts/:id/edit					controllers.Contracts.edit(id: Long)
+POST		/contracts/:id/edit					controllers.Contracts.update(id: Long)
+GET			/contracts/new							controllers.Contracts.emptyForm
+POST		/contracts/new							controllers.Contracts.create
+GET			/contracts/:id/delete				controllers.Contracts.delete(id: Long)
 
 
 # Map static resources from the /public folder to the /assets URL path

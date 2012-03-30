@@ -5,26 +5,27 @@
 @main("Locations", "Locations", "Settings") {
 
 	@if(locations.isEmpty) {
-		<h3>No locations.</h3>
+	<h3>No locations.</h3>
 	} else {
 	<table class="locations">
 		<tr>
 			<th>Code</th>
 			<th class="inner_display_column">Description</th>
 			<th><th>
-		</tr>
-		@locations.map { location =>
-			<tr>
-				<td> @location.code</td>
-				<td class="inner_display_column">@location.description</td>
-				<td><a class="edit_link" href="@routes.Locations.edit(location.id)">edit</a>
-				<a class="delete_link" href="@routes.Locations.delete(location.id)">delete</a></td>
-			</tr>
-		}
-		</table>
-	}
+				</tr>
+				@locations.map { location =>
+				<tr>
+					<td> @location.code</td>
+					<td class="inner_display_column">@location.description</td>
+					<td><a class="edit_link" href="@routes.Locations.edit(location.id)">edit</a>
+						<a class="delete_link" href="@routes.Locations.delete(location.id)">delete</a></td>
+				</tr>
+				}
+			</table>
+			}
 
-	@form_html(locationForm, routes.Locations.create, formLegend = "Create a new location")
+			@form_html(locationForm, routes.Locations.create, formLegend = "Create a new location",
+				submitButtonName = "Create")
 
 
 }

@@ -10,6 +10,7 @@ import views._
 import anorm._
 
 import models.Contract
+import models.ContractFilter
 import models.Location
 import models.Term
 import models.TimePeriodUnits
@@ -19,6 +20,34 @@ object Contracts extends Controller {
 	// Forms
 
 	// TODO change mrc and nrc to BigDecimal
+
+	val filterForm: Form[ContractFilter] = Form(
+		mapping (
+			"showOk" -> boolean,
+			"showNearWarning" -> boolean,
+			"showFarWarning" -> boolean,
+			"showTooLate" -> boolean,
+			"showActive" -> boolean,
+			"showCancelled" -> boolean,
+			"earliestStartDate" -> optional(date),
+			"lastestStartDate" -> optional(date)
+			)
+		(
+			(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, 
+				earliestStartDate, latestStartDate) =>
+			ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
+				earliestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None), 
+				latestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None))
+		)
+		(
+			(filter: ContractFilter) => Some((
+			filter.showOk, filter.showNearWarning, filter.showFarWarning,
+			filter.showTooLate, filter.showActive, filter.showCancelled,
+			filter.earliestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
+			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None)))
+		)
+	)
+
 
 	val contractForm: Form[Contract] = Form(
 		mapping(
@@ -53,7 +82,11 @@ object Contracts extends Controller {
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
 				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
-				Option(new LocalDate(cancelledDate)),
+				//cancelledDate.map(date => Some(new LocalDate(date)).getOrElse(None)),
+				cancelledDate match {
+					case Some(date) => Some(new LocalDate(date))
+					case None => None
+				},
 				//reminderPeriod, reminderPeriodUnits, 
 				lastModifyingUser, lastModifiedTime, companyId)
 		)
@@ -84,40 +117,61 @@ object Contracts extends Controller {
 		)
 	)
 
-  def form = Action {
-    Ok(html.contract.form(contractForm))
+  def emptyForm = Action {
+    Ok(html.contract.new_form(contractForm))
   }
 
-  def editForm(id: Long) = Action {
-		Contract.findById(id).map { existingContract =>
-			Ok(html.contract.form(contractForm.fill(existingContract)))
-		}.getOrElse(NotFound)
+	def all = Action {
+    Ok(views.html.contract.list(Contract.all(), filterForm))
 	}
 
-
-	def contracts = Action {
-    Ok(views.html.contracts(Contract.all(), contractForm))
+	def filtered = Action { implicit request =>
+    Ok(views.html.contract.list(Contract.all(), filterForm))
 	}
 
-	def newContract = Action { implicit request =>
+	def create = Action { implicit request =>
 		contractForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.contract.form(formWithErrors)),
 			contract => {
 				Contract.create(contract)
-				Ok(html.contract.summary(contract, "Contact created", "You just created a contract:"))
+				Ok(html.contract.view(contract, "Contact created", "You just created a contract:"))
 			}
 		)
 	}
 
-	def viewContract(id: Long) = Action { implicit request =>
+  def edit(id: Long) = Action {
 		Contract.findById(id).map { existingContract =>
-			Ok(html.contract.summary(existingContract, "Contract " + existingContract.contractId, ""))
+			Ok(html.contract.edit_form(contractForm.fill(existingContract)))
 		}.getOrElse(NotFound)
 	}
 
-	def deleteContract(id: Long) = Action {
+  def update(id: Long) = Action { implicit request =>
+		contractForm.bindFromRequest.fold(
+			formWithErrors => {
+				Contract.findById(id).map { 
+					existingContract => {
+						println("Form error")
+						BadRequest(views.html.contract.form( formWithErrors))
+					}
+				}.getOrElse(NotFound)
+			},
+			contract => {
+				Contract.update(id, contract)
+				Ok(views.html.contract.list(Contract.all(), filterForm))
+			}
+		)
+	}
+
+
+	def view(id: Long) = Action { implicit request =>
+		Contract.findById(id).map { existingContract =>
+			Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
+		}.getOrElse(NotFound)
+	}
+
+	def delete(id: Long) = Action {
 		Contract.delete(id)
-		Redirect(routes.Contracts.contracts)
+		Redirect(routes.Contracts.all)
 	}
   
 }

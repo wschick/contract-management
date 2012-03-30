@@ -4,7 +4,7 @@
 
 CREATE TABLE currency (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	label varchar(10) NOT NULL
+	abbreviation varchar(10) NOT NULL
 );
 
 CREATE TABLE location (
@@ -19,12 +19,12 @@ CREATE TABLE contract_type (
 );
 
 
-CREATE TABLE contact (
+CREATE TABLE person (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	name varchar(80) NOT NULL,
 	email varchar(80) NOT NULL,
 	telephone varchar(20),
-	company_id integer 
+	company_id integer NOT NULL,
 );
 
 CREATE TABLE company (
@@ -37,13 +37,14 @@ CREATE TABLE company (
 CREATE TABLE reminder (
 	id integer NOT NULL AUTO_INCREMENT,
 	reminder_date date NOT NULL,
-	contract_id	integer NOT NULL 
+	contract_id	integer NOT NULL,
+	sent boolean NOT NULL DEFAULT FALSE
 );
 
 
-CREATE TABLE reminder_contact (
+CREATE TABLE reminder_person (
 	reminder_id integer NOT NULL,
-	contact_id integer NOT NULL
+	person_id integer NOT NULL
 );
 
 
@@ -64,8 +65,6 @@ CREATE TABLE contract (
 	cancellation_period integer NOT NULL,
 	cancellation_period_units integer NOT NULL,
 	cancelled_date date,
-	--reminder_period integer,
-	--reminder_period_units integer,
 	last_modifying_user varchar(40),
 	last_modified_time datetime,
 	company_id integer NOT NULL

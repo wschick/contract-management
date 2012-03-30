@@ -1,0 +1,66 @@
+@(filterForm: Form[ContractFilter])
+
+@import helper._
+
+<p class="contract-filter">Filter contracts by</p>
+
+	@form(action=routes.Contracts.filtered, 'class -> "filter-form") {
+
+
+	<fieldset id="contract-status">
+		<legend>Show Contracts with Status</legend>
+
+		@checkbox(
+		filterForm("showOk"), '_label -> "", '_text -> "OK", 
+		'_showConstraints -> false, '_class -> "contract-filter", '_text -> "OK"
+		)
+
+		@checkbox(
+		filterForm("showNearWarning"), '_label -> "", '_text -> "Near Warning", 
+		'_showConstraints -> false, '_class -> "contract-filter"
+		)
+
+		@checkbox(
+		filterForm("showFarWarning"), '_label ->"", '_text ->  "Far Warning", 
+		'_showConstraints -> false, '_class -> "contract-filter"
+		)
+
+		@checkbox(
+		filterForm("showTooLate"), '_label -> "", '_text -> "Too late to cancel", 
+		'_showConstraints -> false, '_class -> "contract-filter"
+		)
+
+		@checkbox(
+		filterForm("showActive"), '_label -> "", '_text -> "Active contract", 
+		'_showConstraints -> false, '_class -> "contract-filter"
+		)
+
+		@checkbox(
+		filterForm("showCancelled"), '_label -> "", '_text -> "Cancelled contract", 
+		'_showConstraints -> false, '_class -> "contract-filter"
+		)
+
+	</fieldset>
+
+	<fieldset id="filter-dates">
+		<legend>Dates</legend>
+
+		@inputDate(
+			filterForm("earliest_start_date"),
+			'_label -> "Earlierst start date", '_class -> "date-filter"
+		)
+
+		@inputDate(
+			filterForm("latest_start_date"),
+			'_label -> "Latest start date", '_class -> "date-filter"
+		)
+	</fieldset>
+
+		<div class="actions">
+			<input type="submit" class="btn primary" value="Filter">
+		</div>
+
+		<div style="clear:both"></div>
+
+	}
+

@@ -1,0 +1,53 @@
+@(formWithData: Form[Reminder],
+	formAction: Call, 
+	cancelAction: Option[Call] = None, 
+	formLegend: String, 
+	submitButtonName: String = "Insert",
+	showSentBox: Boolean = false)
+
+@import helper._
+
+	@if(formWithData.hasErrors) {
+		<div class="alert-message error">
+			<p>Please fix all errors</p>
+		</dev>
+	}
+
+	@form(action=formAction, 'class -> "form") {
+
+		<fieldset>
+			<legend>@formLegend</legend>
+
+				@inputDate(formWithData("reminder_date"), '_class -> "form", '_label -> "Date", 
+				'_showConstraints -> false, 'size -> 20)
+
+				@select(
+				formWithData("contract_id"), Contract.options, '_class -> "reminder-contract", 
+					'_label -> "Contract that needs a reminder", '_default -> "-- Choose a contract --",
+					'_showConstraints -> false
+				)
+
+				@if(showSentBox) {
+				@checkbox(formWithData("sent"), '_class -> "reminder-sent", '_label -> "Sent", 
+				'_showConstraints -> false)
+				}
+
+				@*
+				@select(
+					formWithData("recipient"),
+					Person.options, '_multiple -> "multiple",
+					'_label -> "Who gets the reminder?", '_default -> "-- Choose a person --",
+					'_showConstraints -> false
+				)
+				*@
+
+
+		</fieldset>
+
+		<div class="actions">
+			<input type="submit" class="btn primary" value="@submitButtonName">
+			@if(cancelAction != None) {
+			<a href="@cancelAction" class="btn">Cancel</a>
+			}
+		</div>
+}

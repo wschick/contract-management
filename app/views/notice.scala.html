@@ -1,0 +1,31 @@
+@(level: ContractStatus = OK)(body: Html)
+ 
+@import models.ContractStatus
+
+@level match {
+    
+  case FARWARNING => {
+    <div class="far-warning">
+      @body
+    </div>
+  }
+
+  case NEARWARNING => {
+    <div class="near-warning">
+      @body
+    </div>
+  }
+    
+  case TOOLATE => {
+    <div class="too-late">
+      @body
+    </div>
+  }
+    
+  case _ => {
+    <div>
+      @body
+    </div>
+  }
+
+}

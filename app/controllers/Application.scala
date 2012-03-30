@@ -33,23 +33,4 @@ object Application extends Controller {
     Ok(views.html.settings())
   }
 
-	def currencies = Action {
-    Ok(views.html.currencies(Currency.all(), Currency.currencyForm))
-	}
-
-	def newCurrency = Action { implicit request =>
-		Currency.currencyForm.bindFromRequest.fold(
-			errors => BadRequest(views.html.currencies(Currency.all(), errors)),
-			label => {
-				Currency.create(label)
-				Redirect(routes.Application.currencies)
-			}
-		)
-	}
-
-	def deleteCurrency(id: Long) = Action {
-		Currency.delete(id)
-		Redirect(routes.Application.currencies)
-	}
-
 }

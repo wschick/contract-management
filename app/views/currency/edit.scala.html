@@ -1,0 +1,11 @@
+@(currency: Currency, currencyForm: Form[(String)])
+
+@main("Edit currency " + currency.abbreviation, "Edit currency " + currency.abbreviation, "Settings") {
+
+	@form_html(currencyForm, 
+		routes.Currencies.update(currency.id), 
+		Some(routes.Currencies.all), 
+		formLegend = "Update " + currency.abbreviation, 
+		submitButtonName = "Update")
+
+}

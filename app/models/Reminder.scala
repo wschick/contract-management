@@ -7,29 +7,25 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
 import java.util.{Date}
+import org.joda.time._
 
 case class Reminder(
-	id: Long, 
-	reminderDate: Date, 
-	contractId: Long)
+	id: Pk[Long], 
+	reminderDate: LocalDate, 
+	contractId: Long, 
+	sent: Boolean)
 
 object Reminder {
 	  
 	val reminder = {
-		get[Long]("id") ~ 
+		get[Pk[Long]]("id") ~ 
 		get[Date]("reminder_date") ~
-		get[Long]("contract_id") map {
-			case id~reminder_date~contract_id => 
-				Reminder(id, reminder_date, contract_id)
+		get[Long]("contract_id") ~
+		get[Boolean]("sent") map {
+			case id~reminder_date~contract_id~sent => 
+				Reminder(id, new LocalDate(reminder_date), contract_id, sent)
 		}
 	}	
-
-	def reminderForm = Form(
-		tuple (
-			"reminder_date" -> nonEmptyText,
-			"contract_id" -> longNumber
-		)
-	)
 
 	def findById(id: Long): Option[Reminder] = {
 		DB.withConnection { implicit c =>
@@ -39,7 +35,7 @@ object Reminder {
 		}
 	}
 
-	def reminderDateById(id: Long): Option[Date] = {
+	def reminderDateById(id: Long): Option[LocalDate] = {
 		val c = findById(id);
 
 		c match {
@@ -53,15 +49,40 @@ object Reminder {
 		SQL("select * from reminder order by reminder_date").as(reminder *)
 	}
 			  
-	def create(reminderDate: String, contractId: Long) {
+	/*def create(reminder: Reminder) {
+		println("The reminder date is " + formatDate(reminder.reminderDate))
+		create(new LocalDate(reminder.reminderDate), contractId)
+	}*/
+
+	def create(reminder: Reminder) {
 		DB.withConnection { implicit c =>
 			SQL("insert into reminder (reminder_date, contract_id) values ({reminder_date}, {contract_id})").on(
-				'reminder_date -> reminderDate,
-				'contract_id -> contractId
+				'reminder_date -> reminder.reminderDate.toString,
+				'contract_id -> reminder.contractId
 			).executeUpdate()
 		}
 	}
-					  
+
+	/*def update(id: Long, reminderDate: Date, contractId: Long) {
+		update(id, new LocalDate(reminderDate), contractId)
+	}*/
+
+	//def update(id: Long, reminderDate: LocalDate, contractId: Long) {
+	def update(id: Long, reminder: Reminder) {
+		DB.withConnection { implicit connection =>
+			SQL(
+				"""
+					update reminder set reminder_date={reminder_date}, contract_id={contract_id}, sent={sent} where id={id}
+				"""
+				).on(
+				'id -> id,
+				'reminder_date -> reminder.reminderDate.toString,
+				'contract_id -> reminder.contractId,
+				'sent -> reminder.sent
+			).executeUpdate()
+		}
+	}
+
 	def delete(id: Long) {
 		DB.withConnection { implicit c =>
 			SQL("delete from reminder where id = {id}").on(
@@ -80,7 +101,8 @@ object Reminder {
 	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
 		SQL("select * from reminder order by reminderDate")
 			.as(Reminder.reminder *)
-			.map(c => c.id.toString -> (formatDate(c.reminderDate)))
+			.map(c => c.id.toString -> c.reminderDate.toString())
+			//.map(c => c.id.toString -> (formatDate(c.reminderDate)))
 	}
 }
 

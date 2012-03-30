@@ -143,55 +143,110 @@ th.inner_display_column,td.inner_display_column {
 	padding: 5px;
 }
 
-table.contract_list
-{
-	border: 1px solid gray;
-}
-
-table.contract_list th
-{
-	color: white;
-	background-color: gray;
-}
-
-table.contract_list .contract_id
-{
-	width: 6em;
-	background-color: lightgray;
-}
-
-table.contract_list th.contract_id
-{
-	background-color: gray;
-}
-
-table.contract_list th.contract_name { width: 12em; }
-
-table.contract_list th.cost { width: 4em; }
-table.contract_list th.currency { width: 3em; }
-table.contract_list th.location_code { width: 6em; }
-table.contract_list th.links { width: 5em; }
-
-form.form { margin-top: 20px; }
-
-.far-warning { padding: 5px; color: DarkOrange; font-weight: bold; }
-
-.near-warning { padding: 5px; background-color: Red; color: black; }
-
-.too-late { 
-	border: 15px solid black; 
-	padding: 5px;
-	background:
-	linear-gradient(315deg, #ECEDDC 25%, transparent 25%) -50px 0,
-	linear-gradient(225deg, #ECEDDC 25%, transparent 25%) -50px 0,
-	linear-gradient(135deg, #ECEDDC 25%, transparent 25%),
-	linear-gradient(45deg, #ECEDDC 25%, transparent 25%);	
-	background-size: 100px 100px;
-	background-color: #EC173A;
-
-}
 
 // Form actions
+form.form { margin-top: 20px; }
+
 div.actions {
 	margin-top: 20px;
 }
+
+.too-late { 
+	background-color: pink;
+	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	padding: 20px;
+}
+
+div.far-warning { padding: 5px; color: DarkOrange; font-weight: bold; }
+
+div.near-warning { 
+	padding: 5px; 
+	margin-bottom: 5px; 
+	background-color: Red; 
+	color: black; 
+}
+
+div.too-late {
+	margin-bottom: 5px;
+}
+
+// Filtering on Contracts page
+
+p.contract-filter {
+	margin-bottom: 1px;
+	font-weight: bold;
+}
+
+#contract-status {
+	float: left;
+	width: 50em;
+}
+
+#filter-dates {
+	margin-top: 2px;
+	float: left;
+	width: 50em;
+}
+
+form.filter-form div.actions {
+	clear: both;
+	padding-top: 10px;
+}
+
+
+// css and dl http://www.onextrapixel.com/2009/05/13/how-to-use-dl-dt-and-dd-html-tags-to-list-data-vs-table-list-data/
+dl.contract-filter {
+	margin-top: -5px;
+	margin-bottom: -5px;
+	float: left;
+	padding-right: 15px;
+}
+
+dl.contract-filter dt {
+	//width: 100px;
+}
+
+dl.contract-filter dd {
+		margin: 2px 0;
+		padding: 5px 0;
+}
+
+dl.date-filter {
+	margin-top: -5px;
+	margin-bottom: -5px;
+	float: left;
+	padding-right: 20px;
+}
+
+dl.date-filter dt {
+		float: left;
+}
+
+dl.date-filter dd {
+		float: left;
+		margin-left: 3px;
+}
+
+// Reminder form
+dl.reminder-contract dt {
+	float: left;
+}
+
+dl.reminder-contract dd {
+	float: left;
+	margin-left: 5px;
+}
+
+dl.reminder-sent {
+	padding-top: 14px;
+	clear: both;
+}
+
+dl.reminder-sent dt {
+	float: left;
+}
+
+dl.reminder-sent dd {
+	float: left;
+}
+

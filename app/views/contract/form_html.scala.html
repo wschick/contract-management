@@ -1,13 +1,10 @@
-@(contractForm: Form[Contract])
+@(contractForm: Form[Contract],
+	formAction: Call, 
+	cancelAction: Option[Call] = None, 
+	formLegend: String, 
+	submitButtonName: String = "Insert")
 
 @import helper._
-@import helper.twitterBootstrap._
-
-@*@title = {
-	Add a new contract or <small><a href="@routes.Contracts.contracts"> or see existing contract</a></small>
-}*@
-
-@contractFormHtml = {
 
 	@if(contractForm.hasErrors) {
 		<div class="alert-message error">
@@ -15,7 +12,7 @@
 		</dev>
 	}
 
-	@helper.form(action = routes.Contracts.create) {
+	@form(action=formAction, 'class -> "form") {
 
 	<fieldset>
 		<legend>General information</legend>
@@ -42,6 +39,25 @@
 			'_label -> "Description", 'size -> 40
 		)
 
+		@select(
+			contractForm("aEnd"),
+			Location.options,
+			'_label -> "A end", '_default -> "-- Choose a location --",
+			'_showConstraints -> false
+		)
+
+		@select(
+			contractForm("zEnd"),
+			Location.options,
+			'_label -> "Z end (optional)", '_default -> "-- Choose a location --",
+			'_showConstraints -> false
+		)
+
+	</fieldset>
+
+	<fieldset>
+		<legend>Costs</legend>
+
 		@inputText(
 			contractForm("mrc"),
 			'_label -> "MRC", 'size -> 10
@@ -59,19 +75,10 @@
 			'_showConstraints -> false
 		)
 
-		@select(
-			contractForm("aEnd"),
-			Location.options,
-			'_label -> "A end", '_default -> "-- Choose a location --",
-			'_showConstraints -> false
-		)
+	</fieldset>
 
-		@select(
-			contractForm("zEnd"),
-			Location.options,
-			'_label -> "Z end (optional)", '_default -> "-- Choose a location --",
-			'_showConstraints -> false
-		)
+	<fieldset>
+		<legend>Dates</legend>
 
 		@inputDate(
 			contractForm("startDate"),
@@ -110,17 +117,12 @@
 
 	</fieldset>
 
-	<div class="actions">
-		<input type="submit" class="btn primary" value="Insert">
-		<a href="@routes.Contracts.all" class="btn">Cancel</a>
-	</div>
+		<div class="actions">
+			<input type="submit" class="btn primary" value="@submitButtonName">
+			@if(cancelAction != None) {
+			<a href="@cancelAction" class="btn">Cancel</a>
+			}
+		</div>
 
 	}
 
-}
-
-@main("New contract", "Add a new contract", "Contract") {
-
-	@contractFormHtml
-
-}

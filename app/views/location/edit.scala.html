@@ -1,6 +1,6 @@
 @(location: Location, locationForm: Form[(String, String)])
 
-@main("Edit location" + location.code, "Edit location " + location.code, "Settings") {
+@main("Edit location " + location.code, "Edit location " + location.code, "Settings") {
 
 	@form_html(locationForm, 
 		routes.Locations.update(location.id), 

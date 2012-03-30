@@ -84,14 +84,13 @@ object Contract {
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~/*reminderPeriod~reminderPeriodUnits~*/lastModifyingUser~lastModifiedTime~companyId => 
+			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					/*reminderPeriod, reminderPeriodUnits,*/
 					lastModifyingUser, lastModifiedTime, companyId)
 		}
 	}	
@@ -134,6 +133,7 @@ object Contract {
 					insert into contract (contract_id, name, description, mrc, nrc, 
 					currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 					cancellation_period, cancellation_period_units,
+					cancelled_date,
 					last_modifying_user, last_modified_time, company_id) 
 					values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
 					{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
@@ -156,8 +156,41 @@ object Contract {
 				'cancellation_period -> contract.cancellationPeriod.length,
 				'cancellation_period_units -> contract.cancellationPeriod.units.value,
 				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
-				/*'reminder_period -> contract.reminderPeriod,
-				'reminder_period_units -> contract.reminderPeriodUnits,*/
+				'last_modifying_user -> "unknown user",
+				'last_modified_time -> new Date,
+				'companyId -> contract.companyId
+			).executeUpdate()
+		}
+	}
+
+	def update(id: Long, contract: Contract) {
+		println("updating id " + contract.id)
+		DB.withConnection { implicit connection =>
+			SQL(
+				"""
+					update contract set contract_id={contractId}, name={name}, description={description}, 
+					mrc={mrc}, nrc={nrc}, currency_id={currency_id}, a_end_id={a_end_id}, z_end_id={z_end_id}, 
+					start_date={start_date}, term={term}, term_units={term_units},
+					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
+					cancelled_date={cancelled_date}, last_modifying_user={last_modifying_user}, 
+					last_modified_time={last_modified_time}, company_id={companyId} where id={id}
+				"""
+				).on(
+				'id -> id,
+				'contractId -> contract.contractId,
+				'name -> contract.name,
+				'description -> contract.description,
+				'mrc -> contract.mrc,
+				'nrc -> contract.nrc,
+				'currency_id -> contract.currencyId,
+				'a_end_id -> contract.aEnd.id,
+				'z_end_id -> contract.zEnd.id,
+				'start_date -> contract.startDate.toDate,
+				'term -> contract.term.length,
+				'term_units -> contract.term.units.value,
+				'cancellation_period -> contract.cancellationPeriod.length,
+				'cancellation_period_units -> contract.cancellationPeriod.units.value,
+				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
 				'last_modifying_user -> "unknown user",
 				'last_modified_time -> new Date,
 				'companyId -> contract.companyId

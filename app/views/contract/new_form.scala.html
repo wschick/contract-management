@@ -1,0 +1,16 @@
+@(contractForm: Form[Contract])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@*@title = {
+	Add a new contract or <small><a href="@routes.Contracts.all"> or see existing contract</a></small>
+}*@
+
+
+@main("New contract", "Add a new contract", "Contract") {
+
+	@form_html(contractForm, routes.Contracts.create, formLegend = "Create a new contract", 
+		submitButtonName = "Create")
+
+}

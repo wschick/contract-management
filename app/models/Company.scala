@@ -23,13 +23,6 @@ object Company {
 		}
 	}	
 
-	def companyForm = Form(
-		tuple (
-			"name" -> nonEmptyText,
-			"primary_contact_id" -> optional(longNumber)
-		)
-	)
-
 	def findById(id: Long): Option[Company] = {
 		DB.withConnection { implicit c =>
 			SQL("select * from company where id = {id}")
@@ -67,6 +60,20 @@ object Company {
 		}
 	}
 					  
+	def update(id: Long, name: String, primaryContactId: Option[Long]) {
+		DB.withConnection { implicit connection =>
+			SQL(
+				"""
+					update company set name={name}, primary_contact_id={primary_contact_id} where id={id}
+				"""
+				).on(
+				'id -> id,
+				'name -> name,
+				'primary_contact_id -> primaryContactId
+			).executeUpdate()
+		}
+	}
+
 	def delete(id: Long) {
 		DB.withConnection { implicit c =>
 			SQL("delete from company where id = {id}").on(

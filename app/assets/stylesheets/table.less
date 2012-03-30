@@ -1,5 +1,68 @@
+
+table.contract_list { border: 1px solid gray; }
+
+table.contract_list th { 
+	color: white; 
+	background-color: gray; 
+	padding: 5px;
+}
+table.contract_list th.contract_name { width: 12em; }
+table.contract_list th.cost { width: 4em; }
+table.contract_list th.currency { width: 3em; }
+table.contract_list th.location_code { width: 6em; }
+table.contract_list th.links {  }
+table.contract_list th.contract_id { background-color: gray; }
+
+table.contract_list td { border: 1px solid black; padding: 5px; }
+
+table.contract_list .contract_id { width: 6em; background-color: lightgray; }
+
+
 tbody.contacts tr:nth-of-type(odd) {
 	background:Gainsboro;
+}
+
+
+tr.ok {
+	background-color: white;
+}
+
+tr.cancelled {
+	color: white;
+	background-color: DarkGray;
+}
+
+tr.far-warning {
+	background-color: Orange;
+}
+
+tr.near-warning {
+	background-color: Red;
+}
+
+tr.xcontract-too-late,div.xtoo-late {
+	background-color: pink;
+	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	border: 15px solid black;
+}
+
+td.days-to-cancel {
+	text-align: right;
+}
+
+
+td.blank-line {
+	border: none;
+	height: 20px;
+}
+
+table.contract-types {
+	margin-bottom: 20px;
+}
+
+td.contract-links {
+	background-image: none !important;
+	background-color: white;
 }
 
 /* CONTRACT SUMMARY */
@@ -16,34 +79,3 @@ tbody.contacts tr:nth-of-type(odd) {
 	padding-left: 20px;
 }
 
-
-tr.contract-ok {
-	background-color: white;
-}
-
-tr.contract-cancelled {
-	color: white;
-	background-color: DarkGray;
-}
-
-tr.contract-far-warning {
-	background-color: Orange;
-}
-
-tr.contract-near-warning {
-	background-color: Red;
-}
-
-tr.contract-too-late {
-	background-color: red;
-	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
-	border: 15px solid black;
-}
-
-td.days-to-cancel {
-	text-align: right;
-}
-
-table.contract-types {
-	margin-bottom: 20px;
-}

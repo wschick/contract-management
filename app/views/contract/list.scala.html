@@ -1,4 +1,4 @@
-@(contracts: List[Contract], contractForm: Form[Contract])
+@(contracts: List[Contract], filterForm: Form[ContractFilter])
 
 @import helper._
 
@@ -21,7 +21,7 @@
 		@contracts.map { contract =>
 				@defining(contract.status.name) { status => 
 
-				<tr class="contract-@status">
+				<tr class="@status">
 				<td class="contract_id">@contract.contractId</td>
 				<td>@contract.name</td>
 				<td>@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
@@ -32,9 +32,10 @@
 					@contract.daysUntilCancellationDate 
 					} 
 				</td>
-				<td> 
-					<a href="@routes.Contracts.viewContract(contract.id.get)">See details</a>
-					@form(routes.Contracts.deleteContract(contract.id.get)) {
+				<td class="contract-links"> 
+					<a href="@routes.Contracts.view(contract.id.get)">View</a>
+					<a href="@routes.Contracts.edit(contract.id.get)">Edit</a>
+					@form(routes.Contracts.delete(contract.id.get)) {
 						<input type="submit" value="Delete">
 					}
 				</td>
@@ -46,6 +47,10 @@
 
 	<p>
 
-	<a href="@routes.Contracts.newContract">Add a new contract</a>
+	@filter_form(filterForm)
+
+	<p>
+
+	<a href="@routes.Contracts.create">Add a new contract</a>
 
 }

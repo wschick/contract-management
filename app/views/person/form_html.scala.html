@@ -1,0 +1,45 @@
+@(formWithData: Form[(String, String, Option[String], Long)],
+	formAction: Call, 
+	cancelAction: Option[Call] = None, 
+	formLegend: String, 
+	submitButtonName: String = "Insert")
+
+@import helper._
+
+	@if(formWithData.hasErrors) {
+		<div class="alert-message error">
+			<p>Please fix all errors</p>
+		</dev>
+	}
+
+	@form(action=formAction, 'class -> "form") {
+
+		<fieldset>
+			<legend>@formLegend</legend>
+
+				@inputText(formWithData("name"), '_class -> "form", '_label -> "Name", 
+				'_showConstraints -> false, 'size -> 50, 'maxlength -> 50)
+
+				@inputText(formWithData("email"), '_class -> "form", '_label -> "Email", 
+				'_showConstraints -> false, 'size -> 50, 'maxlength -> 50)
+
+				@inputText(formWithData("telephone"), '_class -> "form", '_label -> "Telephone (optional)", 
+				'_showConstraints -> false, 'size -> 20, 'maxlength -> 20)
+
+				@select(
+					formWithData("company_id"),
+					Company.options,
+					'_label -> "Company", '_default -> "-- Choose a company --",
+					'_showConstraints -> false
+				)
+
+		</fieldset>
+
+		<div class="actions">
+			<input type="submit" class="btn primary" value="@submitButtonName">
+			@if(cancelAction != None) {
+			<a href="@cancelAction" class="btn">Cancel</a>
+			}
+		</div>
+
+	}
