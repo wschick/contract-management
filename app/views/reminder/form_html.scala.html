@@ -32,14 +32,12 @@
 				'_showConstraints -> false)
 				}
 
-				@*
-				@select(
-					formWithData("recipient"),
-					Person.options, '_multiple -> "multiple",
+				@multiSelect(
+					formWithData("recipient"), Person.options, 
 					'_label -> "Who gets the reminder?", '_default -> "-- Choose a person --",
-					'_showConstraints -> false
+					'_showConstraints -> false, '_class -> "reminder-person",
+					'_multiple -> "multiple"
 				)
-				*@
 
 
 		</fieldset>
