@@ -1,4 +1,4 @@
-@(formWithData: Form[Reminder],
+@(formWithData: Form[ReminderAndPeople],
 	formAction: Call, 
 	cancelAction: Option[Call] = None, 
 	formLegend: String, 
@@ -33,7 +33,7 @@
 				}
 
 				@multiSelect(
-					formWithData("recipient"), Person.options, 
+					formWithData("people"), Person.options, 
 					'_label -> "Who gets the reminder?", '_default -> "-- Choose a person --",
 					'_showConstraints -> false, '_class -> "reminder-person",
 					'_multiple -> "multiple"

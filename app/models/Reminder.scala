@@ -9,6 +9,8 @@ import play.api.Play.current
 import java.util.{Date}
 import org.joda.time._
 
+case class ReminderAndPeople(reminder: Reminder, people: List[Long]);
+
 case class Reminder(
 	id: Pk[Long], 
 	reminderDate: LocalDate, 

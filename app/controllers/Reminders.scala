@@ -4,12 +4,36 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.data.format._
 import org.joda.time._
 import anorm._
 
 import models.Reminder
+import models.ReminderAndPeople
 
-case class ReminderAndPeople(reminder: Reminder, people: List[Long]);
+
+object ChoiceList extends Formatter[List[Long]]
+{
+	def stringFormat: Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, "error.required", Nil)))
+    def unbind(key: String, value: String) = Map(key -> value)
+  }
+
+	// Look at format/Format.scala
+	// Given form data, make a List[Long]
+	def bind(key: String, data: Map[String, String]) = {
+		stringFormat.bind(key, data).right.flatMap { s =>
+			scala.util.control.Exception.allCatch[List[Long]]
+				.either(List[Long](1,2)) // TODO put in real list
+				.left.map(e => Seq(FormError(key, "error.choices", Nil)))
+		}
+	}
+
+	// Given a List[Long], make what the form needs.
+	def unbind(key: String, value: List[Long]) = 
+		Map(key -> "1,2")
+		// TODO given List[Long], generate comma separated string"1,2")
+}
 
 object Reminders extends Controller {
   
@@ -50,7 +74,7 @@ object Reminders extends Controller {
 				ReminderAndPeople(Reminder(id, new LocalDate(reminder_date), contract_id, sent), List(people))
 		)
 		(
-			(reminder: Reminder) => Some ((
+			(reminderAndPeople: ReminderAndPeople) => Some ((
 				reminder.id,
 				reminder.reminderDate.toDate,
 				reminder.contractId,
@@ -70,18 +94,20 @@ object Reminders extends Controller {
 			"id" -> ignored(NotAssigned:Pk[Long]),
 			"reminder_date" -> date,
 			"contract_id" -> longNumber,
-			"sent" -> boolean
+			"sent" -> boolean,
+			"people" -> of[List[Long]](ChoiceList)
 		)
 		(
-			(id, reminder_date, contract_id, sent) =>
-				Reminder(id, new LocalDate(reminder_date), contract_id, sent)
+			(id, reminder_date, contract_id, sent, people) =>
+				ReminderAndPeople(new Reminder(id, new LocalDate(reminder_date), contract_id, sent), people)
 		)
 		(
-			(reminder: Reminder) => Some ((
-				reminder.id,
-				reminder.reminderDate.toDate,
-				reminder.contractId,
-				reminder.sent
+			(rp: ReminderAndPeople) => Some ((
+				rp.reminder.id,
+				rp.reminder.reminderDate.toDate,
+				rp.reminder.contractId,
+				rp.reminder.sent,
+				rp.people
 			))
 		)
 	)
@@ -95,7 +121,8 @@ object Reminders extends Controller {
 		reminderForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.reminder.list(Reminder.all(), formWithErrors)),
 			reminder => {
-				Reminder.create(reminder)
+				// TODO create the reminder people entries, too
+				Reminder.create(reminder.reminder)
 				Redirect(routes.Reminders.all)
 			}
 		)
@@ -104,7 +131,8 @@ object Reminders extends Controller {
   def edit(id: Long) = Action {
 		Reminder.findById(id).map { reminder =>
 			//Ok(views.html.reminder.edit(reminder, reminderForm.fill((reminder.reminderDate.toDate, reminder.contractId))))
-			Ok(views.html.reminder.edit(reminder, reminderForm.fill(reminder)))
+			// TODO handle person list.
+			Ok(views.html.reminder.edit(reminder, reminderForm.fill(new ReminderAndPeople(reminder, List[Long]() /* this should be people list */))))
 		}.getOrElse(NotFound)
 	}
 
@@ -118,7 +146,8 @@ object Reminders extends Controller {
 				}.getOrElse(NotFound)
 			},
 			reminder => {
-				Reminder.update(id, reminder)
+				//TODO handle people list
+				Reminder.update(id, reminder.reminder)
 				Ok(views.html.reminder.list(Reminder.all(), reminderForm))
 			}
 		)
