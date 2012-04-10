@@ -5,17 +5,26 @@ table.contract_list th {
 	color: white; 
 	background-color: gray; 
 	padding: 5px;
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+table.contract_list th.headerSortUp { 
+	background-image: url(/assets/images/asc.gif);
+}
+table.contract_list th.headerSortDown { 
+	background-image: url(/assets/images/desc.gif);
 }
 table.contract_list th.contract_name { width: 12em; }
 table.contract_list th.cost { width: 4em; }
 table.contract_list th.currency { width: 3em; }
-table.contract_list th.location_code { width: 6em; }
+table.contract_list th.location_code { width: 6.5em; }
+table.contract_list th.days_to_cancellation { width: 6.5em; }
 table.contract_list th.links {  }
 table.contract_list th.contract_id { background-color: gray; }
 
 table.contract_list td { border: 1px solid black; padding: 5px; }
 
-table.contract_list .contract_id { width: 6em; background-color: lightgray; }
+table.contract_list .contract_id { width: 8em; background-color: lightgray; }
 
 
 tbody.contacts tr:nth-of-type(odd) {
@@ -79,3 +88,12 @@ td.contract-links {
 	padding-left: 20px;
 }
 
+
+th.headerSortUp {
+	background-color: red;
+}
+th.header {
+}
+th.headerSortDown {
+	background-color: blue;
+}

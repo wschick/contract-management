@@ -4,16 +4,19 @@
 
 @main("Contracts", "Contracts", "Contracts") {
 
-	<table class="contract_list">
+	<!--table class="contract_list"-->
+	<!--table class="sortable"-->
+	<table class="contract_list" id="contracts">
 		<thead>
 		<tr>
 			<th class="contract_id">Contract Id</td>
-			<th class="contract_name">Name</th>
-			<th class="cost">MRC</th>
-			<th class="cost">NRC</th>
+			<th>Name</th>
+			<!--th class="contract_name">Name</th-->
+			<th class="cost {'sorter':'cost'}">MRC</th>
+			<th class="cost {'sorter':'cost'}">NRC</th>
 			<th class="location_code">Locations</th>
 			<th class="days_to_cancellation">Cancel in</th>
-			<th class="links"></th>
+			<th class="links {sorter: false}"></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -52,5 +55,28 @@
 	<p>
 
 	<a href="@routes.Contracts.create">Add a new contract</a>
+
+	<script type="text/javascript">
+		$.tablesorter.addParser({
+			id: 'cost',
+			is: function(s) { return false; },
+			format: function(s) { 
+				return(s.replace(/[A-z]+/, ""));
+			},
+			type: 'numeric'
+		});
+		$(function() {
+      $("#contracts").tablesorter()({
+				headers: {
+					3: { sorter: 'cost' },
+					4: { sorter: 'cost' }
+				}
+			});
+		});
+			
+		$(document).ready(function() { 
+        $("#contracts").tablesorter();
+		});
+	</script>
 
 }

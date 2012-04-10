@@ -2,9 +2,8 @@ Current status: Everything around contracts works, now I need to get contracts t
 
 To do:
 
-* Get reminder-contact table working.
+* In filter form, get filtering by status working
 * Get daily alerts working.
-* Add "sent" to reminder so I won't sent it again.
 * Add contract type field.
 * Get file uploads working
 * Finish contract filtering. On form submission, grab data, generate where clause and display. How to persist it? Cookie?

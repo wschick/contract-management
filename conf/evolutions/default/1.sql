@@ -93,6 +93,11 @@ SET REFERENTIAL_INTEGRITY FALSE;
 DROP TABLE currency;
 DROP TABLE location;
 DROP TABLE contract;
+DROP TABLE reminder_person;
+DROP TABLE reminder;
+DROP TABLE person;
+DROP TABLE company;
+DROP TABLE contract_type;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 

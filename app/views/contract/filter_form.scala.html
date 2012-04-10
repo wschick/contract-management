@@ -43,16 +43,16 @@
 	</fieldset>
 
 	<fieldset id="filter-dates">
-		<legend>Dates</legend>
+		<legend>Dates (yyyy-mm-dd)</legend>
 
 		@inputDate(
-			filterForm("earliest_start_date"),
-			'_label -> "Earlierst start date", '_class -> "date-filter"
+		filterForm("earliestStartDate"), '_label -> "Earlierst start date", 
+		'_showConstraints -> false, '_class -> "date-filter"
 		)
 
 		@inputDate(
-			filterForm("latest_start_date"),
-			'_label -> "Latest start date", '_class -> "date-filter"
+			filterForm("latestStartDate"), '_label -> "Latest start date",
+		'_showConstraints -> false, '_class -> "date-filter"
 		)
 	</fieldset>
 

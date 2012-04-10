@@ -71,7 +71,7 @@ object Reminders extends Controller {
 			"reminder_date" -> date,
 			"contract_id" -> longNumber,
 			"sent" -> boolean,
-			"people" -> list(Long)
+			"people" -> list(longNumber)
 		)
 		(
 			(id, reminder_date, contract_id, sent, people) =>
@@ -104,10 +104,7 @@ object Reminders extends Controller {
 		)
 		(
 			(id, reminder_date, contract_id, sent, people) =>
-				{
-					println("People is " + people)
 					ReminderAndPeople(new Reminder(id, new LocalDate(reminder_date), contract_id, sent), people)
-				}
 		)
 		(
 			(rp: ReminderAndPeople) => Some ((
@@ -124,16 +121,36 @@ object Reminders extends Controller {
     Ok(views.html.reminder.list(Reminder.all(), reminderForm))
 	}
 
+	def translateToPlayInput(inputMap:Map[String, Seq[String]])= { 
+			inputMap.flatMap ({ 
+				case (key, value) if value.length == 1 => {
+					Map(key->value.head)
+				} 
+				case (key, value) if value.length > 1 => { 
+					value.zipWithIndex.map { 
+						case (value, index) => (key +"[" + index+"]", value)
+				}
+			}
+		})
+	}
+
+
+
 	def create = Action { implicit request =>
 		println(">>>> Start of request")
 		println("the request: " +request.body)
+		println("url encoded: " +request.body.asFormUrlEncoded)
+		println("translated: " + translateToPlayInput(request.body.asFormUrlEncoded.get))
 		println("------")
 		println(reminderForm.bindFromRequest)
-		reminderForm.bindFromRequest.fold(
+		// Alternative binding
+		
+		reminderForm.bind(translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
+		//reminderForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.reminder.list(Reminder.all(), formWithErrors)),
 			reminder => {
 				// TODO create the reminder people entries, too
-				println("Got " + reminder.people.length + " people")
+				println("Got " + reminder.people.length + " people: " + reminder.people)
 				Reminder.create(reminder.reminder)
 				Redirect(routes.Reminders.all)
 			}

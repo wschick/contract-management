@@ -100,6 +100,12 @@ object Contract {
 		SQL("select * from contract").as(contract *)
 	}
 
+	def filtered(filter: ContractFilter): List[Contract] = {
+		DB.withConnection { implicit connection =>
+			SQL("select * from contract " + filter.sqlCondition).as(contract *)
+		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
+	}
+
 	/** Return a contract.
 
 		@param id the id of the contract

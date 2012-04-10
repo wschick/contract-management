@@ -47,6 +47,22 @@ object Reminder {
 	}
 
 
+ val personName = {
+	 get[String]("name") map {
+		 case name => name
+	 }
+ }
+
+	def personNamesForReminder(reminderId: Pk[Long], maxPersons: Int = 1): List[String] = {
+		DB.withConnection { implicit c =>
+			SQL("select person.name from reminder INNER JOIN reminder_person INNER JOIN person where reminder.id = {id} AND reminder_person.reminder_id = reminder.id AND reminder_person.person_id = person.id LIMIT 0," + maxPersons)
+				.on('id -> reminderId).as(personName *)
+		}
+	}
+
+
+
+
 	def all(): List[Reminder] = DB.withConnection { implicit c =>
 		SQL("select * from reminder order by reminder_date").as(reminder *)
 	}

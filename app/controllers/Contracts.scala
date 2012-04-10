@@ -122,11 +122,18 @@ object Contracts extends Controller {
   }
 
 	def all = Action {
-    Ok(views.html.contract.list(Contract.all(), filterForm))
+		val filter = new ContractFilter
+    Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
 	}
 
 	def filtered = Action { implicit request =>
     Ok(views.html.contract.list(Contract.all(), filterForm))
+		filterForm.bindFromRequest.fold(
+			formWithErrors => BadRequest(html.contract.list(Contract.all(), formWithErrors)),
+			filter => {
+    		Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
+			}
+		)
 	}
 
 	def create = Action { implicit request =>
@@ -171,7 +178,7 @@ object Contracts extends Controller {
 
 	def delete(id: Long) = Action {
 		Contract.delete(id)
-		Redirect(routes.Contracts.all)
+		Redirect(routes.Contracts.filtered)
 	}
   
 }

@@ -36,6 +36,9 @@ GET			/reminders/:id/edit					controllers.Reminders.edit(id: Long)
 POST		/reminders/:id/edit					controllers.Reminders.update(id: Long)
 GET			/reminders/:id/delete				controllers.Reminders.delete(id: Long)
 
+GET			/rp													controllers.ReminderPersons.all
+GET			/rp/:reminderId/:personId/delete				controllers.ReminderPersons.delete(reminderId: Long, personId: Long)
+
 GET			/contract_types							controllers.ContractTypes.all
 GET			/contract_types/:id/edit		controllers.ContractTypes.edit(id: Long)
 POST		/contract_types/:id/edit		controllers.ContractTypes.update(id: Long)
