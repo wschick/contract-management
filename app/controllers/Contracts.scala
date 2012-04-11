@@ -1,14 +1,18 @@
 package controllers
 
 import play.api._
+import play.api.libs.json._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import org.joda.time._
+import java.io.File
+import java.io.IOException
 
 import views._
 import anorm._
 
+import models.Attachment
 import models.Contract
 import models.ContractFilter
 import models.Location
@@ -180,5 +184,26 @@ object Contracts extends Controller {
 		Contract.delete(id)
 		Redirect(routes.Contracts.filtered)
 	}
+
+
+	/*def upload = Action(parse.temporaryFile) { implicit request =>
+		println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		val contractId = request.queryString("contractId").head
+		val fileName = request.queryString("qqfile").head
+		println(request)
+		println("id: " + contractId)
+		println("file name: " + fileName)
+		try {
+			request.body.moveTo(new File("/tmp/" + contractId + "/" + fileName))
+			println("Replying ok")
+			Ok("{\"success\": true}")
+		} catch {
+			case e:IOException => {
+				println("Got io exception. " + e.getMessage);
+				Ok("{\"error\": \"" + e.getMessage + "\"}")
+			}
+		}
+	}
+	*/
   
 }

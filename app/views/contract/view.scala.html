@@ -4,49 +4,58 @@
 
 @main(title, title, nav="Contract") {
 
-	@heading
-
 	@defining(contract.status) { cs => 
+		@cs match {
 
-	@cs match {
-
-		case models.CANCELLED => {
-			<p>Contract was cancelled on @contract.cancelledDate</p>
-		}
-		case TOOLATE => {
-			@notice(contract.status) {
-				The cancellation date @contract.cancellationDate has passed.
+			case models.CANCELLED => {
+				<p>Contract was cancelled on @contract.cancelledDate</p>
 			}
-		}
-		case _ => {
-			@notice(contract.status) {
-				<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
-				<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+			case TOOLATE => {
+				@notice(contract.status) {
+					The cancellation date @contract.cancellationDate has passed.
+				}
+			}
+			case _ => {
+				@notice(contract.status) {
+					<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
+					<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+				}
 			}
 		}
 	}
-	}
 
-	<table id="contract_summary" border=1>
-		<tbody>
-			<tr><td>Contract id</td><td>@contract.contractId</td></tr>
-			<tr><td>Name</td><td>@contract.name</td></tr>
-			<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
-			<tr><td>Description</td><td>@contract.description</td></tr>
-			<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
-			<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
-			<tr><td>A end</td><td>@contract.aEnd.longString</td></tr>
-			<tr><td>Z end</td><td>@contract.zEnd.longString</td></tr>
-			<tr><td class="blank-line"></td><td class="blank-line"></td>
-			<tr><td>Start date</td><td>@contract.startDate</td></tr>
-			<tr><td>Term</td><td>@contract.term (@contract.lastDay)</td></tr>
-			<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
-			<tr><td class="blank-line"></td><td class="blank-line"></td>
-			<tr><td>Status</td><td>@contract.status.name</td></tr>
-			<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
-			<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
-	</tbody>
-	</table>
+		<div class="data_table">
+			<table id="contract_summary" border=1>
+				<tbody>
+					<tr><td>Contract id</td><td>@contract.contractId</td></tr>
+					<tr><td>Name</td><td>@contract.name</td></tr>
+					<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
+					<tr><td>Description</td><td>@contract.description</td></tr>
+					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td>A end</td><td>@contract.aEnd.longString</td></tr>
+					<tr><td>Z end</td><td>@contract.zEnd.longString</td></tr>
+					<tr><td class="blank-line"></td><td class="blank-line"></td>
+					<tr><td>Start date</td><td>@contract.startDate</td></tr>
+					<tr><td>Term</td><td>@contract.term (@contract.lastDay)</td></tr>
+					<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
+					<tr><td class="blank-line"></td><td class="blank-line"></td>
+					<tr><td>Status</td><td>@contract.status.name</td></tr>
+					<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
+					<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
+			</tbody>
+			</table>
+		</div>
+
+			<ul id="edit_controls">
+					<li><a href="@routes.Contracts.edit(contract.id.get)">Edit</a>
+					<li id="delete"><a href="@routes.Contracts.delete(contract.id.get)">Delete</a>
+			</ul>
+
+
+	@attachment_list(contract.attachments)
+
+	@uploader(contract.contractId, Some(routes.Attachments.upload(contract.contractId)))
 
 	<p>
 		<a href="@routes.Contracts.all">Back to the list of contracts</a>

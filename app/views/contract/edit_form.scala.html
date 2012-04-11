@@ -13,6 +13,7 @@
 	@form_html(contractForm, 
 	routes.Contracts.update(contractForm.get.id.get), 
 	cancelAction = Some(routes.Contracts.all), 
+	uploadAction = Some(routes.Attachments.upload(contractForm.get.contractId)),
 	formLegend = "Edit a contract", 
 	submitButtonName = "Update")
 

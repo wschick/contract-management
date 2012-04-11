@@ -57,6 +57,8 @@ case class Contract(
 		}
 	}
 
+	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(contractId)
+
 
 }
 
@@ -115,6 +117,18 @@ object Contract {
 	def findById(id: Long): Option[Contract] = {
 		DB.withConnection { implicit connection =>
 			SQL("select * from contract where id = {id}").on('id -> id).as(Contract.contract.singleOpt)
+		}
+	}
+
+	/** Return a contract.
+
+		@param contractId the textual id of the contract (not the numerical database id)
+		@return the contract, if it exists.
+
+		*/
+	def findByContractId(contractId: String): Option[Contract] = {
+		DB.withConnection { implicit connection =>
+			SQL("select * from contract where contract_id = {contract_id}").on('contract_id -> contractId).as(Contract.contract.singleOpt)
 		}
 	}
 

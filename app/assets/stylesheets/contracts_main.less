@@ -1,4 +1,5 @@
 @import "table.less";
+@import "fileuploader.less";
 
 body 
 {
@@ -264,4 +265,58 @@ table.sortable thead {
   color:#666666;
   font-weight: bold;
 	cursor: default;
+}
+
+div.data_table {
+}
+
+ul#edit_controls {
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 20px 0;
+	float: left;
+	width: 100%
+}
+
+ul#edit_controls li { display: inline; }
+
+/* Button from www.markedlines.com/10-awesome-css3-buttons-to-use-on-your-website/ */
+ul#edit_controls li a
+{
+	float: left;
+	width: 3em;
+	/*color: white;
+	/*background-color: blue;*/
+	color: #836d4d;
+	border: 1px solid #d4c198;
+	font-weight: bold;
+	text-align: center;
+
+	padding: 0.25em 1em;
+	margin: 0.5em;
+	text-decoration: none;
+	/*border-right: 5px solid white;*/
+	-moz-border-radius: 3px;
+	-webit-border-radius: 3px;
+	border-radius: 3px;
+	background: -moz-linear-gradient(19% 75% 90deg, #F0DEB8, #FDF0D1, #FFF 100%);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#F0DEB8), color-stop(.3,#FDF0D1));
+}
+
+ul#edit_controls li#delete a:hover
+{
+	background: -moz-linear-gradient(19% 75% 90deg, #F70A31, #F72D4E, #F7637C 100%);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7637C), to(#F70A31), color-stop(.3,#F72D4E));
+	color: white;
+}
+
+ul#edit_controls li a:hover
+{
+	background: -moz-linear-gradient(19% 75% 90deg, #EDC064, #F2E6C8, #F5F5F5 100%);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F5F5F5), to(#EDC064), color-stop(.3,#F2E6C8));
+}
+
+
+div.attachments {
+	clear: both;
 }

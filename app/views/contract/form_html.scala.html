@@ -1,6 +1,7 @@
 @(contractForm: Form[Contract],
 	formAction: Call, 
 	cancelAction: Option[Call] = None, 
+	uploadAction: Option[Call] = None,
 	formLegend: String, 
 	submitButtonName: String = "Insert")
 
@@ -125,4 +126,6 @@
 		</div>
 
 	}
+
+	@uploader(contractForm.get.contractId, uploadAction)
 

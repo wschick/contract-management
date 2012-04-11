@@ -1,0 +1,31 @@
+@(contractId: String, uploadAction: Option[Call] = None)
+
+	@for(ua <- uploadAction) {
+	<div id="file-uploader">
+		<noscript>
+			<p>Please enable JavaScript to use file uploader.</p>
+		</noscript>
+
+		<script>
+			function createUploader(){
+				var uploader = new qq.FileUploader({
+					element: document.getElementById('file-uploader'),
+					action: '/attachments',
+					debug: true,
+					onComplete: function(id, fileName, responseJSON) {
+						if (responseJSON.success) {
+							location.reload(true);
+						} 
+					},
+					params: {
+						contractId: '@contractId'
+					}
+				});
+			}
+
+			window.onload = createUploader;
+		</script>
+	</div>
+
+	}
+
