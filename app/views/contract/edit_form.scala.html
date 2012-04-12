@@ -1,4 +1,4 @@
-@(contractForm: Form[Contract])
+@(id: Long, contractForm: Form[Contract], errorMessage: Option[String] = None)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -10,8 +10,12 @@
 
 @main("Edit contract", "Edit a contract", "Contract") {
 
+	@if(errorMessage != None) {
+		<div class="error-message">@errorMessage</div>
+	}
+
 	@form_html(contractForm, 
-	routes.Contracts.update(contractForm.get.id.get), 
+	routes.Contracts.update(id), 
 	cancelAction = Some(routes.Contracts.all), 
 	uploadAction = Some(routes.Attachments.upload(contractForm.get.contractId)),
 	formLegend = "Edit a contract", 

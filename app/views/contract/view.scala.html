@@ -1,8 +1,12 @@
-@(contract: Contract, title: String, heading: String)
+@(contract: Contract, title: String, heading: String, errorMessage: Option[String] = None)
 
 @import helper._
 
 @main(title, title, nav="Contract") {
+
+	@if(errorMessage != None) {
+		<div class="error-message">@errorMessage</div>
+	}
 
 	@defining(contract.status) { cs => 
 		@cs match {
@@ -48,8 +52,12 @@
 		</div>
 
 			<ul id="edit_controls">
-					<li><a href="@routes.Contracts.edit(contract.id.get)">Edit</a>
-					<li id="delete"><a href="@routes.Contracts.delete(contract.id.get)">Delete</a>
+					<li><a href="@routes.Contracts.edit(contract.id.get)">Edit</a></li>
+					<li id="delete"><a onClick="return confirm('Are you sure you want to delete?'
+						@if(Attachment.getContractAttachments(contract.contractId).length > 0) {
+						+ '\n\nTHIS WILL DELETE ALL ATTACHMENTS, TOO!'
+						}
+						)" href="@routes.Contracts.delete(contract.id.get)">Delete</a></li>
 			</ul>
 
 

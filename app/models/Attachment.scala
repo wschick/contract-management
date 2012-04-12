@@ -8,10 +8,13 @@ case class Attachment(fileName: String, contractId: String) {
 
 object Attachment {
 
-	val attachmentDirectory = "/tmp/"
+	// This must end with a slash
+	val attachmentDirectory = "/tmp/Attachments/"
 
+	// This does not end with a slash
 	def contractDirectoryPath(contractId: String): String = { attachmentDirectory + contractId }
 
+	// This does not end with a slash
 	def attachmentPath(contractId: String, attachmentName: String): String = {
 		Attachment.contractDirectoryPath(contractId) + "/" + attachmentName
 	}
@@ -26,12 +29,12 @@ object Attachment {
 		if (attachmentNames != null) {
 			attachmentNames.foreach { name =>
 				{
-					println("Attachment name is " + name)
+					//println("Attachment name is " + name)
 					attachments ::= Attachment(name, contractId)
 				}
 			}
 		}
-		println(attachments)
+		//println(attachments)
 		return attachments
 	}
 

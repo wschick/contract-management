@@ -14,7 +14,7 @@
 			<tr>
 				<td> @contractType.name</td>
 				<td><a class="edit_link" href="@routes.ContractTypes.edit(contractType.id.get)">edit</a>
-				<a class="delete_link" href="@routes.ContractTypes.delete(contractType.id.get)">delete</a></td>
+				<a onClick="return confirmDelete()" class="delete_link" href="@routes.ContractTypes.delete(contractType.id.get)">delete</a></td>
 			</tr>
 		}
 		</table>

@@ -8,7 +8,7 @@
 		<ul>
 			@attachments.map{ attachment =>
 				<li><a href="@routes.Attachments.view(attachment.contractId, attachment.fileName)" target="_new">@attachment.fileName</a>
-					<a href="@routes.Attachments.delete(attachment.contractId, attachment.fileName, mode)">delete</a>
+					<a onClick="return confirmDelete()" href="@routes.Attachments.delete(attachment.contractId, attachment.fileName, mode)">delete</a>
 				</li>
 			}
 		</ul>

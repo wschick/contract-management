@@ -8,6 +8,7 @@ import play.api.data.Forms._
 import org.joda.time._
 import java.io.File
 import java.io.IOException
+import java.sql.SQLException
 
 import views._
 import anorm._
@@ -82,7 +83,7 @@ object Contracts extends Controller {
 			cancelledDate, 
 			//reminderPeriod, reminderPeriodUnits, 
 			lastModifyingUser, lastModifiedTime, companyId) => 
-				Contract(NotAssigned, contractId, name, description, mrc.toDouble, 
+				Contract(NotAssigned, contractId, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
 				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
@@ -140,19 +141,22 @@ object Contracts extends Controller {
 		)
 	}
 
+	// After creating a contract, go to the view page for what you just created.
 	def create = Action { implicit request =>
 		contractForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.contract.form(formWithErrors)),
 			contract => {
-				Contract.create(contract)
-				Ok(html.contract.view(contract, "Contact created", "You just created a contract:"))
+				val newId = Contract.create(contract)
+				Contract.findById(newId).map { existingContract =>
+					Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
+				}.getOrElse(NotFound)
 			}
 		)
 	}
 
   def edit(id: Long) = Action {
 		Contract.findById(id).map { existingContract =>
-			Ok(html.contract.edit_form(contractForm.fill(existingContract)))
+			Ok(html.contract.edit_form(id, contractForm.fill(existingContract)))
 		}.getOrElse(NotFound)
 	}
 
@@ -161,14 +165,26 @@ object Contracts extends Controller {
 			formWithErrors => {
 				Contract.findById(id).map { 
 					existingContract => {
-						println("Form error")
-						BadRequest(views.html.contract.form( formWithErrors))
+						BadRequest(views.html.contract.form(formWithErrors))
 					}
 				}.getOrElse(NotFound)
 			},
 			contract => {
-				Contract.update(id, contract)
-				Ok(views.html.contract.list(Contract.all(), filterForm))
+				// See if there will be a duplicate contract id
+				// TODO
+				Contract.findById(id).map { 
+					existingContract => {
+						try {
+							Contract.update(id, contract)
+							// If you changed the contractId (used for filing), change the location of attachments.
+							Attachments.changeContractId(existingContract.contractId, contract.contractId)
+							Ok(views.html.contract.list(Contract.all(), filterForm))
+						} catch {
+							case e =>
+								Ok(html.contract.edit_form(id, contractForm.bindFromRequest, errorMessage = Some("A problem: " + e.getMessage)))
+						}
+					}
+				}.getOrElse(NotFound)
 			}
 		)
 	}

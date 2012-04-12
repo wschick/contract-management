@@ -24,18 +24,18 @@ CREATE TABLE person (
 	name varchar(80) NOT NULL,
 	email varchar(80) NOT NULL,
 	telephone varchar(20),
-	company_id integer NOT NULL,
+	company_id integer NOT NULL
 );
 
 CREATE TABLE company (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	name varchar(50) NOT NULL,
-	primary_contact_id integer, 
+	primary_contact_id integer 
 );
 
 
 CREATE TABLE reminder (
-	id integer NOT NULL AUTO_INCREMENT,
+	id integer NOT NULL KEY AUTO_INCREMENT,
 	reminder_date date NOT NULL,
 	contract_id	integer NOT NULL,
 	sent boolean NOT NULL DEFAULT FALSE
@@ -51,11 +51,11 @@ CREATE TABLE reminder_person (
 -- 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	contract_id varchar(30) NOT NULL,
+	contract_id varchar(30) NOT NULL UNIQUE,
 	name varchar(200) NOT NULL,
 	description varchar(255),
-	mrc float NOT NULL,
-	nrc float NOT NULL,
+	mrc double NOT NULL,
+	nrc double NOT NULL,
 	currency_id bigint NOT NULL, 
 	a_end_id bigint NOT NULL, 
 	z_end_id bigint,

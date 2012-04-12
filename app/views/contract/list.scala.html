@@ -38,9 +38,7 @@
 				<td class="contract-links"> 
 					<a href="@routes.Contracts.view(contract.id.get)">View</a>
 					<a href="@routes.Contracts.edit(contract.id.get)">Edit</a>
-					@form(routes.Contracts.delete(contract.id.get)) {
-						<input type="submit" value="Delete">
-					}
+					<!--a onClick="return confirmDelete()" href="@routes.Contracts.delete(contract.id.get)">Delete</a-->
 				</td>
 			</tr>
 			}

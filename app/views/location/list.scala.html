@@ -18,7 +18,7 @@
 					<td> @location.code</td>
 					<td class="inner_display_column">@location.description</td>
 					<td><a class="edit_link" href="@routes.Locations.edit(location.id)">edit</a>
-						<a class="delete_link" href="@routes.Locations.delete(location.id)">delete</a></td>
+						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Locations.delete(location.id)">delete</a></td>
 				</tr>
 				}
 			</table>

@@ -14,21 +14,35 @@ import models.Attachment
 import models.Contract
 
 object Attachments extends Controller {
+
+	/**
+		@returns True if it could change the contract id, false if it could not
+		*/
+	def changeContractId(oldContractId: String, newContractId: String): Boolean = {
+		if (oldContractId != newContractId) {
+
+			val oldPath = Attachment.contractDirectoryPath(oldContractId)
+			val newPath = Attachment.contractDirectoryPath(newContractId)
+			// Complain if something is already at the new path.
+			val newDir = new File(newPath)
+			if (newDir.exists()) return false;
+
+			// Not a problem if old path doesn't exist. There may just be no attachments. Simply return.
+			val oldDir = new File(oldPath)
+			if (!oldDir.exists()) return true;
+
+			return oldDir.renameTo(newDir)
+			
+		} else return true
+	}
   
 	def upload(contractId: String) = Action(parse.temporaryFile) { implicit request =>
-		println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		//val contractId = request.queryString("contractId").head
 		val fileName = request.queryString("qqfile").head
-		//println(request)
-		//println("id: " + contractId)
-		//println("file name: " + fileName)
 		try {
-			request.body.moveTo(new File("/tmp/" + contractId + "/" + fileName))
-			//println("Replying ok")
+			request.body.moveTo(new File(Attachment.attachmentPath(contractId, fileName)))
 			Ok("{\"success\": true}")
 		} catch {
 			case e:IOException => {
-				//println("Got io exception. " + e.getMessage);
 				Ok("{\"error\": \"" + e.getMessage + "\"}")
 			}
 		}

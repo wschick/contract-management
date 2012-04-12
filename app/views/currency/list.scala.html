@@ -11,7 +11,7 @@
 			@currencies.map { currency =>
 				<li>
 					@currency.abbreviation <a class="edit_link" href="@routes.Currencies.edit(currency.id)">edit</a>
-					<a class="delete_link" href="@routes.Currencies.delete(currency.id)">delete</a>
+					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Currencies.delete(currency.id)">delete</a>
 				</li>
 			}
 		</ul>

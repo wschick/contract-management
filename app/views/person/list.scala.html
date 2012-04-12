@@ -22,7 +22,7 @@
 					<td class="inner_display_column">@person.telephone</td>
 					<td class="inner_display_column">@Company.nameById(person.companyId)</td>
 					<td><a class="edit_link" href="@routes.Persons.edit(person.id)">edit</a>
-						<a class="delete_link" href="@routes.Persons.delete(person.id)">delete</a></td>
+						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Persons.delete(person.id)">delete</a></td>
 				</tr>
 			}
 		</table>

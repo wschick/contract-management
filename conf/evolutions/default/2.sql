@@ -20,7 +20,6 @@ insert into company(id, name, primary_contact_id) values(1, 'Acme', 1);
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	--reminder_period, reminder_period_units, 
 	last_modifying_user, last_modified_time, company_id)
 	values (1, 'Tela1', 'Telesta Singapore line 1', 'Line between Sydney and Singapore', 
 		1000, 1000, 1, 2, 1, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1);
@@ -28,7 +27,6 @@ insert into contract(id, contract_id, name, description, mrc, nrc, currency_id,
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	--reminder_period, reminder_period_units, 
 	last_modifying_user, last_modified_time, company_id)
 	values (2, 'Tela2', 'Telesta Singapore line 2', 'Far warning', 
 		7500, 33.40, 1, 2, 1, '2012-01-01', 4, 1, 1, 0, 'wrk', '2012-03-20', 1);
@@ -36,7 +34,6 @@ insert into contract(id, contract_id, name, description, mrc, nrc, currency_id,
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	--reminder_period, reminder_period_units, 
 	last_modifying_user, last_modified_time, company_id)
 	values (3, 'Tela3', 'Telesta Singapore line 3', 'near warning', 
 		11000, 2333, 1, 2, 1, '2012-01-01', 4, 1, 10, 0, 'wrk', '2012-03-20', 1);
@@ -44,7 +41,6 @@ insert into contract(id, contract_id, name, description, mrc, nrc, currency_id,
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	--reminder_period, reminder_period_units, 
 	last_modifying_user, last_modified_time, company_id)
 	values (4, 'Tela4', 'Telesta Singapore line 4', 'Line between Sydney and Singapore', 
 		33000, 2500, 1, 2, 1, '2012-01-01', 1, 2, 30, 0, 'wrk', '2012-03-20', 1);

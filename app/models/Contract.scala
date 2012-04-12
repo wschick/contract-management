@@ -145,48 +145,52 @@ object Contract {
 	/** Create a contract in the database.
 
 		@param contract A contract object to be persisted. The unique database key will be provided automatically.
+		@return The id of the contract just created.
 		*/
-	def create(contract: Contract) = {
+	def create(contract: Contract): Long = {
 		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					insert into contract (contract_id, name, description, mrc, nrc, 
-					currency_id, a_end_id, z_end_id, start_date, term, term_units, 
-					cancellation_period, cancellation_period_units,
-					cancelled_date,
-					last_modifying_user, last_modified_time, company_id) 
-					values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
-					{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
-					{cancellation_period}, {cancellation_period_units}, 
-					{cancelled_date},
-					{last_modifying_user}, {last_modified_time}, {companyId})
-				"""
-				).on(
-				'contractId -> contract.contractId,
-				'name -> contract.name,
-				'description -> contract.description,
-				'mrc -> contract.mrc,
-				'nrc -> contract.nrc,
-				'currency_id -> contract.currencyId,
-				'a_end_id -> contract.aEnd.id,
-				'z_end_id -> contract.zEnd.id,
-				'start_date -> contract.startDate.toDate,
-				'term -> contract.term.length,
-				'term_units -> contract.term.units.value,
-				'cancellation_period -> contract.cancellationPeriod.length,
-				'cancellation_period_units -> contract.cancellationPeriod.units.value,
-				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
-				'last_modifying_user -> "unknown user",
-				'last_modified_time -> new Date,
-				'companyId -> contract.companyId
-			).executeUpdate()
+			{
+				SQL(
+					"""
+						insert into contract (contract_id, name, description, mrc, nrc, 
+						currency_id, a_end_id, z_end_id, start_date, term, term_units, 
+						cancellation_period, cancellation_period_units,
+						cancelled_date,
+						last_modifying_user, last_modified_time, company_id) 
+						values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
+						{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
+						{cancellation_period}, {cancellation_period_units}, 
+						{cancelled_date},
+						{last_modifying_user}, {last_modified_time}, {companyId})
+					"""
+					).on(
+					'contractId -> contract.contractId,
+					'name -> contract.name,
+					'description -> contract.description,
+					'mrc -> contract.mrc,
+					'nrc -> contract.nrc,
+					'currency_id -> contract.currencyId,
+					'a_end_id -> contract.aEnd.id,
+					'z_end_id -> contract.zEnd.id,
+					'start_date -> contract.startDate.toDate,
+					'term -> contract.term.length,
+					'term_units -> contract.term.units.value,
+					'cancellation_period -> contract.cancellationPeriod.length,
+					'cancellation_period_units -> contract.cancellationPeriod.units.value,
+					'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
+					'last_modifying_user -> "unknown user",
+					'last_modified_time -> new Date,
+					'companyId -> contract.companyId
+				).executeUpdate()
+				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
+			}
 		}
 	}
 
 	def update(id: Long, contract: Contract) {
 		println("updating id " + contract.id)
 		DB.withConnection { implicit connection =>
-			SQL(
+				SQL(
 				"""
 					update contract set contract_id={contractId}, name={name}, description={description}, 
 					mrc={mrc}, nrc={nrc}, currency_id={currency_id}, a_end_id={a_end_id}, z_end_id={z_end_id}, 
@@ -214,7 +218,7 @@ object Contract {
 				'last_modifying_user -> "unknown user",
 				'last_modified_time -> new Date,
 				'companyId -> contract.companyId
-			).executeUpdate()
+				).executeUpdate()
 		}
 	}
 					  
