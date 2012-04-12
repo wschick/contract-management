@@ -71,18 +71,15 @@ object Contracts extends Controller {
 			"cancellationPeriod" -> number,
 			"cancellationPeriodUnits" -> number,
 			"cancelledDate" -> optional(date),
-			//"reminderPeriod" -> optional(number),
-			//"reminderPeriodUnits" -> optional(number),
 			"lastModifyingUser" -> optional(text),
 			"lastModifiedTime" -> optional(date),
-			"companyId" -> longNumber
+			"companyId" -> longNumber,
+			"contractTypeId" -> longNumber
 		)
 		(
 			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
 			startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
-			cancelledDate, 
-			//reminderPeriod, reminderPeriodUnits, 
-			lastModifyingUser, lastModifiedTime, companyId) => 
+			cancelledDate, lastModifyingUser, lastModifiedTime, companyId, contractTypeId) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
@@ -92,8 +89,8 @@ object Contracts extends Controller {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
-				//reminderPeriod, reminderPeriodUnits, 
-				lastModifyingUser, lastModifiedTime, companyId)
+				lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get)
+				//TODO handle error condiditions better
 		)
 		(
 			(contract: Contract) => Some((
@@ -114,11 +111,10 @@ object Contracts extends Controller {
 					case Some(date) => Option(date.toDate)
 					case None => None
 				},
-				//contract.reminderPeriod,
-				//contract.reminderPeriodUnits,
 				contract.lastModifyingUser,
 				contract.lastModifiedTime,
-				contract.companyId))
+				contract.companyId,
+				contract.contractType.id))
 		)
 	)
 
@@ -148,7 +144,8 @@ object Contracts extends Controller {
 			contract => {
 				val newId = Contract.create(contract)
 				Contract.findById(newId).map { existingContract =>
-					Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
+					Redirect(routes.Contracts.view(newId))
+					//Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
 				}.getOrElse(NotFound)
 			}
 		)
@@ -170,7 +167,7 @@ object Contracts extends Controller {
 				}.getOrElse(NotFound)
 			},
 			contract => {
-				// See if there will be a duplicate contract id
+				// See if there will be a duplicate contract id and complain if so
 				// TODO
 				Contract.findById(id).map { 
 					existingContract => {
@@ -197,8 +194,21 @@ object Contracts extends Controller {
 	}
 
 	def delete(id: Long) = Action {
-		Contract.delete(id)
-		Redirect(routes.Contracts.filtered)
+		println("Delete " + id)
+		Contract.findById(id).map { existingContract =>
+			{
+				val result = Attachments.deleteAll(existingContract.contractId)
+				if (result == None) {
+					Contract.delete(id)
+					Redirect(routes.Contracts.filtered)
+				} else {
+					// We are currently only allowing delete from the view page.
+					Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, "", 
+						errorMessage = Some("Couldn't delete attachments: " + result)))
+					//Redirect(routes.Contracts.filtered)
+				}
+			}
+		}.getOrElse(NotFound)
 	}
 
 
@@ -206,8 +216,8 @@ object Contracts extends Controller {
 		println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		val contractId = request.queryString("contractId").head
 		val fileName = request.queryString("qqfile").head
-		println(request)
-		println("id: " + contractId)
+		{println(request)
+		kkkprintln("id: " + contractId)
 		println("file name: " + fileName)
 		try {
 			request.body.moveTo(new File("/tmp/" + contractId + "/" + fileName))

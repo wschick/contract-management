@@ -48,7 +48,7 @@ CREATE TABLE reminder_person (
 );
 
 
--- 0 = day, 1 = month, 2 = year
+-- For period units, 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	contract_id varchar(30) NOT NULL UNIQUE,
@@ -67,7 +67,8 @@ CREATE TABLE contract (
 	cancelled_date date,
 	last_modifying_user varchar(40),
 	last_modified_time datetime,
-	company_id integer NOT NULL
+	company_id integer NOT NULL,
+	contract_type_id integer NOT NULL
 );
 
 alter table contract add constraint fk_contract_currency_1 

@@ -2,8 +2,6 @@ Current status: Everything around contracts works, now I need to get contracts t
 
 To do:
 
-* If delete contract, delete uploads, too?
-* Maybe remove delete link from contract list.
 * In filter form, get filtering by status working
 * Finish contract filtering. On form submission, grab data, generate where clause and display. How to persist it? Cookie?
 * Get daily alerts working.

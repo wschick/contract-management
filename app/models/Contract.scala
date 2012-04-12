@@ -25,7 +25,8 @@ case class Contract(
 	//reminderPeriodUnits: Option[Int],
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
-	companyId: Long
+	companyId: Long,
+	contractType: ContractType
 	) {
 
 	def lastDay(): LocalDate = {
@@ -85,15 +86,16 @@ object Contract {
 		get[Option[Int]]("reminder_period_units") ~*/
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
-		get[Long]("company_id") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId => 
+		get[Long]("company_id") ~
+		get[Long]("contract_type_id") map {
+			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					lastModifyingUser, lastModifiedTime, companyId)
+					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId))
 		}
 	}	
 

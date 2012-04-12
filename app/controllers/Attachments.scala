@@ -12,6 +12,7 @@ import java.io.IOException
 
 import models.Attachment
 import models.Contract
+import FileHelper._
 
 object Attachments extends Controller {
 
@@ -39,6 +40,7 @@ object Attachments extends Controller {
 	def upload(contractId: String) = Action(parse.temporaryFile) { implicit request =>
 		val fileName = request.queryString("qqfile").head
 		try {
+			println("Moving new attachment to " + Attachment.attachmentPath(contractId, fileName))
 			request.body.moveTo(new File(Attachment.attachmentPath(contractId, fileName)))
 			Ok("{\"success\": true}")
 		} catch {
@@ -55,6 +57,21 @@ object Attachments extends Controller {
 			inline = true,
 			fileName = _ => name
 		)
+	}
+
+	/**
+		@param contractId Delete the attachments for this contract.
+		@return None if everything went fine, or an error message.
+	*/
+	def deleteAll(contractId: String): Option[String] = {
+		println("Deleting all attachments for " + contractId)
+		try {
+			Attachment.contractDirectory(contractId).deleteAll
+			println("Deletion worked ok")
+			return None
+		} catch {
+			case e => return Some(e.getMessage())
+		}
 	}
 
 	def delete(contractId: String, name: String, mode: String) = Action { implicit request =>	

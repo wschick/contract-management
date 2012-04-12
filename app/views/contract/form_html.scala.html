@@ -41,6 +41,13 @@
 		)
 
 		@select(
+			contractForm("contractTypeId"),
+			Company.options,
+			'_label -> "Contract Type", '_default -> "-- Choose a contract type --",
+			'_showConstraints -> false
+		)
+
+		@select(
 			contractForm("aEnd"),
 			Location.options,
 			'_label -> "A end", '_default -> "-- Choose a location --",

@@ -1,6 +1,8 @@
 package models
 
 import java.io.File
+import play.api.Play
+import play.api.Play.current
 
 case class Attachment(fileName: String, contractId: String) {
 	def fullPath(): String = { Attachment.attachmentPath(contractId, fileName) }
@@ -9,7 +11,7 @@ case class Attachment(fileName: String, contractId: String) {
 object Attachment {
 
 	// This must end with a slash
-	val attachmentDirectory = "/tmp/Attachments/"
+	val attachmentDirectory = Play.configuration.getString("attachment.path").getOrElse("/var/contracto") + "/"
 
 	// This does not end with a slash
 	def contractDirectoryPath(contractId: String): String = { attachmentDirectory + contractId }
@@ -18,6 +20,8 @@ object Attachment {
 	def attachmentPath(contractId: String, attachmentName: String): String = {
 		Attachment.contractDirectoryPath(contractId) + "/" + attachmentName
 	}
+
+	def contractDirectory(contractId: String): File = { new File(contractDirectoryPath(contractId)) }
 
 	def getContractAttachmentNames(contractId: String): Array[String] = {
 		return new File(attachmentDirectory + contractId).list
