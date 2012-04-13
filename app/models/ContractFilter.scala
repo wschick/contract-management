@@ -17,7 +17,8 @@ case class ContractFilter(
 	showActive: Boolean = true, // Active contracts
 	showCancelled: Boolean = false, // Cancelled contracts
 	earliestStartDate: Option[LocalDate] = None,
-	latestStartDate: Option[LocalDate] = None
+	latestStartDate: Option[LocalDate] = None,
+	contractTypeIds: List[Long] = List[Long]()
 	) 
 {
 
@@ -27,6 +28,7 @@ case class ContractFilter(
 	}
 
 	def sqlCondition: String = {
+		println(">>>>> Making SQL condition >>>>>>")
 		var conditionList = List[String]();
 		//if (showOk) { conditionList ::= " status=" + OK.value }
 		//if (showNearWarning) { conditionList = "status=" + NEARWARNING.value :: conditionList }
@@ -38,8 +40,16 @@ case class ContractFilter(
 		//conditionList = List("(" + makeConditionString(conditionList, "OR") + ")")
 		//println(">>>>>>>>>>>>>>>>>Make into list:  " + conditionList)
 
-		if (!showActive) { println("showactive"); conditionList = "cancelled_date IS NOT NULL" :: conditionList }
-		if (!showCancelled) { println("show cancelled"); conditionList = "cancelled_date IS NULL" :: conditionList }
+		// Make contract type condition
+		println("Contract type ids: " + contractTypeIds);
+		if (contractTypeIds.length > 0) {
+			contractTypeIds.foreach(contractTypeId => conditionList ::= " contract_type_id=" + contractTypeId)
+			conditionList = List("(" + makeConditionString(conditionList, "OR") + ")")
+		}
+		
+
+		if (!showActive) { println("don't show showactive"); conditionList = "cancelled_date IS NOT NULL" :: conditionList }
+		if (!showCancelled) { println("don't show cancelled"); conditionList = "cancelled_date IS NULL" :: conditionList }
 		earliestStartDate.map(date => conditionList ::= "start_date>'" + date + "'")
 		println("latest start date " + latestStartDate)
 		latestStartDate.map(date => conditionList ::= "start_date<'" + date + "'")

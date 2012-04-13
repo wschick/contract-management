@@ -12,7 +12,7 @@
 
 		@checkbox(
 		filterForm("showOk"), '_label -> "", '_text -> "OK", 
-		'_showConstraints -> false, '_class -> "contract-filter", '_text -> "OK"
+		'_showConstraints -> false, '_class -> "contract-filter", 'disabled -> "true"
 		)
 
 		@checkbox(
@@ -44,7 +44,7 @@
 	<fieldset id=filter-contract-type>
 		<legend>Contract types</legend>
 				@multiSelect(
-					filterForm("contractType"), ContractType.options, 
+					filterForm("contractTypes_"), ContractType.options, 
 					'_label -> None, '_default -> "Colo",
 					'_showConstraints -> false, 
 					'_multiple -> "multiple"

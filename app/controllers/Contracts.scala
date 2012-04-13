@@ -36,21 +36,23 @@ object Contracts extends Controller {
 			"showActive" -> boolean,
 			"showCancelled" -> boolean,
 			"earliestStartDate" -> optional(date),
-			"lastestStartDate" -> optional(date)
+			"lastestStartDate" -> optional(date),
+			"contractTypes_" -> list(longNumber)
 			)
 		(
 			(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, 
-				earliestStartDate, latestStartDate) =>
-			ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
+				earliestStartDate, latestStartDate, contractTypes_) =>
+			{println(contractTypes_); ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
 				earliestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None), 
-				latestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None))
+				latestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None),
+				contractTypes_)}
 		)
 		(
 			(filter: ContractFilter) => Some((
 			filter.showOk, filter.showNearWarning, filter.showFarWarning,
 			filter.showTooLate, filter.showActive, filter.showCancelled,
 			filter.earliestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
-			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None)))
+			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None), filter.contractTypeIds))
 		)
 	)
 
@@ -133,10 +135,15 @@ object Contracts extends Controller {
 	}
 
 	def filtered = Action { implicit request =>
-    Ok(views.html.contract.list(Contract.all(), filterForm))
-		filterForm.bindFromRequest.fold(
+    //Ok(views.html.contract.list(Contract.all(), filterForm))
+		println("<><><><> The request <><><><><>")
+		println(request.body)
+		println("<><><><> End request <><><><><>")
+		filterForm.bind(RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
+		//filterForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.contract.list(Contract.all(), formWithErrors)),
 			filter => {
+				println("In Contracts, the filter is " + filter)
     		Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
 			}
 		)

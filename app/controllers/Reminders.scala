@@ -121,6 +121,7 @@ object Reminders extends Controller {
     Ok(views.html.reminder.list(Reminder.all(), reminderForm))
 	}
 
+	/*
 	def translateToPlayInput(inputMap:Map[String, Seq[String]])= { 
 			inputMap.flatMap ({ 
 				case (key, value) if value.length == 1 => {
@@ -133,6 +134,7 @@ object Reminders extends Controller {
 			}
 		})
 	}
+	*/
 
 
 
@@ -140,12 +142,12 @@ object Reminders extends Controller {
 		println(">>>> Start of request")
 		println("the request: " +request.body)
 		println("url encoded: " +request.body.asFormUrlEncoded)
-		println("translated: " + translateToPlayInput(request.body.asFormUrlEncoded.get))
+		println("translated: " + RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get))
 		println("------")
 		println(reminderForm.bindFromRequest)
 		// Alternative binding
 		
-		reminderForm.bind(translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
+		reminderForm.bind(RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
 		//reminderForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.reminder.list(Reminder.all(), formWithErrors)),
 			reminder => {
