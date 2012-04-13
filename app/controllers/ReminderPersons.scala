@@ -11,7 +11,7 @@ object ReminderPersons extends Controller {
   
 	/** Show everything */
 	def all = Action {
-    Ok(views.html.ReminderPerson.list(ReminderPerson.all()))
+    Ok(views.html.reminder_person.list(ReminderPerson.all()))
 	}
 
 	/** Delete the location. */

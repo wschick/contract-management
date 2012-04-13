@@ -42,7 +42,7 @@
 
 		@select(
 			contractForm("contractTypeId"),
-			Company.options,
+			ContractType.options,
 			'_label -> "Contract Type", '_default -> "-- Choose a contract type --",
 			'_showConstraints -> false
 		)
@@ -94,14 +94,14 @@
 		)
 
 		@inputText(
-			contractForm("term"),
-			'_label -> "Term", 'size -> 3
+			contractForm("term.termLength"),
+			'_label -> "Term Length", 'size -> 3
 		)
 
 		@select(
-			contractForm("termUnits"),
+			contractForm("term.termUnits"),
 			TimePeriodUnits.options,
-			'_label -> "term units", '_default -> "-- Choose term units --",
+			'_label -> "Term units", '_default -> "-- Choose term units --",
 			'_showConstraints -> false
 		)
 

@@ -1,29 +1,29 @@
-@(level: ContractStatus = OK)(body: Html)
+@(level: ContractStatus = OK, divClass: String = "notice")(body: Html)
  
 @import models.ContractStatus
 
 @level match {
     
   case FARWARNING => {
-    <div class="far-warning">
+    <div class="@divClass far-warning">
       @body
     </div>
   }
 
   case NEARWARNING => {
-    <div class="near-warning">
+    <div class="@divClass near-warning">
       @body
     </div>
   }
     
   case TOOLATE => {
-    <div class="too-late">
+    <div class="@divClass too-late">
       @body
     </div>
   }
     
   case _ => {
-    <div>
+    <div class="@divClass">
       @body
     </div>
   }

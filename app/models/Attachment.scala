@@ -39,7 +39,7 @@ object Attachment {
 			}
 		}
 		//println(attachments)
-		return attachments
+		return attachments.sortBy(_.fileName)
 	}
 
 }

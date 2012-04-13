@@ -7,7 +7,7 @@
 	@form(action=routes.Contracts.filtered, 'class -> "filter-form") {
 
 
-	<fieldset id="contract-status">
+	<fieldset id="filter-contract-status">
 		<legend>Show Contracts with Status</legend>
 
 		@checkbox(
@@ -40,6 +40,15 @@
 		'_showConstraints -> false, '_class -> "contract-filter"
 		)
 
+	</fieldset>
+	<fieldset id=filter-contract-type>
+		<legend>Contract types</legend>
+				@multiSelect(
+					filterForm("contractType"), ContractType.options, 
+					'_label -> None, '_default -> "Colo",
+					'_showConstraints -> false, 
+					'_multiple -> "multiple"
+				)
 	</fieldset>
 
 	<fieldset id="filter-dates">

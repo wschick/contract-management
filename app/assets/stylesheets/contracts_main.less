@@ -134,6 +134,7 @@ dl.form dt
 	background: #ccc;
 	text-align: right;
 	padding: 7px;
+	margin-top: 20px;
 }
 
 table.locations { padding-bottom: 20px;}
@@ -178,15 +179,26 @@ p.contract-filter {
 	font-weight: bold;
 }
 
-#contract-status {
-	float: left;
+#filter-contract-status {
+	//float: left;
 	width: 50em;
+}
+
+#filter-contract-type {
+	float: left;
+	width: 7em;
+	height: 5.2em;
+	margin-top: 7px;
+	margin-right: 0.5em;
 }
 
 #filter-dates {
 	margin-top: 2px;
 	float: left;
-	width: 50em;
+	width: 41em;
+	padding-bottom: -10px;
+	height: 5.2em;
+	margin-top: 7px;
 }
 
 form.filter-form div.actions {
@@ -212,11 +224,21 @@ dl.contract-filter dd {
 		padding: 5px 0;
 }
 
+dl#contractType_field {
+	//padding-top: 1em;
+	margin-top: 0;
+	margin-left: -1.5em;
+}
+
 dl.date-filter {
-	margin-top: -5px;
-	margin-bottom: -5px;
+//	margin-top: -5px;
+	margin-bottom: 10px;
 	float: left;
-	padding-right: 20px;
+	padding-right: 17px;
+}
+
+dl#latestStartDate_field {
+	//padding-right: 0px;
 }
 
 dl.date-filter dt {
@@ -329,4 +351,12 @@ div.error-message {
 	color: red;
 	font-size: 1.5em;
 	margin-bottom: 20px;
+}
+
+div.clearfix {
+	margin: 10px;
+}
+
+div.notice {
+	width: 60%;
 }

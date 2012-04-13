@@ -16,6 +16,7 @@ import anorm._
 import models.Attachment
 import models.Contract
 import models.ContractFilter
+import models.ContractType
 import models.Location
 import models.Term
 import models.TimePeriodUnits
@@ -66,8 +67,9 @@ object Contracts extends Controller {
 			"aEnd" -> longNumber,
 			"zEnd" -> longNumber,
 			"startDate" -> date,
-			"term" -> number,
-			"termUnits" -> number,
+			"term" -> mapping("termLength" -> number, "termUnits" -> number)
+				((termLength, termUnits) => Term(termLength, TimePeriodUnits.create(termUnits)))
+				((t: Term) => Some((t.length, t.units.value))),
 			"cancellationPeriod" -> number,
 			"cancellationPeriodUnits" -> number,
 			"cancelledDate" -> optional(date),
@@ -78,11 +80,13 @@ object Contracts extends Controller {
 		)
 		(
 			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
-			startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
+			startDate, term, cancellationPeriod, cancellationPeriodUnits,
+			//startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
 			cancelledDate, lastModifyingUser, lastModifiedTime, companyId, contractTypeId) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
-				new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
+				new LocalDate(startDate), term, 
+				//new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
 				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 				//cancelledDate.map(date => Some(new LocalDate(date)).getOrElse(None)),
 				cancelledDate match {
@@ -103,8 +107,9 @@ object Contracts extends Controller {
 				contract.aEnd.id, 
 				contract.zEnd.id,
 				contract.startDate.toDate,
-				contract.term.length,
-				contract.term.units.value,
+				contract.term,
+				//contract.term.length,
+				//contract.term.units.value,
 				contract.cancellationPeriod.length,
 				contract.cancellationPeriod.units.value,
 				contract.cancelledDate match {
@@ -114,7 +119,7 @@ object Contracts extends Controller {
 				contract.lastModifyingUser,
 				contract.lastModifiedTime,
 				contract.companyId,
-				contract.contractType.id))
+				contract.contractType.id.get))
 		)
 	)
 
@@ -140,7 +145,7 @@ object Contracts extends Controller {
 	// After creating a contract, go to the view page for what you just created.
 	def create = Action { implicit request =>
 		contractForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(html.contract.form(formWithErrors)),
+			formWithErrors => { println(formWithErrors); BadRequest(html.contract.new_form(formWithErrors))},
 			contract => {
 				val newId = Contract.create(contract)
 				Contract.findById(newId).map { existingContract =>
@@ -211,25 +216,4 @@ object Contracts extends Controller {
 		}.getOrElse(NotFound)
 	}
 
-
-	/*def upload = Action(parse.temporaryFile) { implicit request =>
-		println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		val contractId = request.queryString("contractId").head
-		val fileName = request.queryString("qqfile").head
-		{println(request)
-		kkkprintln("id: " + contractId)
-		println("file name: " + fileName)
-		try {
-			request.body.moveTo(new File("/tmp/" + contractId + "/" + fileName))
-			println("Replying ok")
-			Ok("{\"success\": true}")
-		} catch {
-			case e:IOException => {
-				println("Got io exception. " + e.getMessage);
-				Ok("{\"error\": \"" + e.getMessage + "\"}")
-			}
-		}
-	}
-	*/
-  
 }

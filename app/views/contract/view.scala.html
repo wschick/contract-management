@@ -29,19 +29,21 @@
 	}
 
 		<div class="data_table">
-			<table id="contract_summary" border=1>
+			<table id="contract_summary">
 				<tbody>
+					<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
 					<tr><td>Contract id</td><td>@contract.contractId</td></tr>
 					<tr><td>Name</td><td>@contract.name</td></tr>
-					<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
 					<tr><td>Description</td><td>@contract.description</td></tr>
-					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
-					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td>Contract type</td><td>@contract.contractType.name</td></tr>
 					<tr><td>A end</td><td>@contract.aEnd.longString</td></tr>
 					<tr><td>Z end</td><td>@contract.zEnd.longString</td></tr>
 					<tr><td class="blank-line"></td><td class="blank-line"></td>
+					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td class="blank-line"></td><td class="blank-line"></td>
 					<tr><td>Start date</td><td>@contract.startDate</td></tr>
-					<tr><td>Term</td><td>@contract.term (@contract.lastDay)</td></tr>
+					<tr><td>Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
 					<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
 					<tr><td class="blank-line"></td><td class="blank-line"></td>
 					<tr><td>Status</td><td>@contract.status.name</td></tr>

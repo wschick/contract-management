@@ -21,8 +21,6 @@ case class Contract(
 	term: Term,
 	cancellationPeriod: Term,
 	cancelledDate: Option[LocalDate],
-	//reminderPeriod: Option[Int],
-	//reminderPeriodUnits: Option[Int],
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
 	companyId: Long,
@@ -95,7 +93,8 @@ object Contract {
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId))
+					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get)
+				//TODO this will blow up if it can't find the contractt type
 		}
 	}	
 
@@ -154,16 +153,16 @@ object Contract {
 			{
 				SQL(
 					"""
-						insert into contract (contract_id, name, description, mrc, nrc, 
-						currency_id, a_end_id, z_end_id, start_date, term, term_units, 
-						cancellation_period, cancellation_period_units,
-						cancelled_date,
-						last_modifying_user, last_modified_time, company_id) 
-						values ({contractId}, {name}, {description}, {mrc}, {nrc}, 
-						{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
-						{cancellation_period}, {cancellation_period_units}, 
-						{cancelled_date},
-						{last_modifying_user}, {last_modified_time}, {companyId})
+						insert into contract (
+							contract_id, name, description, mrc, nrc, 
+							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
+							cancellation_period, cancellation_period_units, cancelled_date,
+							last_modifying_user, last_modified_time, company_id, contract_type_id) 
+						values (
+							{contractId}, {name}, {description}, {mrc}, {nrc}, 
+							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
+							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
+							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id})
 					"""
 					).on(
 					'contractId -> contract.contractId,
@@ -182,7 +181,8 @@ object Contract {
 					'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
 					'last_modifying_user -> "unknown user",
 					'last_modified_time -> new Date,
-					'companyId -> contract.companyId
+					'companyId -> contract.companyId,
+					'contract_type_id -> contract.contractType.id
 				).executeUpdate()
 				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 			}
@@ -190,7 +190,7 @@ object Contract {
 	}
 
 	def update(id: Long, contract: Contract) {
-		println("updating id " + contract.id)
+		println("updating id " + id)
 		DB.withConnection { implicit connection =>
 				SQL(
 				"""
@@ -199,7 +199,7 @@ object Contract {
 					start_date={start_date}, term={term}, term_units={term_units},
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
 					cancelled_date={cancelled_date}, last_modifying_user={last_modifying_user}, 
-					last_modified_time={last_modified_time}, company_id={companyId} where id={id}
+					last_modified_time={last_modified_time}, company_id={companyId}, contract_type_id={contract_type_id} where id={id}
 				"""
 				).on(
 				'id -> id,
@@ -219,7 +219,8 @@ object Contract {
 				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
 				'last_modifying_user -> "unknown user",
 				'last_modified_time -> new Date,
-				'companyId -> contract.companyId
+				'companyId -> contract.companyId,
+				'contract_type_id -> contract.contractType.id
 				).executeUpdate()
 		}
 	}

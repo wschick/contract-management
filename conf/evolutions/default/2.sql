@@ -17,9 +17,9 @@ insert into person(id, name, email, telephone, company_id) values(3, 'John', 'me
 
 insert into company(id, name, primary_contact_id) values(1, 'Acme', 1);
 
-insert into contract_type(id, name) values(1, "Line")
-insert into contract_type(id, name) values(2, "Colo")
-insert into contract_type(id, name) values(3, "Support")
+insert into contract_type(id, name) values(1, "Line");
+insert into contract_type(id, name) values(2, "Colo");
+insert into contract_type(id, name) values(3, "Support");
 
 insert into contract(id, contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,

@@ -22,20 +22,20 @@ object ContractTypes extends Controller {
 
 	/** Show all the contract types. */
 	def all = Action {
-    Ok(views.html.ContractType.list(ContractType.all(), contractTypeForm))
+    Ok(views.html.contract_type.list(ContractType.all(), contractTypeForm))
 	}
 
   //def form = Action {
-  //  Ok(html.ContractType.form(contractTypeForm))
+  //  Ok(html.contract_type.form(contractTypeForm))
   //}
 
 	/** Handle a request to make a new contract type */
 	def create = Action { implicit request =>
 		contractTypeForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(html.ContractType.list(ContractType.all(), formWithErrors)),
+			formWithErrors => BadRequest(html.contract_type.list(ContractType.all(), formWithErrors)),
 			contractType => {
 				ContractType.create(contractType)
-				Ok(html.ContractType.list(ContractType.all(), contractTypeForm))
+				Ok(html.contract_type.list(ContractType.all(), contractTypeForm))
 			}
 		)
 	}
@@ -43,7 +43,7 @@ object ContractTypes extends Controller {
 	/** Put up a form so the user can update the values */
   def edit(id: Long) = Action {
 		ContractType.findById(id).map { existingContractType =>
-			Ok(html.ContractType.edit(existingContractType, contractTypeForm.fill(existingContractType)))
+			Ok(html.contract_type.edit(existingContractType, contractTypeForm.fill(existingContractType)))
 		}.getOrElse(NotFound)
 	}
 
@@ -52,19 +52,19 @@ object ContractTypes extends Controller {
 			formWithErrors => {
 				ContractType.findById(id).map { 
 					existingContractType =>
-						BadRequest(html.ContractType.edit( existingContractType, formWithErrors))
+						BadRequest(html.contract_type.edit( existingContractType, formWithErrors))
 				}.getOrElse(NotFound)
 			},
 			contractType => {
 				ContractType.update(id, contractType)
-				Ok(html.ContractType.list(ContractType.all(), contractTypeForm))
+				Ok(html.contract_type.list(ContractType.all(), contractTypeForm))
 			}
 		)
 	}
 
 	//def viewContractType(id: Long) = Action { implicit request =>
 //		ContractType.findById(id).map { existingcontractType =>
-//			Ok(html.ContractType.contract_types_list(ContractType.all(), contractTypeForm))
+//			Ok(html.contract_type.contract_types_list(ContractType.all(), contractTypeForm))
 //		}.getOrElse(NotFound)
 //	}
 
