@@ -1,4 +1,4 @@
-@(locationForm: Form[(String, String)], 
+@(locationForm: Form[(String, String, Option[String])], 
 	formAction: Call, 
 	cancelAction: Option[Call] = None, 
 	formLegend: String, 
@@ -21,6 +21,9 @@
 			'_showConstraints -> false, 'size -> 5, 'maxlength -> 5)
 
 			@textarea(locationForm("description"), '_class -> "form", '_label -> "Description", 
+			'_showConstraints -> false, 'rows -> 2, 'cols -> 50)
+
+			@textarea(locationForm("address"), '_class -> "form", '_label -> "Address", 
 			'_showConstraints -> false, 'rows -> 2, 'cols -> 50)
 
 		</fieldset>

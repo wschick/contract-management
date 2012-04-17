@@ -10,7 +10,8 @@ CREATE TABLE currency (
 CREATE TABLE location (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	code varchar(5) NOT NULL,
-	description varchar(100) NOT NULL
+	description varchar(100) NOT NULL,
+	address varchar(100) 
 );
 
 CREATE TABLE contract_type (

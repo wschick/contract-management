@@ -6,10 +6,10 @@ insert into currency(id, abbreviation) values (1, 'USD');
 insert into currency(id, abbreviation) values (2, 'GBP');
 
 insert into location(id, code, description) values (1, ' NA', 'None'); 
-insert into location(id, code, description) values (2, 'WDC1', 'DC office');
+insert into location(id, code, description, address) values (2, 'WDC1', 'DC office', '529 14th Street NW, Washington, DC 2xsxx');
 insert into location(id, code, description) values (3, 'WDC2', 'Dept. of Labor Lockup');
-insert into location(id, code, description) values (4, 'WDC3', 'Dept. of Commerce Lockup');
-insert into location(id, code, description) values (5, 'WDC6', 'CoreSite colo');
+insert into location(id, code, description, address) values (4, 'WDC3', 'Dept. of Commerce Lockup', '200 14th Street NW, Washtingon, DC');
+insert into location(id, code, description, address) values (5, 'WDC6', 'CoreSite colo', '1275 K Street NW, Washington, DC');
 
 insert into person(id, name, email, telephone, company_id) values(1, 'Abbot', 'abbot@funny', '4555', 1);
 insert into person(id, name, email, telephone, company_id) values(2, 'Costello', 'me@nowhere', Null, 1);

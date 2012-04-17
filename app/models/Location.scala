@@ -7,7 +7,7 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
 
-case class Location(id: Long, code: String, description: String) {
+case class Location(id: Long, code: String, description: String, address: Option[String]) {
 
 	def longString: String = {
 		code + " (" + description + ")"
@@ -20,8 +20,9 @@ object Location {
 	val location = {
 		get[Long]("id") ~ 
 		get[String]("code") ~
-		get[String]("description") map {
-			case id~code~description => Location(id, code, description)
+		get[String]("description") ~
+		get[Option[String]]("address") map {
+			case id~code~description~address => Location(id, code, description, address)
 		}
 	}	
 
@@ -47,11 +48,12 @@ object Location {
 	}
 			  
 	/** Create a location from the form submission. */
-	def create(code: String, description: String) {
+	def create(code: String, description: String, address: Option[String]) {
 		DB.withConnection { implicit c =>
-			SQL("insert into location (code, description) values ({code}, {description})").on(
+			SQL("insert into location (code, description, address) values ({code}, {description}, {address})").on(
 				'code -> code,
-				'description -> description
+				'description -> description,
+				'address -> address
 			).executeUpdate()
 		}
 	}
@@ -63,16 +65,17 @@ object Location {
 		@param description A description of the location.
 		
 		*/
-	def update(id: Long, code: String, description: String) {
+	def update(id: Long, code: String, description: String, address: Option[String]) {
 		DB.withConnection { implicit connection =>
 			SQL(
 				"""
-					update location set code={code}, description={description} where id={id}
+					update location set code={code}, description={description}, address={address} where id={id}
 				"""
 				).on(
 				'id -> id,
 				'code -> code,
-				'description -> description
+				'description -> description,
+				'address -> address
 			).executeUpdate()
 		}
 	}

@@ -12,7 +12,8 @@ object Locations extends Controller {
 	def locationForm = Form(
 		tuple (
 			"code" -> nonEmptyText,
-			"description" -> nonEmptyText
+			"description" -> nonEmptyText,
+			"address" -> optional(text)
 		)
 	)
 
@@ -26,8 +27,8 @@ object Locations extends Controller {
 		locationForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.location.list(Location.all(), formWithErrors)),
 			locationTuple => {
-				val (code, description) = locationTuple
-				Location.create(code, description)
+				val (code, description, address) = locationTuple
+				Location.create(code, description, address)
 				Redirect(routes.Locations.all)
 			}
 		)
@@ -35,8 +36,8 @@ object Locations extends Controller {
 
 	/** Put up a form so the user can update the values */
   def edit(id: Long) = Action {
-		Location.findById(id).map { existingLocation =>
-			Ok(views.html.location.edit(existingLocation, locationForm.fill(existingLocation.code, existingLocation.description)))
+		Location.findById(id).map { theLocation =>
+			Ok(views.html.location.edit(theLocation, locationForm.fill(theLocation.code, theLocation.description, theLocation.address)))
 		}.getOrElse(NotFound)
 	}
 
@@ -51,8 +52,8 @@ object Locations extends Controller {
 				}.getOrElse(NotFound)
 			},
 			locationTuple => {
-				val (code, description) = locationTuple
-				Location.update(id, code, description)
+				val (code, description, address) = locationTuple
+				Location.update(id, code, description, address)
 				Ok(views.html.location.list(Location.all(), locationForm))
 			}
 		)

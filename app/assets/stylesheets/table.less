@@ -1,3 +1,43 @@
+// THIS should not be necessary because it is defined in the main file.
+@lightbackground: #FDF7D7;
+
+.bordered_lines {
+	border-bottom: 1px solid gray
+}
+
+.inner_column {
+	text-align: left; 
+	padding: 5px;
+}
+
+.hilight_column {
+	background: @lightbackground;
+	padding: 0 20px;
+}
+
+/******** LOCATIONS ************/
+table.locations { 
+	
+	padding-bottom: 20px;
+	
+	.location_code, .address {
+		.hilight_column
+	}
+
+	th, td {
+		.bordered_lines;
+	}
+
+	.inner_display_column { 
+		.inner_column;
+	}
+
+}
+
+a.edit_link {
+	margin-left: 15px;
+}
+
 
 table.contract_list { border: 1px solid gray; }
 
@@ -65,10 +105,6 @@ td.blank-line {
 	height: 20px;
 }
 
-table.contract-types {
-	margin-bottom: 20px;
-}
-
 td.contract-links {
 	background-image: none !important;
 	background-color: white;
@@ -97,3 +133,28 @@ th.header {
 th.headerSortDown {
 	background-color: blue;
 }
+
+
+/**************** PERSONS ********************/
+
+table.persons {
+
+	th, td {
+		.bordered_lines;
+	}
+
+	.inner_display_column { 
+		.inner_column;
+	}
+
+	.name {
+		.hilight_column;
+	}
+
+}
+
+/**************** CONTRACT TYPES ********************/
+table.contract-types {
+	margin-bottom: 20px;
+}
+

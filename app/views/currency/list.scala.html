@@ -7,10 +7,10 @@
 	@if(currencies.isEmpty) {
 		<h3>No currencies.</h3>
 	} else {
-		<ul>
+		<ul class="currencies">
 			@currencies.map { currency =>
-				<li>
-					@currency.abbreviation <a class="edit_link" href="@routes.Currencies.edit(currency.id)">edit</a>
+				<li> @currency.abbreviation 
+					<a class="edit_link" href="@routes.Currencies.edit(currency.id)">edit</a>
 					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Currencies.delete(currency.id)">delete</a>
 				</li>
 			}

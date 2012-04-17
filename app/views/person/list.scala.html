@@ -9,18 +9,18 @@
 	} else {
 		<table class="persons">
 			<tr>
-				<th>Name</th>
-				<th class="inner_display_column">Email</th>
-				<th class="inner_display_column">Telephone</th>
-				<th class="inner_display_column">Company
+				<th class="name">Name</th>
+				<th class="inner_display_column email">Email</th>
+				<th class="inner_display_column telephone">Telephone</th>
+				<th class="inner_display_column company">Company
 				<th><th>
 			</tr>
 			@persons.map { person =>
 				<tr>
-					<td> @person.name</td>
-					<td class="inner_display_column">@person.email</td>
-					<td class="inner_display_column">@person.telephone</td>
-					<td class="inner_display_column">@Company.nameById(person.companyId)</td>
+					<td class="name"> @person.name</td>
+					<td class="inner_display_column email">@person.email</td>
+					<td class="inner_display_column telephone">@person.telephone</td>
+					<td class="inner_display_column company"><a href="@routes.Companies.edit(person.companyId)">@Company.nameById(person.companyId)</a></td>
 					<td><a class="edit_link" href="@routes.Persons.edit(person.id)">edit</a>
 						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Persons.delete(person.id)">delete</a></td>
 				</tr>
