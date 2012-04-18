@@ -189,7 +189,9 @@ object Contracts extends Controller {
 							Contract.update(id, contract)
 							// If you changed the contractId (used for filing), change the location of attachments.
 							Attachments.changeContractId(existingContract.contractId, contract.contractId)
-							Ok(views.html.contract.list(Contract.all(), filterForm))
+							//TODO should redirect to view page or list, depending on where you came from
+							Redirect(routes.Contracts.all)
+							//Ok(views.html.contract.list(Contract.all(), filterForm))
 						} catch {
 							case e =>
 								Ok(html.contract.edit_form(id, contractForm.bindFromRequest, errorMessage = Some("A problem: " + e.getMessage)))
