@@ -2,21 +2,22 @@
 
 @import helper._
 
-@main("Contracts", "Contracts", "Contracts") {
+@main("Contracts", "Contracts", "contracts") {
 
 	<!--table class="contract_list"-->
 	<!--table class="sortable"-->
-	<table class="contract_list" id="contracts">
+	<table class="contracts" id="contracts">
 		<thead>
 		<tr>
 			<th class="contract_id">Contract Id</td>
 			<th>Name</th>
 			<!--th class="contract_name">Name</th-->
-			<th class="cost {'sorter':'cost'}">MRC</th>
-			<th class="cost {'sorter':'cost'}">NRC</th>
-			<th class="location_code">Locations</th>
-			<th class="days_to_cancellation">Cancel in</th>
-			<th class="links {sorter: false}"></th>
+			<th class="inner_display_column cost {'sorter':'cost'}">MRC</th>
+			<th class="inner_display_column cost {'sorter':'cost'}">NRC</th>
+			<th class="inner_display_column location_code">Locations</th>
+			<th class="inner_display_column days_to_cancellation">Days to cancel</th>
+			<th class="attention"></th>
+			<th class="inner_display_column links {sorter: false}"></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -26,16 +27,19 @@
 
 				<tr class="@status">
 				<td class="contract_id">@Company.findById(contract.companyId).get.name @contract.contractId</td>
-				<td>@contract.name</td>
-				<td>@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
-				<td>@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
-				<td>@contract.aEnd.code<br/>@contract.zEnd.code</td>
-				<td class="days-to-cancel">
+				<td class="inner_display_column">@contract.name</td>
+				<td class="inner_display_column">@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
+				<td class="inner_display_column">@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
+				<td class="inner_display_column">@contract.aEnd.code<br/>@contract.zEnd.code</td>
+				<td class="inner_display_column days-to-cancel">
 					@if(contract.status != CANCELLED) { 
 					@contract.daysUntilCancellationDate 
 					} 
 				</td>
-				<td class="contract-links"> 
+				<td class="attention">@if(contract.attention!=None){
+					<a class="attention" href="">!<span>@contract.attention</span></a>
+					}else{}</td>
+				<td class="inner_display_column contract-links"> 
 					<a href="@routes.Contracts.view(contract.id.get)">View</a>
 					<a href="@routes.Contracts.edit(contract.id.get)">Edit</a>
 					<!--a onClick="return confirmDelete()" href="@routes.Contracts.delete(contract.id.get)">Delete</a-->

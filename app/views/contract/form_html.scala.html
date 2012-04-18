@@ -35,10 +35,16 @@
 			'_label -> "Name", 'size -> 40
 		)
 
-		@inputText(
-			contractForm("description"),
-			'_label -> "Description", 'size -> 40
+		@textarea(
+			contractForm("decription"),
+			'_label -> "Description", 'rows -> 2, 'cols -> 40
 		)
+
+		@textarea(
+			contractForm("attention"),
+			'_label -> "Notes for attention", 'rows -> 2, 'cols -> 40
+		)
+
 
 		@select(
 			contractForm("contractTypeId"),
@@ -106,12 +112,12 @@
 		)
 
 		@inputText(
-			contractForm("cancellationPeriod"),
+			contractForm("cancellation.len"),
 			'_label -> "Cancellation Period", 'size -> 3
 		)
 
 		@select(
-			contractForm("cancellationPeriodUnits"),
+			contractForm("cancellation.units"),
 			TimePeriodUnits.options,
 			'_label -> "cancellation period units", '_default -> "-- Choose cancellation period units --",
 			'_showConstraints -> false

@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           controllers.Contracts.all
 GET     /settings                   controllers.Application.settings
 
 GET			/currencies									controllers.Currencies.all

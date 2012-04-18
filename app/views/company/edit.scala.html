@@ -1,6 +1,6 @@
 @(company: Company, theForm: Form[(String, Option[Long])])
 
-@main("Edit " + company.name, "Edit " + company.name, "Companies") {
+@main("Edit " + company.name, "Edit " + company.name, "companies") {
 
 	@form_html(theForm, 
 		routes.Companies.update(company.id), 

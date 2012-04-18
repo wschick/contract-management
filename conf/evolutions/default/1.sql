@@ -69,7 +69,8 @@ CREATE TABLE contract (
 	last_modifying_user varchar(40),
 	last_modified_time datetime,
 	company_id integer NOT NULL,
-	contract_type_id integer NOT NULL
+	contract_type_id integer NOT NULL,
+	attention varchar(300)
 );
 
 alter table contract add constraint fk_contract_currency_1 

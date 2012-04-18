@@ -24,7 +24,8 @@ case class Contract(
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
 	companyId: Long,
-	contractType: ContractType
+	contractType: ContractType,
+	attention: Option[String]
 	) {
 
 	def lastDay(): LocalDate = {
@@ -85,15 +86,16 @@ object Contract {
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") ~
-		get[Long]("contract_type_id") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId => 
+		get[Long]("contract_type_id") ~
+		get[Option[String]]("attention") map {
+			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention => 
 				Contract(id, contractId, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get)
+					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention)
 				//TODO this will blow up if it can't find the contractt type
 		}
 	}	
@@ -157,12 +159,12 @@ object Contract {
 							contract_id, name, description, mrc, nrc, 
 							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
-							last_modifying_user, last_modified_time, company_id, contract_type_id) 
+							last_modifying_user, last_modified_time, company_id, contract_type_id, attention) 
 						values (
 							{contractId}, {name}, {description}, {mrc}, {nrc}, 
 							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
-							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id})
+							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id}, {attention})
 					"""
 					).on(
 					'contractId -> contract.contractId,
@@ -182,7 +184,8 @@ object Contract {
 					'last_modifying_user -> "unknown user",
 					'last_modified_time -> new Date,
 					'companyId -> contract.companyId,
-					'contract_type_id -> contract.contractType.id
+					'contract_type_id -> contract.contractType.id,
+					'attention -> contract.attention
 				).executeUpdate()
 				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 			}
@@ -199,7 +202,8 @@ object Contract {
 					start_date={start_date}, term={term}, term_units={term_units},
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
 					cancelled_date={cancelled_date}, last_modifying_user={last_modifying_user}, 
-					last_modified_time={last_modified_time}, company_id={companyId}, contract_type_id={contract_type_id} where id={id}
+					last_modified_time={last_modified_time}, company_id={companyId}, contract_type_id={contract_type_id}, 
+					attention={attention} where id={id}
 				"""
 				).on(
 				'id -> id,
@@ -220,7 +224,8 @@ object Contract {
 				'last_modifying_user -> "unknown user",
 				'last_modified_time -> new Date,
 				'companyId -> contract.companyId,
-				'contract_type_id -> contract.contractType.id
+				'contract_type_id -> contract.contractType.id,
+				'attention -> contract.attention
 				).executeUpdate()
 		}
 	}

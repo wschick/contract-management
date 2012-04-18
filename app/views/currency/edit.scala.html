@@ -1,6 +1,6 @@
 @(currency: Currency, currencyForm: Form[(String)])
 
-@main("Edit currency " + currency.abbreviation, "Edit currency " + currency.abbreviation, "Settings") {
+@main("Edit currency " + currency.abbreviation, "Edit currency " + currency.abbreviation, "settings") {
 
 	@form_html(currencyForm, 
 		routes.Currencies.update(currency.id), 

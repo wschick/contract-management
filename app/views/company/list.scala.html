@@ -2,21 +2,21 @@
 
 @import helper._
 
-@main("Companies", "Companies", "Companies") {
+@main("Companies", "Companies", "companies") {
 
 	@if(companies.isEmpty) {
 		<h3>No companies.</h3>
 	} else {
 		<table class="companies">
 			<tr>
-				<th>Company Name</th>
-				<th class="inner_display_column">Primary Contact
+				<th class="company_name">Company Name</th>
+				<th class="inner_display_column company_contact">Primary Contact
 				<th><th>
 			</tr>
 			@companies.map { company =>
 				<tr>
-					<td> @company.name</td>
-					<td class="inner_display_column">@Person.nameById(company.primaryContactId)</td>
+					<td class="company_name"> @company.name</td>
+					<td class="inner_display_column company_contact">@Person.nameById(company.primaryContactId)</td>
 					<td><a class="edit_link" href="@routes.Companies.edit(company.id)">edit</a>
 					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Companies.delete(company.id)">delete</a></td>
 				</tr>

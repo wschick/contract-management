@@ -2,25 +2,27 @@
 
 @import helper._
 
-@main("Reminders", "Reminders", "Reminders") {
+@main("Reminders", "Reminders", "reminders") {
 
 	@if(reminders.isEmpty) {
 		<h3>No reminders.</h3>
 	} else {
 		<table class="reminders">
 			<tr>
-				<th>Date</th>
-				<th class="inner_display_column">Contract</th>
-				<th class="inner_display_column">Sent</th>
-				<th class="inner_display_column">Sent to</th>
+				<th class="reminder_date">Date</th>
+				<th class="inner_display_column reminder_contract">Contract</th>
+				<th class="inner_display_column reminder_sent">Sent</th>
+				<th class="inner_display_column reminder_persons">Recipients</th>
 				<th><th>
 			</tr>
 			@reminders.map { reminder =>
-				<tr>
-					<td> @reminder.reminderDate</td>
-					<td class="inner_display_column">@Contract.nameById(reminder.contractId)</td>
-					<td class="inner_display_column">@reminder.sent</td>
-					<td class="inner_display_column">@Reminder.personNamesForReminder(reminder.id)</td>
+			<tr @if(reminder.sent) {
+				class="sent"
+				}>
+					<td class="reminder_date"> @reminder.reminderDate</td>
+					<td class="inner_display_column reminder_contract">@Contract.nameById(reminder.contractId)</td>
+					<td class="inner_display_column reminder_sent">@reminder.sent</td>
+					<td class="inner_display_column reminder_persons">@Reminder.personNamesForReminder(reminder.id)</td>
 					<td><a class="edit_link" href="@routes.Reminders.edit(reminder.id.get)">edit</a>
 						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Reminders.delete(reminder.id.get)">delete</a></td>
 				</tr>

@@ -1,5 +1,20 @@
 // THIS should not be necessary because it is defined in the main file.
-@lightbackground: #FDF7D7;
+@table_highlight: #E8DABA;
+//@table_highlight: #FDF7D7;
+.heading-font {
+	font-family: 'Droids Sans', sans-serif;
+}
+
+.text-font {
+	font-family: 'Droid Serif', serif;
+}
+
+/** End of stuff that should be inherited from main **/
+
+/******** GENERAL DEFINES ************/
+a.edit_link {
+	margin-left: 15px;
+}
 
 .bordered_lines {
 	border-bottom: 1px solid gray
@@ -11,19 +26,15 @@
 }
 
 .hilight_column {
-	background: @lightbackground;
+	background: @table_highlight;
 	padding: 0 20px;
 }
 
-/******** LOCATIONS ************/
-table.locations { 
+
+.basic_table { 
 	
 	padding-bottom: 20px;
 	
-	.location_code, .address {
-		.hilight_column
-	}
-
 	th, td {
 		.bordered_lines;
 	}
@@ -34,83 +45,202 @@ table.locations {
 
 }
 
-a.edit_link {
-	margin-left: 15px;
+
+.too-late-background {
+	background-color: lightblue;
+	background-image: -repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+}
+
+/******** LOCATIONS ************/
+table.locations { 
+	
+	.basic_table;
+	
+	.location_code, .address {
+		.hilight_column
+	}
+
 }
 
 
-table.contract_list { border: 1px solid gray; }
+/******** COMPANIES ************/
+table.companies { 
+	
+	.basic_table;
 
-table.contract_list th { 
-	color: white; 
-	background-color: gray; 
-	padding: 5px;
-	background-repeat: no-repeat;
-	background-position: center left;
+	.company_name {
+		.hilight_column
+	}
+
 }
-table.contract_list th.headerSortUp { 
-	background-image: url(/assets/images/asc.gif);
+
+
+/**************** PERSONS ********************/
+
+table.persons {
+
+	.basic_table;
+
+	.name {
+		.hilight_column;
+	}
+
 }
-table.contract_list th.headerSortDown { 
-	background-image: url(/assets/images/desc.gif);
+
+
+/******** REMINDERS ************/
+table.reminders { 
+
+	.basic_table;
+	
+	.reminder_date {
+		.hilight_column
+	}
+
+	.sent {
+		background-color: lightgray;
+	}
+
 }
-table.contract_list th.contract_name { width: 12em; }
-table.contract_list th.cost { width: 4em; }
-table.contract_list th.currency { width: 3em; }
-table.contract_list th.location_code { width: 6.5em; }
-table.contract_list th.days_to_cancellation { width: 6.5em; }
-table.contract_list th.links {  }
-table.contract_list th.contract_id { background-color: gray; }
 
-table.contract_list td { border: 1px solid black; padding: 5px; }
+/******** CURRENCIES ************/
+table.currencies { 
 
-table.contract_list .contract_id { width: 8em; background-color: lightgray; }
+	.basic_table;
+	
+	.currency_abbreviation {
+		.hilight_column
+	}
+
+}
+
+/******** CONTRACT TYPES ************/
+table.contract_types { 
+
+	.basic_table;
+	
+	.contract_type_name {
+		.hilight_column
+	}
+
+}
+
+/******** CONTRACTS ************/
+
+table.contracts { 
+
+	//border: 1px solid gray; 
+	.basic_table;
+
+	/***** Headers *****/
+	thx { 
+		color: white; 
+		background-color: gray; 
+		padding: 5px;
+		background-repeat: no-repeat;
+		background-position: center left;
+	}
+
+	th.headerSortUp { 
+		background-image: url(/assets/images/asc.gif);
+	}
+
+	th.headerSortDown { 
+		background-image: url(/assets/images/desc.gif);
+	}
+
+	th.contract_name { width: 12em; }
+	th.cost { width: 4em; }
+	th.currency { width: 3em; }
+	th.location_code { width: 6.5em; }
+	th.days_to_cancellation { width: 4em; }
+	th.attention { width: 2em; }
+	th.links {  }
+	//th.contract_id { background-color: gray; }
+	.contract_id { width: 8em; background-color: @table_highlight; }
+
+	/***** Cells *****/
+	//td { border: 1px solid black; padding: 5px; }
+
+	td.days-to-cancel { text-align: right; }
+
+	td.blank-line {
+		border: none;
+		height: 20px;
+	}
+
+	td.contract-links {
+		background-image: none !important;
+		background-color: white;
+	}
+
+	td.attention {
+		text-align: center;
+		background-color: white;
+	}
+
+	/***** Rows *****/
+	tr.ok {
+		background-color: white;
+	}
+
+	tr.cancelled {
+		color: white;
+		background-color: DarkGray;
+	}
+
+	tr.far-warning {
+		background-color: Orange;
+	}
+
+	tr.near-warning {
+		background-color: Red;
+	}
+
+	tr.too-late {
+		.too-late-background;
+	}
+
+	a.attention {
+
+		color: red;
+		font-size: xx-large;
+		font-weight: bold;
+		text-decoration: none;
+
+		span { 
+			display: none; 
+			color: black; 
+			font-size: medium;
+			font-weight: normal;
+		}
 
 
+	}
+
+	a.attention:hover span { 
+		display: block; 
+		position: absolute;
+		//top: -20px;
+		left: 100px;
+		background: white;
+		border: 5px double black;
+		padding: 20px;
+	}
+
+
+}
+
+/*
 tbody.contacts tr:nth-of-type(odd) {
 	background:Gainsboro;
 }
+*/
 
 
-tr.ok {
-	background-color: white;
-}
 
-tr.cancelled {
-	color: white;
-	background-color: DarkGray;
-}
-
-tr.far-warning {
-	background-color: Orange;
-}
-
-tr.near-warning {
-	background-color: Red;
-}
-
-tr.xcontract-too-late,div.xtoo-late {
-	background-color: pink;
-	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
-	border: 15px solid black;
-}
-
-td.days-to-cancel {
-	text-align: right;
-}
-
-
-td.blank-line {
-	border: none;
-	height: 20px;
-}
-
-td.contract-links {
-	background-image: none !important;
-	background-color: white;
-}
-
-/* CONTRACT SUMMARY */
+/******** CONTRACT SUMMARY ************/
 
 #contract_summary {
 	margin-bottom: 20px;
@@ -132,29 +262,5 @@ th.header {
 }
 th.headerSortDown {
 	background-color: blue;
-}
-
-
-/**************** PERSONS ********************/
-
-table.persons {
-
-	th, td {
-		.bordered_lines;
-	}
-
-	.inner_display_column { 
-		.inner_column;
-	}
-
-	.name {
-		.hilight_column;
-	}
-
-}
-
-/**************** CONTRACT TYPES ********************/
-table.contract-types {
-	margin-bottom: 20px;
 }
 

@@ -37,9 +37,14 @@
 			'_label -> "Name", 'size -> 40
 		)
 
-		@inputText(
-			contractForm("description"),
-			'_label -> "Description", 'size -> 40
+		@textarea(
+			contractForm("decription"),
+			'_label -> "Description", 'rows -> 2, 'cols -> 40
+		)
+
+		@textarea(
+			contractForm("attention"),
+			'_label -> "Notes for attention", 'rows -> 2, 'cols -> 40
 		)
 
 		@inputText(

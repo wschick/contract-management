@@ -2,20 +2,28 @@
 
 @import helper._
 
-@main("Currencies", "Currencies", "Settings") {
+@main("Currencies", "Currencies", "settings") {
 
 	@if(currencies.isEmpty) {
-		<h3>No currencies.</h3>
+		<h3>No contract types.</h3>
 	} else {
-		<ul class="currencies">
+		<table class="currencies">
+			<tr>
+				<th class="currency_abbreviation">Name</th>
+				<th><th>
+			</tr>
 			@currencies.map { currency =>
-				<li> @currency.abbreviation 
-					<a class="edit_link" href="@routes.Currencies.edit(currency.id)">edit</a>
-					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Currencies.delete(currency.id)">delete</a>
-				</li>
+				<tr>
+					<td class="currency_abbreviation"> @currency.abbreviation</td>
+					<td>
+						<a class="edit_link" href="@routes.Currencies.edit(currency.id)">edit</a>
+						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Currencies.delete(currency.id)">delete</a>
+					</td>
+				</tr>
 			}
-		</ul>
+		</table>
 	}
+
 
 	@form_html(currencyForm, routes.Currencies.create, formLegend = "Create a new currency",
 		submitButtonName = "Create")

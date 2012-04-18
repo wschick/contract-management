@@ -1,6 +1,6 @@
 @(reminder: Reminder, theForm: Form[ReminderAndPeople])
 
-@main("Edit reminder for " + reminder.reminderDate, "Edit reminder for " + reminder.reminderDate, "Reminder") {
+@main("Edit reminder for " + reminder.reminderDate, "Edit reminder for " + reminder.reminderDate, "reminders") {
 
 	@form_html(theForm, 
 		routes.Reminders.update(reminder.id.get), 

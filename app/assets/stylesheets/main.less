@@ -5,14 +5,22 @@
 @import "table.less";
 @import "fileuploader.less";
 
+.heading-font {
+	font-family: 'Droid Serif', serif;
+}
+
+.text-font {
+	font-family: 'Droids Sans', sans-serif;
+}
+
 body 
 {
-	font-family: 'Droids Sans', sans-serif;
+	.text-font;
 }
 
 h1, h2, h3, h4
 {
-	font-family: 'Droid Serif', serif;
+	.heading-font;
 }
 
 #container
@@ -53,14 +61,6 @@ h1, h2, h3, h4
 {
 }
 
-/************ NAVIGATION *************/
-#navigation
-{
-	float: left;
-	width: 100%;
-	background: #333;
-}
-
 a.delete_link {
 	margin-left: 20px;
 }
@@ -91,6 +91,42 @@ dl.form dt
 }
 
 /***************** NAVIGATION ***************************/
+#navigation {
+
+	float: left;
+	width: 100%;
+	background: #333;
+
+	ul {
+		margin: 0;
+		padding: 0;
+
+ 		li
+		{
+			list-style-type: none;
+			display: inline;
+
+			a
+			{
+				display: block;
+				float: left;
+				padding: 5px 10px;
+				color: #fff;
+				text-decoration: none;
+				border-right: 1px solid #fff;
+			}
+
+			a.selected {
+					background: @darkbackground;
+					color: black
+				}
+
+
+			a:hover { background: @darkbackground; color: black; }
+		}
+	}
+}
+
 #settingsnav ul { margin: 0; padding: 0; }
 
 #settingsnav ul li
@@ -98,29 +134,7 @@ dl.form dt
 	list-style-type: none;
 }
 
-#navigation ul
-{
-	margin: 0;
-	padding: 0;
-}
-
-#navigation ul li
-{
-	list-style-type: none;
-	display: inline;
-}
-
-#navigation li a
-{
-	display: block;
-	float: left;
-	padding: 5px 10px;
-	color: #fff;
-	text-decoration: none;
-	border-right: 1px solid #fff;
-}
-
-#navigation li a:hover { background: #E8DABA; color: black; }
+/************** MAIN LAYOUT ***************/
 
 #content
 {
@@ -153,8 +167,9 @@ div.actions {
 }
 
 .too-late { 
-	background-color: pink;
-	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	background-color: lightblue;
+	//background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
 	padding: 20px;
 }
 
@@ -357,5 +372,17 @@ div.clearfix {
 }
 
 div.notice {
+	//width: 60%;
+}
+
+
+div.contract-view-container {
 	width: 60%;
 }
+
+div.attention {
+	border: 5px solid red;
+	padding: 5px;
+	margin: 10px 0 15px 0;
+}
+

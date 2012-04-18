@@ -2,31 +2,37 @@
 
 @import helper._
 
-@main(title, title, nav="Contract") {
+@main(title, title, nav="contracts") {
 
-	@if(errorMessage != None) {
-		<div class="error-message">@errorMessage</div>
-	}
+	<div class="contract-view-container">
 
-	@defining(contract.status) { cs => 
-		@cs match {
+		@if(errorMessage != None) {
+			<div class="error-message">@errorMessage</div>
+		}
 
-			case models.CANCELLED => {
-				<p>Contract was cancelled on @contract.cancelledDate</p>
-			}
-			case TOOLATE => {
-				@notice(contract.status) {
-					The cancellation date @contract.cancellationDate has passed.
+		@defining(contract.status) { cs => 
+			@cs match {
+
+				case models.CANCELLED => {
+					<p>Contract was cancelled on @contract.cancelledDate</p>
 				}
-			}
-			case _ => {
-				@notice(contract.status) {
-					<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
-					<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+				case TOOLATE => {
+					@notice(contract.status) {
+						The cancellation date @contract.cancellationDate has passed.
+					}
+				}
+				case _ => {
+					@notice(contract.status) {
+						<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
+						<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+					}
 				}
 			}
 		}
-	}
+
+		@if(contract.attention != None) {
+			<div class="attention">Attention: @contract.attention</div>
+		}
 
 		<div class="data_table">
 			<table id="contract_summary">
@@ -49,10 +55,11 @@
 					<tr><td>Status</td><td>@contract.status.name</td></tr>
 					<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
 					<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
-			</tbody>
+				</tbody>
 			</table>
 		</div>
 
+	</div>
 			<ul id="edit_controls">
 					<li><a href="@routes.Contracts.edit(contract.id.get)">Edit</a></li>
 					<li id="delete"><a onClick="return confirm('Are you sure you want to delete?'

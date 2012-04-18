@@ -1,22 +1,22 @@
 @(contractTypes: List[ContractType], contractTypeForm: Form[ContractType])
 
-@main("Contract Types", "Contract Types", "Settings") {
+@main("Contract Types", "Contract Types", "settings") {
 
 	@if(contractTypes.isEmpty) {
 		<h3>No contract types.</h3>
 	} else {
-	<table class="contract-types">
-		<tr>
-			<th>Name</th>
-			<th><th>
-		</tr>
-		@contractTypes.map { contractType =>
+		<table class="contract_types">
 			<tr>
-				<td> @contractType.name</td>
-				<td><a class="edit_link" href="@routes.ContractTypes.edit(contractType.id.get)">edit</a>
-				<a onClick="return confirmDelete()" class="delete_link" href="@routes.ContractTypes.delete(contractType.id.get)">delete</a></td>
+				<th class="contract_type_name">Name</th>
+				<th><th>
 			</tr>
-		}
+			@contractTypes.map { contractType =>
+				<tr>
+					<td class="contract_type_name"> @contractType.name</td>
+					<td><a class="edit_link" href="@routes.ContractTypes.edit(contractType.id.get)">edit</a>
+					<a onClick="return confirmDelete()" class="delete_link" href="@routes.ContractTypes.delete(contractType.id.get)">delete</a></td>
+				</tr>
+			}
 		</table>
 	}
 

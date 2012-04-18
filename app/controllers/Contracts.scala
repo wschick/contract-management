@@ -72,30 +72,30 @@ object Contracts extends Controller {
 			"term" -> mapping("termLength" -> number, "termUnits" -> number)
 				((termLength, termUnits) => Term(termLength, TimePeriodUnits.create(termUnits)))
 				((t: Term) => Some((t.length, t.units.value))),
-			"cancellationPeriod" -> number,
-			"cancellationPeriodUnits" -> number,
+			"cancellation" -> mapping("len" -> number, "units" -> number)
+				((len, units) => Term(len, TimePeriodUnits.create(units)))
+				((t: Term) => Some((t.length, t.units.value))),
+			//"cancellationPeriod" -> number,
+			//"cancellationPeriodUnits" -> number,
 			"cancelledDate" -> optional(date),
 			"lastModifyingUser" -> optional(text),
 			"lastModifiedTime" -> optional(date),
 			"companyId" -> longNumber,
-			"contractTypeId" -> longNumber
+			"contractTypeId" -> longNumber,
+			"attention" -> optional(text)
 		)
 		(
 			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
-			startDate, term, cancellationPeriod, cancellationPeriodUnits,
-			//startDate, term, termUnits, cancellationPeriod, cancellationPeriodUnits,
-			cancelledDate, lastModifyingUser, lastModifiedTime, companyId, contractTypeId) => 
+			startDate, term, cancellation,
+			cancelledDate, lastModifyingUser, lastModifiedTime, companyId, contractTypeId, attention) => 
 				Contract(NotAssigned, contractId, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
-				new LocalDate(startDate), term, 
-				//new LocalDate(startDate), Term(term, TimePeriodUnits.create(termUnits)), 
-				Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
-				//cancelledDate.map(date => Some(new LocalDate(date)).getOrElse(None)),
+				new LocalDate(startDate), term, cancellation,
 				cancelledDate match {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
-				lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get)
+				lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention)
 				//TODO handle error condiditions better
 		)
 		(
@@ -110,10 +110,11 @@ object Contracts extends Controller {
 				contract.zEnd.id,
 				contract.startDate.toDate,
 				contract.term,
+				contract.cancellationPeriod,
 				//contract.term.length,
 				//contract.term.units.value,
-				contract.cancellationPeriod.length,
-				contract.cancellationPeriod.units.value,
+				//contract.cancellationPeriod.length,
+				//contract.cancellationPeriod.units.value,
 				contract.cancelledDate match {
 					case Some(date) => Option(date.toDate)
 					case None => None
@@ -121,7 +122,8 @@ object Contracts extends Controller {
 				contract.lastModifyingUser,
 				contract.lastModifiedTime,
 				contract.companyId,
-				contract.contractType.id.get))
+				contract.contractType.id.get,
+				contract.attention))
 		)
 	)
 
