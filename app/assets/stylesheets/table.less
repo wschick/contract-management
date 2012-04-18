@@ -130,7 +130,6 @@ table.contract_types {
 
 table.contracts { 
 
-	//border: 1px solid gray; 
 	.basic_table;
 
 	/***** Headers *****/
@@ -157,11 +156,12 @@ table.contracts {
 	th.days_to_cancellation { width: 4em; }
 	th.attention { width: 2em; }
 	th.links {  }
-	//th.contract_id { background-color: gray; }
-	.contract_id { width: 8em; background-color: @table_highlight; }
 
 	/***** Cells *****/
-	//td { border: 1px solid black; padding: 5px; }
+
+	.contract_id {
+		.hilight_column
+	}
 
 	td.days-to-cancel { text-align: right; }
 
