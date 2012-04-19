@@ -92,7 +92,7 @@ create index ix_contract_z_end_1 on contract(z_end_id);
 
 # --- !Downs
  
-SET REFERENTIAL_INTEGRITY FALSE;
+/*SET REFERENTIAL_INTEGRITY FALSE;*/
 
 DROP TABLE currency;
 DROP TABLE location;
@@ -103,5 +103,5 @@ DROP TABLE person;
 DROP TABLE company;
 DROP TABLE contract_type;
 
-SET REFERENTIAL_INTEGRITY TRUE;
+/*SET REFERENTIAL_INTEGRITY TRUE;*/
 
