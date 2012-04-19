@@ -1,0 +1,15 @@
+@(formWithData: Form[(String, Option[Long])],
+	formAction: Call, 
+	submitButtonName: String = "Create")
+
+@import helper._
+
+	@form(action=formAction, 'class -> "form") {
+
+				@inputText(formWithData("name"), '_class -> "form", '_label -> "Name", 
+				'_showConstraints -> false, 'size -> 50, 'maxlength -> 50)
+
+		<div class="actions">
+			<input type="submit" class="btn primary" value="@submitButtonName">
+		</div>
+}
