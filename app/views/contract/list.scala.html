@@ -9,13 +9,14 @@
 	<table class="contracts" id="contracts">
 		<thead>
 		<tr>
-			<th class="contract_id">Contract Id</td>
+			<th class="contract_id">Contract</td>
 			<th>Name</th>
 			<!--th class="contract_name">Name</th-->
 			<th class="inner_display_column cost {'sorter':'cost'}">MRC</th>
 			<th class="inner_display_column cost {'sorter':'cost'}">NRC</th>
 			<th class="inner_display_column location_code">Locations</th>
 			<th class="inner_display_column days_to_cancellation">Days to cancel</th>
+			<th class="inner_display_column billing_account">Billing Account</th>
 			<th class="attention"></th>
 			<th class="inner_display_column links {sorter: false}"></th>
 		</tr>
@@ -26,7 +27,7 @@
 				@defining(contract.status.name) { status => 
 
 				<tr class="@status">
-				<td class="contract_id">@Company.findById(contract.companyId).get.name @contract.contractId</td>
+				<td class="contract_id">@Company.findById(contract.companyId).get.name @contract.vendorContractId</td>
 				<td class="inner_display_column">@contract.name</td>
 				<td class="inner_display_column">@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td>
 				<td class="inner_display_column">@contract.nrc<br/>@Currency.stringById(contract.currencyId)</td>
@@ -36,6 +37,7 @@
 					@contract.daysUntilCancellationDate 
 					} 
 				</td>
+				<td class="inner_display_column">@contract.billingAccount</td>
 				<td class="attention">@if(contract.attention!=None){
 					<a class="attention" href="">!<span>@contract.attention</span></a>
 					}else{}</td>

@@ -9,7 +9,8 @@ import java.util.Date
 
 case class Contract(
 	id: Pk[Long] = NotAssigned,
-	contractId: String, // Used for filing
+	vendorContractId: String, // Used for filing
+	billingAccount: Option[String],
 	name: String, 
 	description: Option[String],
 	mrc: Double, 
@@ -24,9 +25,17 @@ case class Contract(
 	lastModifyingUser: Option[String],
 	lastModifiedTime: Option[Date],
 	companyId: Long,
+	//company: Company,
 	contractType: ContractType,
 	attention: Option[String]
 	) {
+
+	/**
+		@returns company name and vendor's contract id, concatenated
+	*/
+	def vendorIdString(): String = {
+		Company.findById(companyId).get.name + " " + vendorContractId
+	}
 
 	def lastDay(): LocalDate = {
 		//val jSD = new DateTime(startDate)
@@ -57,7 +66,7 @@ case class Contract(
 		}
 	}
 
-	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(contractId)
+	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(companyId).get.name, vendorContractId)
 
 
 }
@@ -67,7 +76,8 @@ object Contract {
 
 	val contract = {
 		get[Pk[Long]]("id") ~ 
-		get[String]("contract_id") ~ 
+		get[String]("vendor_contract_id") ~ 
+		get[Option[String]]("billing_account") ~ 
 		get[String]("name") ~
 		get[Option[String]]("description") ~
 		get[Double]("mrc") ~
@@ -88,8 +98,8 @@ object Contract {
 		get[Long]("company_id") ~
 		get[Long]("contract_type_id") ~
 		get[Option[String]]("attention") map {
-			case id~contractId~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention => 
-				Contract(id, contractId, name, description, mrc, nrc, currencyId,
+			case id~vendorContractId~billingAccount~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention => 
+				Contract(id, vendorContractId, billingAccount, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
@@ -125,13 +135,15 @@ object Contract {
 
 	/** Return a contract.
 
-		@param contractId the textual id of the contract (not the numerical database id)
+		@param vendorContractId the textual id of the contract (not the numerical database id)
 		@return the contract, if it exists.
 
 		*/
-	def findByContractId(contractId: String): Option[Contract] = {
+	def findByVendorContractId(companyId: Long, vendorContractId: String): Option[Contract] = {
 		DB.withConnection { implicit connection =>
-			SQL("select * from contract where contract_id = {contract_id}").on('contract_id -> contractId).as(Contract.contract.singleOpt)
+			SQL("select * from contract where vendor_contract_id={vendor_contract_id} and company_id={company_id}")
+				.on('vendor_contract_id -> vendorContractId, 'company_id -> companyId).
+				as(Contract.contract.singleOpt)
 		}
 	}
 
@@ -156,18 +168,19 @@ object Contract {
 				SQL(
 					"""
 						insert into contract (
-							contract_id, name, description, mrc, nrc, 
+							vendor_contract_id, billing_account, name, description, mrc, nrc, 
 							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
 							last_modifying_user, last_modified_time, company_id, contract_type_id, attention) 
 						values (
-							{contractId}, {name}, {description}, {mrc}, {nrc}, 
+							{vendorContractId}, {billing_account}, {name}, {description}, {mrc}, {nrc}, 
 							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
 							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id}, {attention})
 					"""
 					).on(
-					'contractId -> contract.contractId,
+					'vendorContractId -> contract.vendorContractId,
+					'billing_account -> contract.billingAccount,
 					'name -> contract.name,
 					'description -> contract.description,
 					'mrc -> contract.mrc,
@@ -197,7 +210,8 @@ object Contract {
 		DB.withConnection { implicit connection =>
 				SQL(
 				"""
-					update contract set contract_id={contractId}, name={name}, description={description}, 
+					update contract set vendor_contract_id={vendorContractId}, billing_account={billingAccount}, 
+					name={name}, description={description}, 
 					mrc={mrc}, nrc={nrc}, currency_id={currency_id}, a_end_id={a_end_id}, z_end_id={z_end_id}, 
 					start_date={start_date}, term={term}, term_units={term_units},
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
@@ -207,7 +221,8 @@ object Contract {
 				"""
 				).on(
 				'id -> id,
-				'contractId -> contract.contractId,
+				'vendorContractId -> contract.vendorContractId,
+				'billingAccount -> contract.billingAccount,
 				'name -> contract.name,
 				'description -> contract.description,
 				'mrc -> contract.mrc,

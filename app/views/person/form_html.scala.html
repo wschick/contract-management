@@ -17,6 +17,16 @@
 		<fieldset>
 			<legend>@formLegend</legend>
 
+				@select(
+					formWithData("company_id"),
+					Company.options,
+					'_label -> "Company", '_default -> "-- Choose a company --",
+					'_showConstraints -> false
+				)
+
+				<p style="margin-bottom: 20px;"><a class="popup" href="#inline_content" title="Make a new company">Make a new company</a>
+				</p>
+
 				@inputText(formWithData("name"), '_class -> "form", '_label -> "Name", 
 				'_showConstraints -> false, 'size -> 50, 'maxlength -> 50)
 
@@ -25,13 +35,6 @@
 
 				@inputText(formWithData("telephone"), '_class -> "form", '_label -> "Telephone (optional)", 
 				'_showConstraints -> false, 'size -> 20, 'maxlength -> 20)
-
-				@select(
-					formWithData("company_id"),
-					Company.options,
-					'_label -> "Company", '_default -> "-- Choose a company --",
-					'_showConstraints -> false
-				)
 
 		</fieldset>
 
@@ -42,4 +45,15 @@
 			}
 		</div>
 
+		<script type="text/javascript">
+			jQuery('a.popup').colorbox({inline: true, width:"50%"});
+		</script>
+
 	}
+
+		<div style='display:none'>
+			<div id='inline_content' style='padding:10px; background: #fff;'>
+				@company.form_simple(Companies.companyForm, routes.Companies.popupCreate)
+			</div>
+		</div>
+

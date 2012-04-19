@@ -26,8 +26,13 @@
 		)
 
 		@inputText(
-			contractForm("contractId"),
-			'_label -> "Id used for filing. Must be unique"
+			contractForm("vendorContractId"),
+			'_label -> "Vendor's contract identifier"
+		)
+
+		@inputText(
+			contractForm("billingAccount"),
+			'_label -> "Vendor's billing account number", 'size -> 20
 		)
 
 		@inputText(

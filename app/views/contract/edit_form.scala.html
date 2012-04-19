@@ -1,4 +1,4 @@
-@(id: Long, contractForm: Form[Contract], errorMessage: Option[String] = None)
+@(contract: Contract, contractForm: Form[Contract], errorMessage: Option[String] = None)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -15,9 +15,9 @@
 	}
 
 	@form_html(contractForm, 
-	routes.Contracts.update(id), 
+	routes.Contracts.update(contract.id.get), 
 	cancelAction = Some(routes.Contracts.all), 
-	uploadAction = Some(routes.Attachments.upload(contractForm.get.contractId)),
+	uploadAction = Some(routes.Attachments.upload(contract.companyId, contract.vendorContractId)),
 	formLegend = "Edit a contract", 
 	submitButtonName = "Update")
 

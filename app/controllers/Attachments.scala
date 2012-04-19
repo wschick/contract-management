@@ -12,6 +12,7 @@ import java.io.IOException
 
 import models.Attachment
 import models.Contract
+import models.Company
 import FileHelper._
 
 object Attachments extends Controller {
@@ -19,11 +20,11 @@ object Attachments extends Controller {
 	/**
 		@returns True if it could change the contract id, false if it could not
 		*/
-	def changeContractId(oldContractId: String, newContractId: String): Boolean = {
-		if (oldContractId != newContractId) {
+	def changeVendorContractId(companyName: String, oldVendorContractId: String, newVendorContractId: String): Boolean = {
+		if (oldVendorContractId != newVendorContractId) {
 
-			val oldPath = Attachment.contractDirectoryPath(oldContractId)
-			val newPath = Attachment.contractDirectoryPath(newContractId)
+			val oldPath = Attachment.contractDirPath(companyName, oldVendorContractId)
+			val newPath = Attachment.contractDirPath(companyName, newVendorContractId)
 			// Complain if something is already at the new path.
 			val newDir = new File(newPath)
 			if (newDir.exists()) return false;
@@ -36,12 +37,36 @@ object Attachments extends Controller {
 			
 		} else return true
 	}
+
+	def changeCompanyName(currentCompanyName: String, newCompanyName: String): Boolean = {
+		if (currentCompanyName != newCompanyName) {
+
+			val newDir = Attachment.companyDir(newCompanyName)
+			// Complain if something is already at the new path.
+			if (newDir.exists()) return false;
+
+			// Not a problem if old path doesn't exist. There may just be no attachments. Simply return.
+			val oldDir = Attachment.companyDir(currentCompanyName)
+			if (!oldDir.exists()) return true;
+
+			return oldDir.renameTo(newDir)
+			
+		} else return true
+	}
   
-	def upload(contractId: String) = Action(parse.temporaryFile) { implicit request =>
+	def upload(companyId: Long, vendorContractId: String) = Action(parse.temporaryFile) { implicit request =>
 		val fileName = request.queryString("qqfile").head
+	/*
+	def upload(contact: Contract) = Action(parse.temporaryFile) { implicit request =>
+		// TODO remove these last 2 when we know we want to pass in a contract.
+		val companyId = contract.companyId
+		val vendorContractId = contract.vendorContractId
+		*/
+		// TODO handle missing company
+		val company = Company.findById(companyId).get
 		try {
-			println("Moving new attachment to " + Attachment.attachmentPath(contractId, fileName))
-			request.body.moveTo(new File(Attachment.attachmentPath(contractId, fileName)))
+			println("Moving new attachment to " + Attachment.attachmentPath(company.name, vendorContractId, fileName))
+			request.body.moveTo(new File(Attachment.attachmentPath(company.name, vendorContractId, fileName)))
 			Ok("{\"success\": true}")
 		} catch {
 			case e:IOException => {
@@ -51,40 +76,53 @@ object Attachments extends Controller {
 	}
 
 	/** View a contract attachment */
-	def view(contractId: String, name: String) = Action { implicit request =>
-		Ok.sendFile(
-			content = new java.io.File(Attachment.attachmentPath(contractId, name)),
-			inline = true,
-			fileName = _ => name
-		)
+	def view(companyName: String, vendorContractId: String, fileName: String) = Action { implicit request =>
+			Ok.sendFile(
+				content = new java.io.File(Attachment.attachmentPath(companyName, vendorContractId, fileName)),
+				inline = true,
+				fileName = _ => fileName
+			)
+		/*}
+		else
+			//TODO handle error better. trying to view attachment, but company isn't defined
+			Ok("error: company with id " + companyId + " isn't defined")*/
 	}
 
 	/**
-		@param contractId Delete the attachments for this contract.
+		@param vendorContractId Delete the attachments for this contract.
 		@return None if everything went fine, or an error message.
 	*/
-	def deleteAll(contractId: String): Option[String] = {
-		println("Deleting all attachments for " + contractId)
-		try {
-			Attachment.contractDirectory(contractId).deleteAll
-			println("Deletion worked ok")
-			return None
-		} catch {
-			case e => return Some(e.getMessage())
-		}
+	def deleteAll(companyId: Long, vendorContractId: String): Option[String] = {
+		val company= Company.findById(companyId)
+		if (company!= None) {
+			val cn = company.get.name
+			println("Deleting all attachments for " + cn + " "  + vendorContractId)
+			try {
+				Attachment.contractDir(cn, vendorContractId).deleteAll
+				println("Deletion worked ok")
+				return None
+			} catch {
+				case e => return Some(e.getMessage())
+			}
+		} else 
+			//TODO handle error better. trying to view attachment, but company isn't defined
+			None
 	}
 
-	def delete(contractId: String, name: String, mode: String) = Action { implicit request =>	
-		//TODO handle error conditions
-		new java.io.File(Attachment.attachmentPath(contractId, name)).delete
-		val maybeContract = Contract.findByContractId(contractId)
-		maybeContract.map(contract => {
-			mode match {
-				case "view" => Redirect(routes.Contracts.view(contract.id.get))
-				//case "view" => Ok(views.html.contract.view(contract, "Deleted attachment \"" + name "\""", "ZYZZY"))
-				case "edit" => Redirect(routes.Contracts.edit(contract.id.get))
-				case _ => Redirect(routes.Contracts.filtered)
-			}
-		}).getOrElse(Redirect(routes.Contracts.filtered))
+	/** Delete an attachment */
+	def delete(contractId: Long, companyName: String, vendorContractId: String, name: String, mode: String) = Action { implicit request =>	
+			Attachment.findAttachment(companyName, vendorContractId, name).delete
+			//TODO handle error conditions
+
+			// Now go to some reasonable destination page.
+			val maybeContract = Contract.findById(contractId)
+			maybeContract.map(contract => {
+				mode match {
+					case "view" => Redirect(routes.Contracts.view(contract.id.get))
+					case "edit" => Redirect(routes.Contracts.edit(contract.id.get))
+					case _ => Redirect(routes.Contracts.filtered)
+				}
+			}).getOrElse(Redirect(routes.Contracts.filtered))
+
 	}
 }

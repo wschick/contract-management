@@ -26,6 +26,7 @@ GET			/persons/:id/delete					controllers.Persons.delete(id: Long)
 
 GET			/companies									controllers.Companies.all
 POST		/companies									controllers.Companies.create
+POST		/companies/popup						controllers.Companies.popupCreate
 GET			/companies/:id/edit					controllers.Companies.edit(id: Long)
 POST		/companies/:id/edit					controllers.Companies.update(id: Long)
 GET			/companies/:id/delete				controllers.Companies.delete(id: Long)
@@ -54,9 +55,9 @@ GET			/contracts/new							controllers.Contracts.emptyForm
 POST		/contracts/new							controllers.Contracts.create
 GET			/contracts/:id/delete				controllers.Contracts.delete(id: Long)
 
-POST		/attachments										controllers.Attachments.upload(contractId: String)
-GET			/attachments/delete							controllers.Attachments.delete(contractId: String, name: String, mode: String)
-GET			/attachments/:contractId/:name	controllers.Attachments.view(contractId: String, name: String)
+POST		/attachments										controllers.Attachments.upload(companyId: Long, vendorContractId: String)
+GET			/attachments/delete							controllers.Attachments.delete(contractId: Long, companyName: String, vendorContractId: String, name: String, mode: String)
+GET			/attachments/:companyName/:vendorContractId/:name	controllers.Attachments.view(companyName: String, vendorContractId: String, name: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

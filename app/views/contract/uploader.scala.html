@@ -1,4 +1,4 @@
-@(contractId: String, uploadAction: Option[Call] = None)
+@(companyId: Long, vendorContractId: String, uploadAction: Option[Call] = None)
 
 	@for(ua <- uploadAction) {
 	<div id="file-uploader">
@@ -10,6 +10,7 @@
 			function createUploader(){
 				var uploader = new qq.FileUploader({
 					element: document.getElementById('file-uploader'),
+					/* TODO derive action from routes, don't hard-code it. */
 					action: '/attachments',
 					debug: true,
 					onComplete: function(id, fileName, responseJSON) {
@@ -18,7 +19,8 @@
 						} 
 					},
 					params: {
-						contractId: '@contractId'
+						companyId: '@companyId',
+						vendorContractId: '@vendorContractId'
 					}
 				});
 			}

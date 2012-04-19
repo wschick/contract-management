@@ -20,6 +20,17 @@ object Companies extends Controller {
     Ok(views.html.company.list(Company.all(), companyForm))
 	}
 
+	def popupCreate = Action { implicit request =>
+		companyForm.bindFromRequest.fold(
+			formWithErrors => BadRequest(views.html.company.list(Company.all(), formWithErrors)),
+			companyTuple => {
+				val (name, primaryContactId) = companyTuple
+				Company.create(name, primaryContactId)
+				Redirect(routes.Persons.all)
+			}
+		)
+	}
+
 	def create = Action { implicit request =>
 		companyForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.company.list(Company.all(), formWithErrors)),
@@ -48,7 +59,12 @@ object Companies extends Controller {
 			},
 			company => {
 				val (name, primaryContactId) = company
+				val existing = Company.findById(id).get
+
 				Company.update(id, name, primaryContactId)
+
+				Attachments.changeCompanyName(existing.name, name)
+
 				Ok(views.html.company.list(Company.all(), companyForm))
 			}
 		)

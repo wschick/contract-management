@@ -14,3 +14,9 @@ To do:
 * Consider using either Int or BigDecimal for the mrc and nrc. If there is never a fractional part, just use Int.
 * Why doesn't diagonal pattern for too-late work in Firefox? Why won't it work without webkit in chrome on my site, but works ok on example site?
 * Make sure quotes and other sensitive characters are escaped on input fields
+* Make new company popup on people page look better
+* Contract ID -> Vendor contract Number
+* Billing account number (new field, 20 characters), to appear in contracts list.
+* 2 reminders - one the day before the cancellation date, and the other 30 days prior to that.
+* In contract, make member data a Company, not a CompanyId
+* On contract view, make link back to list retain filtering

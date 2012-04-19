@@ -38,7 +38,8 @@
 			<table id="contract_summary">
 				<tbody>
 					<tr><td>Company</td><td>@Company.nameById(contract.companyId)</td></tr>
-					<tr><td>Contract id</td><td>@contract.contractId</td></tr>
+					<tr><td>Vendor contract id</td><td>@contract.vendorContractId</td></tr>
+					<tr><td>Billing account</td><td>@contract.billingAccount</td></tr>
 					<tr><td>Name</td><td>@contract.name</td></tr>
 					<tr><td>Description</td><td>@contract.description</td></tr>
 					<tr><td>Contract type</td><td>@contract.contractType.name</td></tr>
@@ -63,16 +64,16 @@
 			<ul id="edit_controls">
 					<li><a href="@routes.Contracts.edit(contract.id.get)">Edit</a></li>
 					<li id="delete"><a onClick="return confirm('Are you sure you want to delete?'
-						@if(Attachment.getContractAttachments(contract.contractId).length > 0) {
+						@if(Attachment.getContractAttachments(contract.companyId, contract.vendorContractId).length > 0) {
 						+ '\n\nTHIS WILL DELETE ALL ATTACHMENTS, TOO!'
 						}
 						)" href="@routes.Contracts.delete(contract.id.get)">Delete</a></li>
 			</ul>
 
 
-	@attachment_list(contract.attachments)
+	@attachment_list(contract.id.get, contract.attachments)
 
-	@uploader(contract.contractId, Some(routes.Attachments.upload(contract.contractId)))
+	@uploader(contract.companyId, contract.vendorContractId, Some(routes.Attachments.upload(contract.companyId, contract.vendorContractId)))
 
 	<p>
 		<a href="@routes.Contracts.all">Back to the list of contracts</a>

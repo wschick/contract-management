@@ -14,6 +14,7 @@ import views._
 import anorm._
 
 import models.Attachment
+import models.Company
 import models.Contract
 import models.ContractFilter
 import models.ContractType
@@ -60,7 +61,8 @@ object Contracts extends Controller {
 	val contractForm: Form[Contract] = Form(
 		mapping(
 			"id" -> ignored(NotAssigned:Pk[Long]),
-			"contractId" -> nonEmptyText,
+			"vendorContractId" -> nonEmptyText,
+			"billingAccount" -> optional(text),
 			"name" -> nonEmptyText,
 			"description" -> optional(text),
 			"mrc" -> nonEmptyText,
@@ -75,32 +77,30 @@ object Contracts extends Controller {
 			"cancellation" -> mapping("len" -> number, "units" -> number)
 				((len, units) => Term(len, TimePeriodUnits.create(units)))
 				((t: Term) => Some((t.length, t.units.value))),
-			//"cancellationPeriod" -> number,
-			//"cancellationPeriodUnits" -> number,
 			"cancelledDate" -> optional(date),
-			"lastModifyingUser" -> optional(text),
-			"lastModifiedTime" -> optional(date),
 			"companyId" -> longNumber,
 			"contractTypeId" -> longNumber,
 			"attention" -> optional(text)
 		)
 		(
-			(id, contractId, name, description, mrc, nrc, currency, aEnd, zEnd,
+			(id, vendorContractId, billingAccount, name, description, mrc, nrc, currency, aEnd, zEnd,
 			startDate, term, cancellation,
-			cancelledDate, lastModifyingUser, lastModifiedTime, companyId, contractTypeId, attention) => 
-				Contract(NotAssigned, contractId, name, description, mrc.toDouble,
+			cancelledDate, companyId, contractTypeId, attention) => 
+				Contract(NotAssigned, vendorContractId, billingAccount, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), term, cancellation,
 				cancelledDate match {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
-				lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention)
+				None, None, /*lastModifyingUser, lastModifiedTime,*/ companyId, ContractType.findById(contractTypeId).get, attention)
 				//TODO handle error condiditions better
 		)
 		(
 			(contract: Contract) => Some((
-				contract.id, contract.contractId, 
+				contract.id, 
+				contract.vendorContractId, 
+				contract.billingAccount,
 				contract.name, 
 				contract.description, 
 				contract.mrc.toString, 
@@ -119,8 +119,8 @@ object Contracts extends Controller {
 					case Some(date) => Option(date.toDate)
 					case None => None
 				},
-				contract.lastModifyingUser,
-				contract.lastModifiedTime,
+				//contract.lastModifyingUser,
+				//contract.lastModifiedTime,
 				contract.companyId,
 				contract.contractType.id.get,
 				contract.attention))
@@ -159,7 +159,6 @@ object Contracts extends Controller {
 				val newId = Contract.create(contract)
 				Contract.findById(newId).map { existingContract =>
 					Redirect(routes.Contracts.view(newId))
-					//Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
 				}.getOrElse(NotFound)
 			}
 		)
@@ -167,7 +166,7 @@ object Contracts extends Controller {
 
   def edit(id: Long) = Action {
 		Contract.findById(id).map { existingContract =>
-			Ok(html.contract.edit_form(id, contractForm.fill(existingContract)))
+			Ok(html.contract.edit_form(existingContract, contractForm.fill(existingContract)))
 		}.getOrElse(NotFound)
 	}
 
@@ -176,7 +175,7 @@ object Contracts extends Controller {
 			formWithErrors => {
 				Contract.findById(id).map { 
 					existingContract => {
-						BadRequest(views.html.contract.form(formWithErrors))
+						BadRequest(views.html.contract.edit_form(existingContract, formWithErrors))
 					}
 				}.getOrElse(NotFound)
 			},
@@ -187,14 +186,15 @@ object Contracts extends Controller {
 					existingContract => {
 						try {
 							Contract.update(id, contract)
-							// If you changed the contractId (used for filing), change the location of attachments.
-							Attachments.changeContractId(existingContract.contractId, contract.contractId)
+							// If you changed the vendorContractId (used for filing), change the location of attachments.
+							// TODO handle missing company better
+							Attachments.changeVendorContractId(Company.findById(existingContract.companyId).get.name, existingContract.vendorContractId, contract.vendorContractId)
 							//TODO should redirect to view page or list, depending on where you came from
 							Redirect(routes.Contracts.all)
 							//Ok(views.html.contract.list(Contract.all(), filterForm))
 						} catch {
 							case e =>
-								Ok(html.contract.edit_form(id, contractForm.bindFromRequest, errorMessage = Some("A problem: " + e.getMessage)))
+								Ok(html.contract.edit_form(existingContract, contractForm.bindFromRequest, errorMessage = Some("A problem: " + e.getMessage)))
 						}
 					}
 				}.getOrElse(NotFound)
@@ -205,7 +205,7 @@ object Contracts extends Controller {
 
 	def view(id: Long) = Action { implicit request =>
 		Contract.findById(id).map { existingContract =>
-			Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, ""))
+			Ok(html.contract.view(existingContract, "Contract " + existingContract.vendorIdString(), ""))
 		}.getOrElse(NotFound)
 	}
 
@@ -213,13 +213,13 @@ object Contracts extends Controller {
 		println("Delete " + id)
 		Contract.findById(id).map { existingContract =>
 			{
-				val result = Attachments.deleteAll(existingContract.contractId)
+				val result = Attachments.deleteAll(existingContract.companyId, existingContract.vendorContractId)
 				if (result == None) {
 					Contract.delete(id)
 					Redirect(routes.Contracts.filtered)
 				} else {
 					// We are currently only allowing delete from the view page.
-					Ok(html.contract.view(existingContract, "Contract " + existingContract.contractId, "", 
+					Ok(html.contract.view(existingContract, "Contract " + existingContract.vendorIdString(), "", 
 						errorMessage = Some("Couldn't delete attachments: " + result)))
 					//Redirect(routes.Contracts.filtered)
 				}
