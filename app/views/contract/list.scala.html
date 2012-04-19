@@ -16,7 +16,7 @@
 			<th class="inner_display_column cost {'sorter':'cost'}">NRC</th>
 			<th class="inner_display_column location_code">Locations</th>
 			<th class="inner_display_column days_to_cancellation">Days to cancel</th>
-			<th class="inner_display_column billing_account">Billing Account</th>
+			<th class="inner_display_column billing-account">Billing Account</th>
 			<th class="attention"></th>
 			<th class="inner_display_column links {sorter: false}"></th>
 		</tr>
@@ -37,9 +37,9 @@
 					@contract.daysUntilCancellationDate 
 					} 
 				</td>
-				<td class="inner_display_column">@contract.billingAccount</td>
+				<td class="inner_display_column billing-account">@contract.billingAccount</td>
 				<td class="attention">@if(contract.attention!=None){
-					<a class="attention" href="">!<span>@contract.attention</span></a>
+					<a class="attention" href="#">!<span>@contract.attention</span></a>
 					}else{}</td>
 				<td class="inner_display_column contract-links"> 
 					<a href="@routes.Contracts.view(contract.id.get)">View</a>
