@@ -14,7 +14,8 @@ case class ReminderAndPeople(reminder: Reminder, people: List[Long]);
 case class Reminder(
 	id: Pk[Long], 
 	reminderDate: LocalDate, 
-	contractId: Long, 
+	//contractId: Long, 
+	contract: Contract,
 	sent: Boolean)
 
 object Reminder {
@@ -25,7 +26,8 @@ object Reminder {
 		get[Long]("contract_id") ~
 		get[Boolean]("sent") map {
 			case id~reminder_date~contract_id~sent => 
-				Reminder(id, new LocalDate(reminder_date), contract_id, sent)
+				Reminder(id, new LocalDate(reminder_date), Contract.findById(contract_id).get, sent)
+				// Note: should never get contract_id that isn't in database
 		}
 	}	
 
@@ -67,16 +69,12 @@ object Reminder {
 		SQL("select * from reminder order by reminder_date").as(reminder *)
 	}
 			  
-	/*def create(reminder: Reminder) {
-		println("The reminder date is " + formatDate(reminder.reminderDate))
-		create(new LocalDate(reminder.reminderDate), contractId)
-	}*/
 
 	def create(reminder: Reminder) {
 		DB.withConnection { implicit c =>
 			SQL("insert into reminder (reminder_date, contract_id) values ({reminder_date}, {contract_id})").on(
 				'reminder_date -> reminder.reminderDate.toString,
-				'contract_id -> reminder.contractId
+				'contract_id -> reminder.contract.id.get
 			).executeUpdate()
 		}
 	}
@@ -95,7 +93,7 @@ object Reminder {
 				).on(
 				'id -> id,
 				'reminder_date -> reminder.reminderDate.toString,
-				'contract_id -> reminder.contractId,
+				'contract_id -> reminder.contract.id.get,
 				'sent -> reminder.sent
 			).executeUpdate()
 		}

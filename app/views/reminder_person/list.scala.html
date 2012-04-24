@@ -15,7 +15,7 @@
 				</tr>
 				@rps.map { rp =>
 				<tr>
-					<td> @Reminder.findById(rp.reminderId).map(r => Contract.nameById(r.contractId)).getOrElse("")</td>
+					<td> @Reminder.findById(rp.reminderId).map(r => Contract.nameById(r.contract.id.get)).getOrElse("")</td>
 					<td class="inner_display_column">@Person.nameById(Some(rp.personId))</td>
 					<td>
 						<a onClick="return confirmDelete()" class="delete_link" href="@routes.ReminderPersons.delete(rp.reminderId, rp.personId)">delete</a></td>

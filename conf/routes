@@ -55,6 +55,8 @@ GET			/contracts/new							controllers.Contracts.emptyForm
 POST		/contracts/new							controllers.Contracts.create
 GET			/contracts/:id/delete				controllers.Contracts.delete(id: Long)
 
+GET			/emails/test								controllers.Emails.test
+
 POST		/attachments										controllers.Attachments.upload(companyId: Long, vendorContractId: String)
 GET			/attachments/delete							controllers.Attachments.delete(contractId: Long, companyName: String, vendorContractId: String, name: String, mode: String)
 GET			/attachments/:companyName/:vendorContractId/:name	controllers.Attachments.view(companyName: String, vendorContractId: String, name: String)

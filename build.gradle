@@ -1,0 +1,51 @@
+apply plugin:"java"
+apply plugin:"eclipse"
+apply plugin:"packaging"
+
+version="1.0.0"
+release="2"
+
+buildscript {
+	repositories {
+		mavenRepo urls: "http://build.ntkn.com/artifactory/repo"
+	}
+
+	dependencies {
+		classpath( group: 'com.ntkn', name: 'build-PackagingPlugin', version: '1.0-SNAPSHOT'){
+			changing = true
+		}
+	}
+}
+
+repositories {
+	maven {
+	   url "http://build.ntkn.com/artifactory/repo"
+	}
+}
+
+dependencies {
+   compile "contracts:contracts_2.9.1:1.0.0"
+}
+
+packages {
+	playApplication{
+		type "rpm"
+		type "zip"
+		name="ntkn-contract-management"
+		description="A web application to manage contracts"
+		
+		configFile("conf/application.conf")		
+
+		services{
+			playService{
+				name="ntkn-contract-management"
+				jvmArg '-Dconfig.file=${configDir}/application.conf'
+				jvmArg '-DapplyEvolutions.default=true'
+				description="Runs the web app for contract management on port 9000"
+				mainClass="play.core.server.NettyServer"
+				parameters=[ '${dataDir}' ]
+			}
+		}
+	}
+}//packages
+

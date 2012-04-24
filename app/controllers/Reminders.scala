@@ -8,6 +8,7 @@ import play.api.data.format._
 import org.joda.time._
 import anorm._
 
+import models.Contract
 import models.Reminder
 import models.ReminderAndPeople
 
@@ -104,13 +105,14 @@ object Reminders extends Controller {
 		)
 		(
 			(id, reminder_date, contract_id, sent, people) =>
-					ReminderAndPeople(new Reminder(id, new LocalDate(reminder_date), contract_id, sent), people)
+					ReminderAndPeople(new Reminder(id, new LocalDate(reminder_date), Contract.findById(contract_id).get, sent), people)
+					// TODO handle error can't find contract better
 		)
 		(
 			(rp: ReminderAndPeople) => Some ((
 				rp.reminder.id,
 				rp.reminder.reminderDate.toDate,
-				rp.reminder.contractId,
+				rp.reminder.contract.id.get,
 				rp.reminder.sent,
 				rp.people
 			))
