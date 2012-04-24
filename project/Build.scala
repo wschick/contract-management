@@ -16,7 +16,7 @@ object ApplicationBuild extends Build {
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
 			coffeescriptOptions := Seq("bare"),
-			credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
+			credentials += Credentials(Path.userHome / ".credentials"),
 			publishTo := Some("Artifactory Realm" at "http://build.ntkn.com/artifactory/libs-release-local/")
 
     )
