@@ -1,0 +1,30 @@
+@(budgetForm: Form[Budget], formAction: Call, cancelAction: Option[Call] = None, formLegend: String = "Form legend", submitButtonName: String = "Insert") 
+
+	@if(budgetForm.hasErrors) {
+		<div class="alert-message error">
+			<p>Please fix all errors</p>
+		</dev>
+	}
+
+	@helper.form(action = formAction) { 
+
+	<fieldset>
+		<legend>@formLegend</legend>
+
+		@helper.inputText(
+			budgetForm("name"),
+				'_label -> "Name of budget", '_showConstraints -> false, 'size -> 20
+			)
+
+	</fieldset>
+
+	<div class="actions">
+		<input type="submit" class="btn primary" value="@submitButtonName">
+		@if(cancelAction != None) {
+		<a href="@cancelAction" class="btn">Cancel</a>
+		}
+	</div>
+
+	}
+
+

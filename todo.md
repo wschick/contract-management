@@ -2,6 +2,10 @@ Current status: Everything around contracts works, now I need to get contracts t
 
 To do:
 
+* If a contract has passed cancellation, automatically add 365 to it (essentially, auto-renew it)
+* Possibly have 2 view of front page, one general, one with contract details. The other could have circuit id, contract id, cable id
+* Show MSA and service order relationship. Be able to see all related contracts.
+* Search function
 * In filter form, get filtering by status working
 * Add filtering by sent status and contract name to reminders.
 * Mark required fields consistently, and use a star or some color

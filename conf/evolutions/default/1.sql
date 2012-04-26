@@ -2,6 +2,11 @@
  
 # --- !Ups
 
+CREATE TABLE budget (
+	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	name varchar(20) NOT NULL
+);
+
 CREATE TABLE currency (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	abbreviation varchar(10) NOT NULL
@@ -71,7 +76,8 @@ CREATE TABLE contract (
 	last_modified_time datetime,
 	company_id integer NOT NULL,
 	contract_type_id integer NOT NULL,
-	attention varchar(300)
+	attention varchar(300),
+	budget_id integer NOT NULL
 );
 
 alter table contract add constraint fk_contract_currency_1 
@@ -94,14 +100,15 @@ create index ix_contract_z_end_1 on contract(z_end_id);
  
 /*SET REFERENTIAL_INTEGRITY FALSE;*/
 
+DROP TABLE budget;
 DROP TABLE currency;
 DROP TABLE location;
-DROP TABLE contract;
 DROP TABLE reminder_person;
 DROP TABLE reminder;
 DROP TABLE person;
 DROP TABLE company;
 DROP TABLE contract_type;
+DROP TABLE contract;
 
 /*SET REFERENTIAL_INTEGRITY TRUE;*/
 

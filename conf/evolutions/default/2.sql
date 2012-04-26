@@ -2,8 +2,15 @@
 
 # --- !Ups
 
+insert into budget(id, name) values (1, 'Unbudgeted');
+insert into budget(id, name) values (2, 'BAU');
+insert into budget(id, name) values (3, 'Expansion');
+
 insert into currency(id, abbreviation) values (1, 'USD');
-insert into currency(id, abbreviation) values (2, 'GBP');
+insert into currency(id, abbreviation) values (2, 'EUR');
+insert into currency(id, abbreviation) values (3, 'GBP');
+insert into currency(id, abbreviation) values (4, 'JPY');
+insert into currency(id, abbreviation) values (5, 'DKK');
 
 insert into location(id, code, description) values (1, ' NA', 'None'); 
 insert into location(id, code, description, address) values (2, 'WDC1', 'DC office', '529 14th Street NW, Washington, DC 2xsxx');
@@ -25,44 +32,44 @@ insert into contract_type(id, name) values(3, "Support");
 insert into contract(id, vendor_contract_id, billing_account, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	last_modifying_user, last_modified_time, company_id, contract_type_id)
+	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
 	values (1, '138209f8', '34803', 'Acme Singapore line 1', 'Line between Sydney and Singapore', 
-		1000, 1000, 1, 2, 1, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1, 1);
+		1000, 1000, 1, 2, 1, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1, 1, 2);
 
 insert into contract(id, vendor_contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	last_modifying_user, last_modified_time, company_id, contract_type_id, attention)
+	last_modifying_user, last_modified_time, company_id, contract_type_id, attention, budget_id)
 	values (2, '4980238', 'Acme NYC line 2', 'Far warning', 
-		7500, 33.40, 1, 2, 1, '2012-01-01', 4, 1, 1, 0, 'wrk', '2012-03-20', 1, 1, "Verify contract");
+		7500, 33.40, 2, 2, 1, '2012-01-01', 4, 1, 1, 0, 'wrk', '2012-03-20', 1, 1, "Verify contract", 3);
 
 insert into contract(id, vendor_contract_id, billing_account, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	last_modifying_user, last_modified_time, company_id, contract_type_id)
+	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
 	values (3, '1146378', '370999', 'Acme Dalls line 3', 'near warning', 
-		11000, 2333, 1, 2, 1, '2012-01-01', 4, 1, 10, 0, 'wrk', '2012-03-20', 1, 1);
+		11000, 2333, 3, 2, 1, '2012-01-01', 4, 1, 10, 0, 'wrk', '2012-03-20', 1, 1, 1);
 
 insert into contract(id, vendor_contract_id, billing_account, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	last_modifying_user, last_modified_time, company_id, contract_type_id)
-	values (4, 'RT87309', 'N21028', 'Acme Los Angeles 4', 'Line between Chicago and LA', 
-		33000, 2500, 1, 2, 1, '2012-01-01', 1, 2, 30, 0, 'wrk', '2012-03-20', 1, 1);
+	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
+	values (4, 'RT87309', 'N21028', 'Acme Los Angeles 4', 'Line between Chicago an3 LA', 
+		33000, 2500, 4, 2, 1, '2012-01-01', 1, 2, 30, 0, 'wrk', '2012-03-20', 1, 1, 2);
 
 insert into contract(id, vendor_contract_id, billing_account, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units, cancelled_date,
-	last_modifying_user, last_modified_time, company_id, contract_type_id)
+	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
 	values (5, '182098', '1280398302', 'Acme North Pole line 5', 'From Chicago to North Pole. Cancelled, replaced by Acme RT87309', 
-		150, 85, 1, 2, 1, '2010-01-01', 1, 2, 30, 0, '2010-11-15', 'wrk', '2012-03-20', 1, 1);
+		150, 85, 5, 2, 1, '2010-01-01', 1, 2, 30, 0, '2010-11-15', 'wrk', '2012-03-20', 1, 1, 1);
 
 insert into contract(id, vendor_contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
 	cancellation_period, cancellation_period_units,
-	last_modifying_user, last_modified_time, company_id, contract_type_id, attention)
+	last_modifying_user, last_modified_time, company_id, contract_type_id, attention, budget_id)
 	values (6, '372098', 'Cisco Support Contract', 'Support contract on the XXX cisco device', 
-		2000, 0, 2, 2, 1, '2012-01-01', 1, 2, 30, 0, 'wrk', '2012-04-12', 2, 3, "Transfer to billing");
+		2000, 0, 2, 2, 1, '2012-01-01', 1, 2, 30, 0, 'wrk', '2012-04-12', 2, 3, "Transfer to billing", 2);
 
 insert into reminder(id, reminder_date, contract_id) values (1, '2012-01-01', 1);
 
@@ -71,10 +78,12 @@ insert into reminder_person(reminder_id, person_id) values (1, 2);
 
 # --- !Downs
 
-delete from reminder_person;
-delete from reminder;
-delete from contract;
+delete from budget;
 delete from currency;
 delete from location;
+delete from reminder_person;
+delete from reminder;
 delete from person;
 delete from company;
+delete from contract_type;
+delete from contract;

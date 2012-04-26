@@ -27,7 +27,8 @@ case class Contract(
 	companyId: Long,
 	//company: Company,
 	contractType: ContractType,
-	attention: Option[String]
+	attention: Option[String],
+	budget: Budget
 	) {
 
 	/**
@@ -66,6 +67,8 @@ case class Contract(
 		}
 	}
 
+	def hasAttachments: Boolean = Attachment.contractHasAttachments(Company.findById(companyId).get.name, vendorContractId)
+
 	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(companyId).get.name, vendorContractId)
 
 
@@ -97,16 +100,18 @@ object Contract {
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") ~
 		get[Long]("contract_type_id") ~
-		get[Option[String]]("attention") map {
-			case id~vendorContractId~billingAccount~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention => 
+		get[Option[String]]("attention") ~
+		get[Long]("budget_id") map {
+			case id~vendorContractId~billingAccount~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention~budgetId => 
 				Contract(id, vendorContractId, billingAccount, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention)
-				//TODO this will blow up if it can't find the contractt type
+					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention,
+					Budget.findById(budgetId).get)
+				//TODO this will blow up if it can't find the contract type or budget
 		}
 	}	
 
@@ -171,12 +176,14 @@ object Contract {
 							vendor_contract_id, billing_account, name, description, mrc, nrc, 
 							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
-							last_modifying_user, last_modified_time, company_id, contract_type_id, attention) 
+							last_modifying_user, last_modified_time, company_id, contract_type_id, attention,
+							budget_id) 
 						values (
 							{vendorContractId}, {billing_account}, {name}, {description}, {mrc}, {nrc}, 
 							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
-							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id}, {attention})
+							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id}, {attention},
+							{budget_id})
 					"""
 					).on(
 					'vendorContractId -> contract.vendorContractId,
@@ -198,7 +205,8 @@ object Contract {
 					'last_modified_time -> new Date,
 					'companyId -> contract.companyId,
 					'contract_type_id -> contract.contractType.id,
-					'attention -> contract.attention
+					'attention -> contract.attention,
+					'budget_id -> contract.budget.id
 				).executeUpdate()
 				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 			}
@@ -217,7 +225,7 @@ object Contract {
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
 					cancelled_date={cancelled_date}, last_modifying_user={last_modifying_user}, 
 					last_modified_time={last_modified_time}, company_id={companyId}, contract_type_id={contract_type_id}, 
-					attention={attention} where id={id}
+					attention={attention}, budget_id={budget_id} where id={id}
 				"""
 				).on(
 				'id -> id,
@@ -240,7 +248,8 @@ object Contract {
 				'last_modified_time -> new Date,
 				'companyId -> contract.companyId,
 				'contract_type_id -> contract.contractType.id,
-				'attention -> contract.attention
+				'attention -> contract.attention,
+				'budget_id -> contract.budget.id
 				).executeUpdate()
 		}
 	}

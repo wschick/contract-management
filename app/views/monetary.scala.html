@@ -1,0 +1,10 @@
+@(value: Double, currency: String)
+
+@{currency match {
+	case "USD" => "$" + value
+	case "GBP" => "£" + value
+	case "EUR" => "€" + value
+	case "JPY" => "¥" + value
+	case _ => value + " " + currency
+	}
+}

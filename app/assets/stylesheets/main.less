@@ -19,6 +19,32 @@ body
 	.text-font;
 }
 
+.icon {
+	font-family: 'ContractoIconsRegular', sans-serif;
+	font-size: large;
+}
+
+a.icon {
+	text-decoration: none;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-left: 2px;
+	margin-right: 2px;
+	color: black;
+	transition: all 0.1s ease-in-out;
+	-webkit-transition: all 0.25s ease-in-out;
+	-moz-transitions: all 0.25s ease-in-out;
+}
+
+a.icon:hover {
+	background-color: @darkbackground;
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	box-shadow: 0 0px 20px rgba(0, 0, 0, 1);
+	-webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 1);
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+
 h1, h2, h3, h4
 {
 	.heading-font;

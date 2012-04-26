@@ -6,6 +6,12 @@
 GET     /                           controllers.Contracts.all
 GET     /settings                   controllers.Application.settings
 
+GET			/budget											controllers.Budgets.all
+GET			/budget/:id/edit						controllers.Budgets.edit(id: Long)
+POST		/budget/:id/edit						controllers.Budgets.update(id: Long)
+POST		/budget/new									controllers.Budgets.create
+GET			/budget/:id/delete					controllers.Budgets.delete(id: Long)
+
 GET			/currencies									controllers.Currencies.all
 POST		/currencies									controllers.Currencies.create
 GET			/currencies/:id/edit				controllers.Currencies.edit(id: Long)

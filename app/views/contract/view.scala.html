@@ -48,6 +48,7 @@
 					<tr><td class="blank-line"></td><td class="blank-line"></td>
 					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
 					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
+					<tr><td>Budget</td><td>@contract.budget.name</td></tr>
 					<tr><td class="blank-line"></td><td class="blank-line"></td>
 					<tr><td>Start date</td><td>@contract.startDate</td></tr>
 					<tr><td>Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
@@ -71,6 +72,7 @@
 			</ul>
 
 
+	<a name="attachments" />
 	@attachment_list(contract.id.get, contract.attachments)
 
 	@uploader(contract.companyId, contract.vendorContractId, Some(routes.Attachments.upload(contract.companyId, contract.vendorContractId)))

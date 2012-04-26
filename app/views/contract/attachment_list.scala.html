@@ -1,6 +1,6 @@
-@(contractId: Long, attachments: Seq[Attachment], mode: String = "view")
+@(contractId: Long, attachments: Seq[Attachment], mode: String = "view", containerType: String = "div", showHeading: Boolean = true)
 
-<div id="attachments">
+<@containerType class="attachments">
 	@if(attachments.length == 0) {
 		<p>No attachments</p>
 	} else {
@@ -13,4 +13,4 @@
 			}
 		</ul>
 	}
-</div>
+</@containerType>

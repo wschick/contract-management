@@ -115,6 +115,17 @@ table.currencies {
 
 }
 
+/******** BUDGETS ************/
+table.budgets { 
+
+	.basic_table;
+	
+	.budget_name {
+		.hilight_column
+	}
+
+}
+
 /******** CONTRACT TYPES ************/
 table.contract_types { 
 
@@ -155,6 +166,7 @@ table.contracts {
 	th.location_code { width: 6.5em; }
 	th.days_to_cancellation { width: 4em; }
 	th.attention { width: 2em; }
+	th.attachments { width: 1em; }
 	th.links {  }
 
 	/***** Cells *****/
@@ -176,6 +188,11 @@ table.contracts {
 	}
 
 	td.billing-account {
+		background-color: white;
+	}
+
+	td.attachments {
+		text-align: center;
 		background-color: white;
 	}
 
@@ -206,12 +223,77 @@ table.contracts {
 		.too-late-background;
 	}
 
-	a.attention {
+	span.dropv {
+		padding: 0px 10px 10px 0px;
+		text-align: left;
+	}
 
-		color: red;
+	span.dropv a.icon {
+	}
+
+	span.dropv ul { /* The popup characteristics */
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		position: absolute;
+		background: white;
+		text-align: left;
+		padding: 0px 0px 0px 4px;
+		width: 10em;
+		border: 1px solid black;
+		left: 600px;
+		visibility: hidden;
+	}
+
+	span.dropv:hover ul { visibility: visible }
+
+	span.dropv ul li a {
+		font-size: medium;
+		color: black;
+		display: block;
+		width: 10em;
+		padding: 5px;
+		.text-font;
+
+	}
+
+	span.dropv ul li a:hover {
+		font-weight: bold;
+	}
+	
+	a.attachments {
+		
+		color: green;
 		font-size: xx-large;
 		font-weight: bold;
 		text-decoration: none;
+
+		span{ 
+			visibility: hidden;
+			position: absolute;
+			left: -1000px;
+			width: 33em;
+			text-align: left;
+			padding: 20px;
+			color: black; 
+			background: white;
+			font-size: medium;
+			font-weight: normal;
+			border: 5px double black;
+		}
+
+	}
+	a.attachments:hover {
+		span { 
+			left: 220px;
+			visibility: visible;
+		}
+
+	}
+
+	a.attention {
+
+		color: red;
 
 		span { 
 			visibility: hidden;
@@ -225,6 +307,7 @@ table.contracts {
 			font-size: medium;
 			font-weight: normal;
 			border: 5px double black;
+			.text-font;
 		}
 
 		&:hover span { 

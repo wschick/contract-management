@@ -14,6 +14,7 @@ import views._
 import anorm._
 
 import models.Attachment
+import models.Budget
 import models.Company
 import models.Contract
 import models.ContractFilter
@@ -80,12 +81,13 @@ object Contracts extends Controller {
 			"cancelledDate" -> optional(date),
 			"companyId" -> longNumber,
 			"contractTypeId" -> longNumber,
-			"attention" -> optional(text)
+			"attention" -> optional(text),
+			"budgetId" -> longNumber
 		)
 		(
 			(id, vendorContractId, billingAccount, name, description, mrc, nrc, currency, aEnd, zEnd,
 			startDate, term, cancellation,
-			cancelledDate, companyId, contractTypeId, attention) => 
+			cancelledDate, companyId, contractTypeId, attention, budgetId) => 
 				Contract(NotAssigned, vendorContractId, billingAccount, name, description, mrc.toDouble,
 				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), term, cancellation,
@@ -93,8 +95,9 @@ object Contracts extends Controller {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
-				None, None, /*lastModifyingUser, lastModifiedTime,*/ companyId, ContractType.findById(contractTypeId).get, attention)
-				//TODO handle error condiditions better
+				None, None, /*lastModifyingUser, lastModifiedTime,*/ companyId, ContractType.findById(contractTypeId).get, 
+				attention, Budget.findById(budgetId).get)
+				//TODO handle error condiditions better. The findByIds could blow up
 		)
 		(
 			(contract: Contract) => Some((
@@ -111,10 +114,6 @@ object Contracts extends Controller {
 				contract.startDate.toDate,
 				contract.term,
 				contract.cancellationPeriod,
-				//contract.term.length,
-				//contract.term.units.value,
-				//contract.cancellationPeriod.length,
-				//contract.cancellationPeriod.units.value,
 				contract.cancelledDate match {
 					case Some(date) => Option(date.toDate)
 					case None => None
@@ -123,7 +122,8 @@ object Contracts extends Controller {
 				//contract.lastModifiedTime,
 				contract.companyId,
 				contract.contractType.id.get,
-				contract.attention))
+				contract.attention,
+				contract.budget.id.get))
 		)
 	)
 

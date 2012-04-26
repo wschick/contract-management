@@ -46,6 +46,10 @@ object Attachment {
 
 	/***** Attachments *****/
 
+	def contractHasAttachments(companyName: String, vendorContractId: String): Boolean = {
+		getContractAttachmentNames(companyName, vendorContractId) != null
+	}
+
 	def getContractAttachmentNames(companyName: String, vendorContractId: String): Array[String] = {
 		return contractDir(companyName, vendorContractId).list
 	}

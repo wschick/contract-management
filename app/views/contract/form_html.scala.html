@@ -50,7 +50,6 @@
 			'_label -> "Notes for attention", 'rows -> 2, 'cols -> 40
 		)
 
-
 		@select(
 			contractForm("contractTypeId"),
 			ContractType.options,
@@ -91,6 +90,13 @@
 			contractForm("currency"),
 			Currency.options,
 			'_label -> "Currency", '_default -> "-- Choose a currency --",
+			'_showConstraints -> false
+		)
+
+		@select(
+			contractForm("budgetId"),
+			Budget.options,
+			'_label -> "Budget", '_default -> "-- Choose a budget --",
 			'_showConstraints -> false
 		)
 
