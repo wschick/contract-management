@@ -77,7 +77,9 @@ CREATE TABLE contract (
 	company_id integer NOT NULL,
 	contract_type_id integer NOT NULL,
 	attention varchar(300),
-	budget_id integer NOT NULL
+	budget_id integer NOT NULL,
+	is_msa boolean NOT NULL default 0,
+	msa_id integer 
 );
 
 alter table contract add constraint fk_contract_currency_1 

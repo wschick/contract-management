@@ -1,10 +1,12 @@
 @(value: Double, currency: String)
 
-@{currency match {
-	case "USD" => "$" + value
-	case "GBP" => "£" + value
-	case "EUR" => "€" + value
-	case "JPY" => "¥" + value
-	case _ => value + " " + currency
+@{
+	val valueString = "%1.0f" format value
+	currency match {
+	case "USD" => "$" + valueString
+	case "GBP" => "£" + valueString
+	case "EUR" => "€" + valueString
+	case "JPY" => "¥" + valueString
+	case _ => valueString+ " " + currency
 	}
 }

@@ -17,6 +17,7 @@ import models.Attachment
 import models.Budget
 import models.Company
 import models.Contract
+import models.ContractCosts
 import models.ContractFilter
 import models.ContractType
 import models.Location
@@ -66,9 +67,14 @@ object Contracts extends Controller {
 			"billingAccount" -> optional(text),
 			"name" -> nonEmptyText,
 			"description" -> optional(text),
-			"mrc" -> nonEmptyText,
+			"cost" -> mapping("mrc" -> nonEmptyText, "nrc" -> nonEmptyText, "currencyId" -> longNumber)
+				((mrc, nrc, currencyId) => ContractCosts.create(mrc, nrc, currencyId))
+				/*((mrc, nrc, currencyId) => ContractCosts(mrc.toDouble, nrc.toDouble, currencyId))*/
+				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currencyId))),
+			/*"mrc" -> nonEmptyText,
 			"nrc" -> nonEmptyText,
 			"currency" -> longNumber,
+			*/
 			"aEnd" -> longNumber,
 			"zEnd" -> longNumber,
 			"startDate" -> date,
@@ -82,21 +88,23 @@ object Contracts extends Controller {
 			"companyId" -> longNumber,
 			"contractTypeId" -> longNumber,
 			"attention" -> optional(text),
-			"budgetId" -> longNumber
+			"budgetId" -> longNumber,
+			"isMSA" -> boolean,
+			"MSAId" -> optional(longNumber)
 		)
 		(
-			(id, vendorContractId, billingAccount, name, description, mrc, nrc, currency, aEnd, zEnd,
+			(id, vendorContractId, billingAccount, name, description, cost, aEnd, zEnd,
 			startDate, term, cancellation,
-			cancelledDate, companyId, contractTypeId, attention, budgetId) => 
-				Contract(NotAssigned, vendorContractId, billingAccount, name, description, mrc.toDouble,
-				nrc.toDouble, currency, Location.findById(aEnd).get, Location.findById(zEnd).get, 
+			cancelledDate, companyId, contractTypeId, attention, budgetId, isMSA, MSAId) => 
+				Contract(NotAssigned, vendorContractId, billingAccount, name, description, cost.mrc,
+				cost.nrc, cost.currencyId, Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				new LocalDate(startDate), term, cancellation,
 				cancelledDate match {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
 				None, None, /*lastModifyingUser, lastModifiedTime,*/ companyId, ContractType.findById(contractTypeId).get, 
-				attention, Budget.findById(budgetId).get)
+				attention, Budget.findById(budgetId).get, isMSA, MSAId)
 				//TODO handle error condiditions better. The findByIds could blow up
 		)
 		(
@@ -106,9 +114,10 @@ object Contracts extends Controller {
 				contract.billingAccount,
 				contract.name, 
 				contract.description, 
-				contract.mrc.toString, 
+				ContractCosts(contract.mrc, contract.nrc, contract.currencyId),
+				/*contract.mrc.toString, 
 				contract.nrc.toString, 
-				contract.currencyId,
+				contract.currencyId,*/
 				contract.aEnd.id, 
 				contract.zEnd.id,
 				contract.startDate.toDate,
@@ -123,7 +132,9 @@ object Contracts extends Controller {
 				contract.companyId,
 				contract.contractType.id.get,
 				contract.attention,
-				contract.budget.id.get))
+				contract.budget.id.get,
+				contract.isMSA,
+				contract.MSAId))
 		)
 	)
 

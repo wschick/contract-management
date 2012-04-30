@@ -45,6 +45,16 @@
 					<tr><td>Contract type</td><td>@contract.contractType.name</td></tr>
 					<tr><td>A end</td><td>@contract.aEnd.longString</td></tr>
 					<tr><td>Z end</td><td>@contract.zEnd.longString</td></tr>
+					<tr><td>MSA</td><td>@{
+						if (contract.isMSA) "This is an MSA"
+						else if (contract.MSAId == None) "No MSA"
+						else {
+							val msaId = contract.MSAId.get
+							val msaName = Contract.nameById(msaId).get
+							if (msaName == None) "Bad MSA - no MSA for Id " + msaId
+							else new Html("<a href=\"" + routes.Contracts.view(msaId) + "\">" + msaName + "</a>")
+							}
+							}</td></tr>
 					<tr><td class="blank-line"></td><td class="blank-line"></td>
 					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
 					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>

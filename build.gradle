@@ -2,8 +2,8 @@ apply plugin:"java"
 apply plugin:"eclipse"
 apply plugin:"packaging"
 
-version="1.0.0"
-release="2"
+version="1.0.1"
+release="1"
 
 buildscript {
 	repositories {
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-   compile "contracts:contracts_2.9.1:1.0.0"
+   compile "contracts:contracts_2.9.1:1.0.1"
 }
 
 packages {

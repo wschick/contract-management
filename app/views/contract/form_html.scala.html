@@ -71,23 +71,35 @@
 			'_showConstraints -> false
 		)
 
+		@checkbox(
+		contractForm("isMSA"), '_label ->"", '_text ->  "This is a MSA", 
+		'_showConstraints -> false, '_class -> "checkbox"
+		)
+
+		@select(
+			contractForm("MSAId"),
+			Contract.MSAOptions,
+			'_label -> "MSA", '_default -> "MSA",
+			'_showConstraints -> false
+		)
+
 	</fieldset>
 
 	<fieldset>
 		<legend>Costs</legend>
 
 		@inputText(
-			contractForm("mrc"),
+			contractForm("cost.mrc"),
 			'_label -> "MRC", 'size -> 10 
 		)
 
 		@inputText(
-			contractForm("nrc"),
+			contractForm("cost.nrc"),
 			'_label -> "NRC", 'size -> 10
 		)
 
 		@select(
-			contractForm("currency"),
+			contractForm("cost.currencyId"),
 			Currency.options,
 			'_label -> "Currency", '_default -> "-- Choose a currency --",
 			'_showConstraints -> false

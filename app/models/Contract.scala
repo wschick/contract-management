@@ -28,7 +28,9 @@ case class Contract(
 	//company: Company,
 	contractType: ContractType,
 	attention: Option[String],
-	budget: Budget
+	budget: Budget,
+	isMSA: Boolean,
+	MSAId: Option[Long] // Points to contract that is MSA.
 	) {
 
 	/**
@@ -71,7 +73,6 @@ case class Contract(
 
 	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(companyId).get.name, vendorContractId)
 
-
 }
 
 
@@ -94,23 +95,26 @@ object Contract {
 		get[Int]("cancellation_period") ~
 		get[Int]("cancellation_period_units") ~
 		get[Option[Date]]("cancelled_date") ~
-		/*get[Option[Int]]("reminder_period") ~
-		get[Option[Int]]("reminder_period_units") ~*/
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") ~
 		get[Long]("company_id") ~
 		get[Long]("contract_type_id") ~
 		get[Option[String]]("attention") ~
-		get[Long]("budget_id") map {
-			case id~vendorContractId~billingAccount~name~description~mrc~nrc~currencyId~aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~attention~budgetId => 
+		get[Long]("budget_id") ~
+		get[Boolean]("is_msa") ~
+		get[Option[Long]]("msa_id") map {
+			case id~vendorContractId~billingAccount~name~description~mrc~nrc~currencyId~
+				aEndId~zEndId~startDate~term~termUnits~cancellationPeriod~cancellationPeriodUnits~
+				cancelledDate~lastModifyingUser~lastModifiedTime~companyId~contractTypeId~
+				attention~budgetId~isMSA~msa_id => 
 				Contract(id, vendorContractId, billingAccount, name, description, mrc, nrc, currencyId,
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					new LocalDate(startDate), 
 					Term(term, TimePeriodUnits.create(termUnits)), 
 					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
 					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, attention,
-					Budget.findById(budgetId).get)
+					lastModifyingUser, lastModifiedTime, companyId, ContractType.findById(contractTypeId).get, 
+					attention, Budget.findById(budgetId).get, isMSA, msa_id)
 				//TODO this will blow up if it can't find the contract type or budget
 		}
 	}	
@@ -177,13 +181,13 @@ object Contract {
 							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
 							last_modifying_user, last_modified_time, company_id, contract_type_id, attention,
-							budget_id) 
+							budget_id, is_mas, msa_id) 
 						values (
 							{vendorContractId}, {billing_account}, {name}, {description}, {mrc}, {nrc}, 
 							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
 							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
 							{last_modifying_user}, {last_modified_time}, {companyId}, {contract_type_id}, {attention},
-							{budget_id})
+							{budget_id}, {is_msa}, {msa_id})
 					"""
 					).on(
 					'vendorContractId -> contract.vendorContractId,
@@ -206,7 +210,9 @@ object Contract {
 					'companyId -> contract.companyId,
 					'contract_type_id -> contract.contractType.id,
 					'attention -> contract.attention,
-					'budget_id -> contract.budget.id
+					'budget_id -> contract.budget.id,
+					'is_msa -> contract.isMSA,
+					'msa_id -> contract.MSAId
 				).executeUpdate()
 				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 			}
@@ -225,7 +231,7 @@ object Contract {
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
 					cancelled_date={cancelled_date}, last_modifying_user={last_modifying_user}, 
 					last_modified_time={last_modified_time}, company_id={companyId}, contract_type_id={contract_type_id}, 
-					attention={attention}, budget_id={budget_id} where id={id}
+					attention={attention}, budget_id={budget_id}, is_msa={is_msa}, msa_id={msa_id} where id={id}
 				"""
 				).on(
 				'id -> id,
@@ -249,7 +255,9 @@ object Contract {
 				'companyId -> contract.companyId,
 				'contract_type_id -> contract.contractType.id,
 				'attention -> contract.attention,
-				'budget_id -> contract.budget.id
+				'budget_id -> contract.budget.id,
+				'is_msa -> contract.isMSA,
+				'msa_id -> contract.MSAId
 				).executeUpdate()
 		}
 	}
@@ -272,6 +280,13 @@ object Contract {
 		*/
 	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
 		SQL("select * from contract order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
+	}
+
+	/** Make Map[String, String] needed for MSA select options in a form. 
+			This uses the name of the contract as the visible text.
+		*/
+	def MSAOptions: Seq[(String, String)] = DB.withConnection { implicit connection => 
+		SQL("select * from contract where is_msa=1 order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
 	}
 
 }
