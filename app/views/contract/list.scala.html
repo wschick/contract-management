@@ -9,11 +9,13 @@
 	<table class="contracts" id="contracts">
 		<thead>
 		<tr>
-			<th class="contract_id">Contract</td>
-			<th>Name</th>
-			<!--th class="contract_name">Name</th-->
+			<th class="vendor">Vendor</td>
+			<th class="inner_display_column vendor_contract_id">Vendor Contract ID</th>
+			<th class="inner_display_column billing_account">Billing Account</th>
+			<th class="inner_display_column contract_type">Type</th>
 			<th class="inner_display_column cost {'sorter':'cost'}">MRC</th>
-			<th class="inner_display_column location_code">Locations</th>
+			<th class="inner_display_column locations">Locations</th>
+			<th class="inner_display_column budget">Budget</td>
 			<th class="inner_display_column days_to_cancellation">Days to cancel</th>
 			<th class="attention"></th>
 			<th class="attachments"></th>
@@ -26,37 +28,39 @@
 				@defining(contract.status.name) { status => 
 
 				<tr class="@status">
-				<td class="contract_id">@Company.findById(contract.companyId).get.name @contract.vendorContractId</td>
-				<td class="inner_display_column">@contract.name</td>
-				<td class="inner_display_column">@monetary(contract.mrc, Currency.stringById(contract.currencyId))</td>
-				<!--td class="inner_display_column">@contract.mrc<br/>@Currency.stringById(contract.currencyId)</td-->
-				<td class="inner_display_column">@contract.aEnd.code / @contract.zEnd.code</td>
-				<td class="inner_display_column days-to-cancel">
-					@if(contract.status != CANCELLED) { 
-					@contract.daysUntilCancellationDate 
-					} 
-				</td>
-				<td class="attention">@if(contract.attention!=None){
-					<a class="attention icon" href="#">f<span>@contract.attention</span></a>
-					}else{}
-				</td>
-				<td class="attachments">@if(contract.hasAttachments){
-					<span class="dropv"><a class="icon" href="#">a</a>
-							<ul>
-								@contract.attachments.map{ attachment =>
-									<li>
-										<a href="@routes.Attachments.view(attachment.companyName, attachment.vendorContractId, attachment.fileName)" target="_new">@attachment.fileName</a>
-								</li>
-								}
-							</ul>
-					} else {}
-				</td>
-				<td class="inner_display_column contract-links"> 
-					<a title="View" href="@routes.Contracts.view(contract.id.get)" class="icon">I</a>
-					<a title="Edit" href="@routes.Contracts.edit(contract.id.get)" class="icon">e</a>
-					<!--a onClick="return confirmDelete()" href="@routes.Contracts.delete(contract.id.get)">Delete</a-->
-				</td>
-			</tr>
+					<td class="vendor">@Company.findById(contract.companyId).get.name</td>
+					<td class="inner_display_column vendor_contract_id">@contract.vendorContractId</td>
+					<td class="inner_display_column billing_account">@contract.billingAccount</td>
+					<td class="inner_display_column contract_type">@contract.contractType.name</td>
+					<td class="inner_display_column cost">@monetary(contract.mrc, Currency.stringById(contract.currencyId))</td>
+					<td class="inner_display_column locations">@contract.aEnd.code / @contract.zEnd.code</td>
+					<td class="inner_display_column budget">@contract.budget.name</td>
+					<td class="inner_display_column days-to-cancel">
+						@if(contract.status != CANCELLED) { 
+						@contract.daysUntilCancellationDate 
+						} 
+					</td>
+					<td class="attention">@if(contract.attention!=None){
+						<a class="attention icon" href="#">f<span>@contract.attention</span></a>
+						}else{}
+					</td>
+					<td class="attachments">@if(contract.hasAttachments){
+						<span class="dropv"><a class="icon" href="#">a</a>
+								<ul>
+									@contract.attachments.map{ attachment =>
+										<li>
+											<a href="@routes.Attachments.view(attachment.companyName, attachment.vendorContractId, attachment.fileName)" target="_new">@attachment.fileName</a>
+									</li>
+									}
+								</ul>
+						} else {}
+					</td>
+					<td class="inner_display_column contract-links"> 
+						<a title="View" href="@routes.Contracts.view(contract.id.get)" class="icon">I</a>
+						<a title="Edit" href="@routes.Contracts.edit(contract.id.get)" class="icon">e</a>
+						<!--a onClick="return confirmDelete()" href="@routes.Contracts.delete(contract.id.get)">Delete</a-->
+					</td>
+				</tr>
 			}
 		}
 	</tbody>

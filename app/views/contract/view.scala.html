@@ -55,16 +55,16 @@
 							else new Html("<a href=\"" + routes.Contracts.view(msaId) + "\">" + msaName + "</a>")
 							}
 							}</td></tr>
-					<tr><td class="blank-line"></td><td class="blank-line"></td>
+					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
 					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
 					<tr><td>Budget</td><td>@contract.budget.name</td></tr>
-					<tr><td class="blank-line"></td><td class="blank-line"></td>
+					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
+					<tr><td>Status</td><td>@contract.status.name</td></tr>
 					<tr><td>Start date</td><td>@contract.startDate</td></tr>
 					<tr><td>Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
 					<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
-					<tr><td class="blank-line"></td><td class="blank-line"></td>
-					<tr><td>Status</td><td>@contract.status.name</td></tr>
+					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
 					<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
 				</tbody>

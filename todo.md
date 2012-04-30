@@ -4,7 +4,7 @@ To do:
 
 * If a contract has passed cancellation, automatically add 365 to it (essentially, auto-renew it)
 * Possibly have 2 view of front page, one general, one with contract details. The other could have circuit id, contract id, cable id
-* Show MSA and service order relationship. Be able to see all related contracts.
+* Be able to filter on all contracts related to an MSA.
 * Search function
 * In filter form, get filtering by status working
 * Add filtering by sent status and contract name to reminders.
@@ -19,8 +19,6 @@ To do:
 * Why doesn't diagonal pattern for too-late work in Firefox? Why won't it work without webkit in chrome on my site, but works ok on example site?
 * Make sure quotes and other sensitive characters are escaped on input fields
 * Make new company popup on people page look better
-* Contract ID -> Vendor contract Number
-* Billing account number (new field, 20 characters), to appear in contracts list.
 * 2 reminders - one the day before the cancellation date, and the other 30 days prior to that.
 * In contract, make member data a Company, not a CompanyId
 * On contract view, make link back to list retain filtering

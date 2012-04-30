@@ -152,6 +152,10 @@ table.contracts {
 		background-position: center left;
 	}
 
+	th {
+		font-size: small;
+	}
+
 	th.headerSortUp { 
 		background-image: url(/assets/images/asc.gif);
 	}
@@ -171,8 +175,10 @@ table.contracts {
 
 	/***** Cells *****/
 
-	.contract_id {
-		.hilight_column
+	.vendor {
+		.hilight_column;
+		padding-left: 5px;
+		padding-right: 5px;
 	}
 
 	td.days-to-cancel { text-align: right; }
@@ -180,6 +186,7 @@ table.contracts {
 	td.blank-line {
 		border: none;
 		height: 20px;
+		background-color: lightgray;
 	}
 
 	td.contract-links {
