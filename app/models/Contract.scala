@@ -181,7 +181,7 @@ object Contract {
 							currency_id, a_end_id, z_end_id, start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
 							last_modifying_user, last_modified_time, company_id, contract_type_id, attention,
-							budget_id, is_mas, msa_id) 
+							budget_id, is_msa, msa_id) 
 						values (
 							{vendorContractId}, {billing_account}, {name}, {description}, {mrc}, {nrc}, 
 							{currency_id}, {a_end_id}, {z_end_id}, {start_date}, {term}, {term_units},
