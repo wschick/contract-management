@@ -55,10 +55,10 @@
 							else new Html("<a href=\"" + routes.Contracts.view(msaId) + "\">" + msaName + "</a>")
 							}
 							}</td></tr>
-					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
-					<tr><td>MRC</td><td>@contract.mrc @Currency.stringById(contract.currencyId)</td></tr>
-					<tr><td>NRC</td><td>@contract.nrc @Currency.stringById(contract.currencyId)</td></tr>
-					<tr><td>Budget</td><td>@contract.budget.name</td></tr>
+					<tr> <td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td></tr>
+					<tr><td>MRC</td><td>@monetary(contract.cost.mrc, contract.cost.currency.abbreviation))</td></tr>
+					<tr><td>NRC</td><td>@monetary(contract.cost.nrc, contract.cost.currency.abbreviation))</td></tr>
+					<tr><td>Budget</td><td>@contract.cost.budget.name</td></tr>
 					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Status</td><td>@contract.status.name</td></tr>
 					<tr><td>Start date</td><td>@contract.startDate</td></tr>

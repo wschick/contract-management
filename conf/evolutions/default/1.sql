@@ -57,29 +57,31 @@ CREATE TABLE reminder_person (
 -- For period units, 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	company_id integer NOT NULL,
 	vendor_contract_id varchar(30) NOT NULL,
 	billing_account varchar(20),
+	is_msa boolean NOT NULL default 0,
+	msa_id integer,
 	name varchar(200) NOT NULL,
 	description varchar(255),
+	contract_type_id integer NOT NULL,
+	a_end_id bigint NOT NULL, 
+	z_end_id bigint,
 	mrc double NOT NULL,
 	nrc double NOT NULL,
 	currency_id bigint NOT NULL, 
-	a_end_id bigint NOT NULL, 
-	z_end_id bigint,
+	budget_id integer NOT NULL,
 	start_date date NOT NULL,
 	term integer NOT NULL,
 	term_units integer NOT NULL, 
 	cancellation_period integer NOT NULL,
 	cancellation_period_units integer NOT NULL,
 	cancelled_date date,
-	last_modifying_user varchar(40),
-	last_modified_time datetime,
-	company_id integer NOT NULL,
-	contract_type_id integer NOT NULL,
+	auto_renew_period integer,
+	auto_renew__period_units integer,
 	attention varchar(300),
-	budget_id integer NOT NULL,
-	is_msa boolean NOT NULL default 0,
-	msa_id integer 
+	last_modifying_user varchar(40),
+	last_modified_time datetime
 );
 
 alter table contract add constraint fk_contract_currency_1 

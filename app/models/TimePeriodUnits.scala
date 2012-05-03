@@ -22,7 +22,7 @@ object TimePeriodUnits {
 			case MONTH.value => MONTH
 			case YEAR.value => YEAR
 			// TODO throw some reasonable exception here, instead of making bogus
-			case _ => BOGUS
+			case _ => throw new IllegalArgumentException("Unknown TimePeriodUnits value " + value)
 		}
 }
 
@@ -43,16 +43,6 @@ case object YEAR extends TimePeriodUnits {
 	val name = "Year" 
 	val pluralName = "Years"
 }
-
-/** This is bogus. We shouldn't have to do this. However, I added
-this hack because when making a contract in Contracts, we have to do something
-if we get an invalid number. */
-case object BOGUS extends TimePeriodUnits { 
-	val value = 3
-	val name = "NO UNIT" 
-	val pluralName = "NO UNITS"
-}
-
 
 }
 

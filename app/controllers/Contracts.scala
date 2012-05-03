@@ -63,20 +63,20 @@ object Contracts extends Controller {
 	val contractForm: Form[Contract] = Form(
 		mapping(
 			"id" -> ignored(NotAssigned:Pk[Long]),
+			"companyId" -> longNumber,
 			"vendorContractId" -> nonEmptyText,
 			"billingAccount" -> optional(text),
+			"isMSA" -> boolean,
+			"MSAId" -> optional(longNumber),
 			"name" -> nonEmptyText,
 			"description" -> optional(text),
-			"cost" -> mapping("mrc" -> nonEmptyText, "nrc" -> nonEmptyText, "currencyId" -> longNumber)
-				((mrc, nrc, currencyId) => ContractCosts.create(mrc, nrc, currencyId))
-				/*((mrc, nrc, currencyId) => ContractCosts(mrc.toDouble, nrc.toDouble, currencyId))*/
-				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currencyId))),
-			/*"mrc" -> nonEmptyText,
-			"nrc" -> nonEmptyText,
-			"currency" -> longNumber,
-			*/
+			"contractTypeId" -> longNumber,
 			"aEnd" -> longNumber,
 			"zEnd" -> longNumber,
+			"cost" -> mapping("mrc" -> nonEmptyText, "nrc" -> nonEmptyText, 
+				"currencyId" -> longNumber, "budgetId" -> longNumber)
+				((mrc, nrc, currencyId, budgetId) => ContractCosts.create(mrc, nrc, currencyId, budgetId))
+				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currency.id, cc.budget.id.get))),
 			"startDate" -> date,
 			"term" -> mapping("termLength" -> number, "termUnits" -> number)
 				((termLength, termUnits) => Term(termLength, TimePeriodUnits.create(termUnits)))
@@ -85,41 +85,55 @@ object Contracts extends Controller {
 				((len, units) => Term(len, TimePeriodUnits.create(units)))
 				((t: Term) => Some((t.length, t.units.value))),
 			"cancelledDate" -> optional(date),
-			"companyId" -> longNumber,
-			"contractTypeId" -> longNumber,
-			"attention" -> optional(text),
-			"budgetId" -> longNumber,
-			"isMSA" -> boolean,
-			"MSAId" -> optional(longNumber)
+			"autoRenewPeriod" -> mapping("len" -> optional(number), "units" -> optional(number))
+				((len, units) => {
+					if (len == None || units == None) None 
+					else Some(Term(len.get, TimePeriodUnits.create(units.get)))
+					})
+				((t: Option[Term]) => {
+					if (t == None) None
+					else Some((Some(t.get.length), Some(t.get.units.value)))
+					}),
+			"attention" -> optional(text)
 		)
 		(
-			(id, vendorContractId, billingAccount, name, description, cost, aEnd, zEnd,
-			startDate, term, cancellation,
-			cancelledDate, companyId, contractTypeId, attention, budgetId, isMSA, MSAId) => 
-				Contract(NotAssigned, vendorContractId, billingAccount, name, description, cost.mrc,
-				cost.nrc, cost.currencyId, Location.findById(aEnd).get, Location.findById(zEnd).get, 
+			(id, companyId, vendorContractId, billingAccount, isMSA, MSAId,
+			name, description, contractTypeId, 
+			aEnd, zEnd,
+			cost, 
+			startDate, term, cancellation, cancelledDate, autoRenewPeriod,
+			attention 
+			) => 
+				Contract(NotAssigned, companyId, vendorContractId, billingAccount, isMSA, MSAId,
+				name, description, ContractType.findById(contractTypeId).get, 
+				Location.findById(aEnd).get, Location.findById(zEnd).get, 
+				cost,
+				/*cost.mrc, cost.nrc, cost.currencyId, Budget.findById(budgetId).get,*/
 				new LocalDate(startDate), term, cancellation,
 				cancelledDate match {
 					case Some(date) => Some(new LocalDate(date))
 					case None => None
 				},
-				None, None, /*lastModifyingUser, lastModifiedTime,*/ companyId, ContractType.findById(contractTypeId).get, 
-				attention, Budget.findById(budgetId).get, isMSA, MSAId)
+				autoRenewPeriod,
+				attention, 
+				None, None /*lastModifyingUser, lastModifiedTime,*/ )
 				//TODO handle error condiditions better. The findByIds could blow up
 		)
 		(
 			(contract: Contract) => Some((
 				contract.id, 
+				contract.companyId,
 				contract.vendorContractId, 
 				contract.billingAccount,
+				contract.isMSA,
+				contract.MSAId,
 				contract.name, 
 				contract.description, 
-				ContractCosts(contract.mrc, contract.nrc, contract.currencyId),
-				/*contract.mrc.toString, 
-				contract.nrc.toString, 
-				contract.currencyId,*/
+				contract.contractType.id.get,
 				contract.aEnd.id, 
 				contract.zEnd.id,
+				contract.cost,
+				/*ContractCosts(contract.mrc, contract.nrc, contract.currencyId, contract.budget.id.get),*/
 				contract.startDate.toDate,
 				contract.term,
 				contract.cancellationPeriod,
@@ -127,14 +141,11 @@ object Contracts extends Controller {
 					case Some(date) => Option(date.toDate)
 					case None => None
 				},
+				contract.autoRenewPeriod,
+				contract.attention
 				//contract.lastModifyingUser,
-				//contract.lastModifiedTime,
-				contract.companyId,
-				contract.contractType.id.get,
-				contract.attention,
-				contract.budget.id.get,
-				contract.isMSA,
-				contract.MSAId))
+				//contract.lastModifiedTime
+				))
 		)
 	)
 

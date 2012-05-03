@@ -29,6 +29,8 @@ Emails
 * 2 reminders - one the day before the cancellation date, and the other 30 days prior to that.
 
 Internals
+* Get login working.
 * Consider using either Int or BigDecimal for the mrc and nrc. If there is never a fractional part, just use Int.
 * In contract, make member data a Company, not a CompanyId
 * Make a print stylesheet
+* Fix warning in code.

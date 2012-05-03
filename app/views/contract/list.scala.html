@@ -32,9 +32,9 @@
 					<td class="inner_display_column vendor_contract_id">@contract.vendorContractId</td>
 					<td class="inner_display_column billing_account">@contract.billingAccount</td>
 					<td class="inner_display_column contract_type">@contract.contractType.name</td>
-					<td class="inner_display_column cost">@monetary(contract.mrc, Currency.stringById(contract.currencyId))</td>
+					<td class="inner_display_column cost">@monetary(contract.cost.mrc, contract.cost.currency.abbreviation))</td>
 					<td class="inner_display_column locations">@contract.aEnd.code / @contract.zEnd.code</td>
-					<td class="inner_display_column budget">@contract.budget.name</td>
+					<td class="inner_display_column budget">@contract.cost.budget.name</td>
 					<td class="inner_display_column days-to-cancel">
 						@if(contract.status != CANCELLED) { 
 						@contract.daysUntilCancellationDate 

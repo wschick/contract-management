@@ -3,18 +3,22 @@ package models
 case class ContractCosts(
 	mrc: Double,
 	nrc: Double,
-	currencyId: Long) {
+	currency: Currency,
+	budget: Budget) {
 
 	def currencyAbbreviation(): String = {
-		val currency = Currency.findById(currencyId)
-		if (currency == None) return "???"
-		else return currency.get.abbreviation
+		currency.abbreviation
 	}
 }
 
 object ContractCosts {
 
-	def create(mrc: String, nrc: String, currencyId: Long): ContractCosts = {
-		ContractCosts(mrc.toDouble, nrc.toDouble, currencyId)
+	def create(mrc: Double, nrc: Double, currencyId: Long, budgetId: Long): ContractCosts = {
+		ContractCosts(mrc, nrc, Currency.findById(currencyId).get, Budget.findById(budgetId).get)
+		// TODO handle missing currency and budget better
+	}
+
+	def create(mrc: String, nrc: String, currencyId: Long, budgetId: Long): ContractCosts = {
+		ContractCosts.create(mrc.toDouble, nrc.toDouble, currencyId, budgetId)
 	}
 }
