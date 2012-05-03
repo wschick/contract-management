@@ -102,7 +102,6 @@ create index ix_contract_z_end_1 on contract(z_end_id);
 
 # --- !Downs
  
-/*SET REFERENTIAL_INTEGRITY FALSE;*/
 
 DROP TABLE budget;
 DROP TABLE currency;
@@ -114,5 +113,4 @@ DROP TABLE company;
 DROP TABLE contract_type;
 DROP TABLE contract;
 
-/*SET REFERENTIAL_INTEGRITY TRUE;*/
 
