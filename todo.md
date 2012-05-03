@@ -19,6 +19,7 @@ Views
 * Add paging to contracts table
 * Make new company popup on people page look better
 * On contract view, make link back to list retain filtering
+* Have a consistent format for dates.
 
 Forms
 =====

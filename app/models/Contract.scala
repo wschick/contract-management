@@ -174,7 +174,7 @@ object Contract {
 				SQL(
 					"""
 						insert into contract (
-							company_id, vendor_contract_id, billing_account, is_msa, msa_id
+							company_id, vendor_contract_id, billing_account, is_msa, msa_id,
 							name, description, contract_type_id, a_end_id, z_end_id, 
 							mrc, nrc, currency_id, budget_id, 
 							start_date, term, term_units, 
