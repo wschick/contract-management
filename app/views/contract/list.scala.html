@@ -11,7 +11,7 @@
 		<tr>
 			<th class="vendor">Vendor</td>
 			<th class="inner_display_column vendor_contract_id">Contract ID</th>
-			<th class="inner_display_column billing_account">Billing Account</th>
+			<!--th class="inner_display_column billing_account">Billing Account</th-->
 			<th class="inner_display_column contract_type">Type</th>
 			<th class="inner_display_column cost {'sorter':'cost'}">MRC</th>
 			<th class="inner_display_column locations">Locations</th>
@@ -30,7 +30,7 @@
 				<tr class="@status">
 					<td class="vendor">@Company.findById(contract.companyId).get.name</td>
 					<td class="inner_display_column vendor_contract_id">@contract.vendorContractId</td>
-					<td class="inner_display_column billing_account">@contract.billingAccount</td>
+					<!--td class="inner_display_column billing_account">@contract.billingAccount</td-->
 					<td class="inner_display_column contract_type">@contract.contractType.name</td>
 					<td class="inner_display_column cost">@monetary(contract.cost.mrc, contract.cost.currency.abbreviation)</td>
 					<td class="inner_display_column locations">@contract.aEnd.code/@contract.zEnd.code</td>
