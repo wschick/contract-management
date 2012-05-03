@@ -10,6 +10,35 @@ import models.TimePeriodUnits
 
 class DateUtilTest extends Specification {
 
+	"Last day calculation for no renewal period" should {
+
+		//============ NO RENEWAL PERIOD =====================
+
+		"be Jan 30, 2000 on January 10" in {
+			val startDate = new LocalDate(2000, 1, 1)
+			val initialTerm = Term(30, TimePeriodUnits.DAY)
+			val autoRenewalPeriod = None
+			val today = new LocalDate(2000, 1, 10)
+			val lastDay = DateUtil.calculateLastDay(startDate, initialTerm, autoRenewalPeriod, today)
+			lastDay.getYear must be equalTo(2000) 
+			lastDay.getMonthOfYear must be equalTo(1) 
+			lastDay.getDayOfMonth must be equalTo(30)
+		}
+
+		"be Jan 30, 2000 on Fanuary 10" in {
+			val startDate = new LocalDate(2000, 1, 1)
+			val initialTerm = Term(30, TimePeriodUnits.DAY)
+			val autoRenewalPeriod = None
+			val today = new LocalDate(2000, 2, 10)
+			val lastDay = DateUtil.calculateLastDay(startDate, initialTerm, autoRenewalPeriod, today)
+			lastDay.getYear must be equalTo(2000) 
+			lastDay.getMonthOfYear must be equalTo(1) 
+			lastDay.getDayOfMonth must be equalTo(30)
+		}
+
+	}
+
+
 	"Last day calculation for days renewal period" should {
 
 		//============ DAYS RENEWAL PERIOD =====================
@@ -104,6 +133,45 @@ class DateUtilTest extends Specification {
 			lastDay.getDayOfMonth must be equalTo(31)
 		}
 	}
+
+	//============ DAYS WHERE RENEWAL IS ON LEAP DAY  =====================
+
+	"Last day calculation when end of initial term falls on leap day" should {
+
+		"be Feb 29 for contract yet to start" in {
+			val startDate = new LocalDate(2000, 2, 21)
+			val term = Term(9, TimePeriodUnits.DAY)
+			val arp = Some(Term(10, TimePeriodUnits.DAY))
+			val today = new LocalDate(2000, 1, 1)
+			val lastDay = DateUtil.calculateLastDay(startDate, term, arp, today)
+			lastDay.getYear must be equalTo(2000) 
+			lastDay.getMonthOfYear must be equalTo(2) 
+			lastDay.getDayOfMonth must be equalTo(29)
+		}
+
+		"be Feb 29 for initial term" in {
+			val startDate = new LocalDate(2000, 2, 21)
+			val term = Term(9, TimePeriodUnits.DAY)
+			val arp = Some(Term(10, TimePeriodUnits.DAY))
+			val today = new LocalDate(2000, 2, 23)
+			val lastDay = DateUtil.calculateLastDay(startDate, term, arp, today)
+			lastDay.getYear must be equalTo(2000) 
+			lastDay.getMonthOfYear must be equalTo(2) 
+			lastDay.getDayOfMonth must be equalTo(29)
+		}
+
+		"be Mar 10 for second term" in {
+			val startDate = new LocalDate(2000, 2, 21)
+			val term = Term(9, TimePeriodUnits.DAY)
+			val arp = Some(Term(10, TimePeriodUnits.DAY))
+			val today = new LocalDate(2000, 3, 2)
+			val lastDay = DateUtil.calculateLastDay(startDate, term, arp, today)
+			lastDay.getYear must be equalTo(2000) 
+			lastDay.getMonthOfYear must be equalTo(3) 
+			lastDay.getDayOfMonth must be equalTo(10)
+		}
+	}
+
 
 	//============ 1 MONTH TERM, 1 MONTH RENEWAL PERIOD =====================
 

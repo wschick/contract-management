@@ -13,6 +13,10 @@
 		</dev>
 	}
 
+	@contractForm.errors.map{err => 
+	<p>@err</p>
+	}
+
 	@form(action=formAction, 'class -> "form") {
 
 	<fieldset>
@@ -106,7 +110,7 @@
 		)
 
 		@select(
-			contractForm("budgetId"),
+			contractForm("cost.budgetId"),
 			Budget.options,
 			'_label -> "Budget", '_default -> "-- Choose a budget --",
 			'_showConstraints -> false
@@ -124,13 +128,25 @@
 
 		@inputText(
 			contractForm("term.termLength"),
-			'_label -> "Term Length", 'size -> 3
+			'_label -> "Initial term length", 'size -> 3
 		)
 
 		@select(
 			contractForm("term.termUnits"),
 			TimePeriodUnits.options,
-			'_label -> "Term units", '_default -> "-- Choose term units --",
+			'_label -> "Initial term units", '_default -> "-- Choose term units --",
+			'_showConstraints -> false
+		)
+
+		@inputText(
+			contractForm("autoRenewPeriod.len"),
+			'_label -> "Auto-renewal period (optional)", 'size -> 3
+		)
+
+		@select(
+			contractForm("autoRenewPeriod.units"),
+			TimePeriodUnits.options,
+			'_label -> "Auto-renewal period units (optional)", '_default -> "-- Choose auto-renewal period units --",
 			'_showConstraints -> false
 		)
 
@@ -142,7 +158,7 @@
 		@select(
 			contractForm("cancellation.units"),
 			TimePeriodUnits.options,
-			'_label -> "cancellation period units", '_default -> "-- Choose cancellation period units --",
+			'_label -> "Cancellation period units", '_default -> "-- Choose cancellation period units --",
 			'_showConstraints -> false
 		)
 

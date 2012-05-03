@@ -2,6 +2,7 @@ package models
 
 import anorm._
 import anorm.SqlParser._
+import play.api._
 import play.api.db._
 import play.api.Play.current
 import org.joda.time._
@@ -50,8 +51,9 @@ case class Contract(
 
 	def daysUntilCancellationDate(): Int = {
 		Days.daysBetween(new LocalDate(), cancellationDate()).getDays
-
 	}
+
+	def willAutoRenew(): Boolean = autoRenewPeriod != None
 
 	def status(): ContractStatus = {
 		cancelledDate match {
@@ -121,7 +123,9 @@ object Contract {
 					{ if (autoRenewPeriod == None || autoRenewPeriodUnits == None) None
 						else Some(Term(autoRenewPeriod.get, TimePeriodUnits.create(autoRenewPeriodUnits.get))) }, 
 					attention, 
-					lastModifyingUser, Some(new LocalDate(lastModifiedTime)))
+					lastModifyingUser, 
+					lastModifiedTime.map(lmt => Some(new LocalDate(lmt))).getOrElse(None)
+					)
 				//TODO this will blow up if it can't find the contract type or budget
 		}
 	}	
@@ -209,7 +213,9 @@ object Contract {
 					'term_units -> contract.term.units.value,
 					'cancellation_period -> contract.cancellationPeriod.length,
 					'cancellation_period_units -> contract.cancellationPeriod.units.value,
-					'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
+					'cancelled_date -> contract.cancelledDate.map(date => date.toDate),
+					'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
+					'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
 					'attention -> contract.attention,
 					'last_modifying_user -> "unknown user",
 					'last_modified_time -> new Date()
@@ -220,7 +226,7 @@ object Contract {
 	}
 
 	def update(id: Long, contract: Contract) {
-		println("updating id " + id)
+		Logger.debug("updating id " + id)
 		DB.withConnection { implicit connection =>
 				SQL(
 				"""
@@ -233,7 +239,7 @@ object Contract {
 					start_date={start_date}, term={term}, term_units={term_units},
 					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
 					cancelled_date={cancelled_date}, 
-					auto_renew_period={auto_renew_period), auto_renew_period_units={auto_renew_period_units},
+					auto_renew_period={auto_renew_period}, auto_renew_period_units={auto_renew_period_units},
 					attention={attention}, 
 					last_modifying_user={last_modifying_user}, last_modified_time={last_modified_time} 
 					where id={id}
@@ -259,9 +265,9 @@ object Contract {
 				'term_units -> contract.term.units.value,
 				'cancellation_period -> contract.cancellationPeriod.length,
 				'cancellation_period_units -> contract.cancellationPeriod.units.value,
-				'cancelled_date -> contract.cancelledDate.map(date => date.toDate).getOrElse(None),
+				'cancelled_date -> contract.cancelledDate.map(date => date.toDate),
 				'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
-				'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units),
+				'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
 				'attention -> contract.attention,
 				'last_modifying_user -> "unknown user",
 				'last_modified_time -> new Date

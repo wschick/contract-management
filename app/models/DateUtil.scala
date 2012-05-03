@@ -2,6 +2,7 @@ package models
 
 import org.joda.time._
 import java.util.Date
+import play.api._
 
 /** 
 	Object that does calculations on dates 
@@ -20,15 +21,6 @@ object DateUtil {
 				Years.years(term.length)
 			}
 		}
-	}
-
-	def isLeapDay(day: LocalDate): Boolean = {
-			day.getMonthOfYear == 2 && day.getDayOfMonth == 29
-	}
-
-	def lastDayAdjustment(day: LocalDate): ReadablePeriod = {
-		if (isLeapDay(day)) return Days.days(0)
-		else return Days.days(1)
 	}
 
 	/**
@@ -53,24 +45,25 @@ object DateUtil {
 		today: LocalDate = LocalDate.now()
 	): LocalDate = {
 
-		val arp = autoRenewPeriod.get
 		val termPeriod = termToPeriod(term)
 		var firstRenewalDate = startDate.plus(termPeriod)
-		if ((arp.units == TimePeriodUnits.MONTH || arp.units == TimePeriodUnits.YEAR) && 
-			firstRenewalDate.getDayOfMonth != startDate.getDayOfMonth) 
-		{
+		if (term.units != TimePeriodUnits.DAY && firstRenewalDate.getDayOfMonth != startDate.getDayOfMonth) {
 			firstRenewalDate = firstRenewalDate.plus(Days.ONE)
 		}
+		println("Start " + startDate + ", term " + term + ", first renewal " + firstRenewalDate)
 		val firstEndDate = firstRenewalDate.minus(Days.ONE)
 
 		val daysSinceFirstEnd = Days.daysBetween(firstEndDate, today).getDays;
 
-		println("Calculate start " + startDate + ", term " + term + ", arp " + autoRenewPeriod.get + ", today " + today)
-		println("First renewal " + firstRenewalDate + ", first end date "  + firstEndDate + ", " + daysSinceFirstEnd + " days since then");
+		Logger.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		Logger.debug("Calculate start " + startDate + ", term " + term + ", arp " + autoRenewPeriod + ", today " + today)
+		Logger.debug("First renewal " + firstRenewalDate + ", first end date "  + firstEndDate + ", " + daysSinceFirstEnd + " days since then");
 
 
 		if (today.compareTo(firstEndDate) <= 0 || autoRenewPeriod == None) return firstEndDate
 		else { // We have auto renewed
+
+			val arp = autoRenewPeriod.get
 
 			arp.units match {
 				case TimePeriodUnits.DAY => {
@@ -87,8 +80,8 @@ object DateUtil {
 					if (secondRenewal.getDayOfMonth != firstRenewalDate.getDayOfMonth) {
 						secondRenewal= secondRenewal.plus(Days.ONE)
 					}
-					println("rp " + renewalPeriod + " nrp " + numRenewalPeriods + " sr " + secondRenewal)
-					println(secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE))
+					Logger.debug("rp " + renewalPeriod + " nrp " + numRenewalPeriods + " sr " + secondRenewal)
+					Logger.debug(secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE).toString)
 					secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE);
 				}
 				case TimePeriodUnits.YEAR => {
@@ -98,8 +91,8 @@ object DateUtil {
 					if (secondRenewal.getDayOfMonth != firstRenewalDate.getDayOfMonth) {
 						secondRenewal= secondRenewal.plus(Days.ONE)
 					}
-					println("rp " + renewalPeriod + " nrp " + numRenewalPeriods + " sr " + secondRenewal)
-					println(secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE))
+					Logger.debug("rp " + renewalPeriod + " nrp " + numRenewalPeriods + " sr " + secondRenewal)
+					Logger.debug(secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE).toString)
 					secondRenewal.plus(renewalPeriod.multipliedBy(numRenewalPeriods)).minus(Days.ONE)
 				}
 			}

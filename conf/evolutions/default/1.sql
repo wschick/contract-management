@@ -78,7 +78,7 @@ CREATE TABLE contract (
 	cancellation_period_units integer NOT NULL,
 	cancelled_date date,
 	auto_renew_period integer,
-	auto_renew__period_units integer,
+	auto_renew_period_units integer,
 	attention varchar(300),
 	last_modifying_user varchar(40),
 	last_modified_time datetime

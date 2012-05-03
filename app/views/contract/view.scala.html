@@ -23,7 +23,16 @@
 				}
 				case _ => {
 					@notice(contract.status) {
-						<p>Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()</p>
+					<p>@if(contract.willAutoRenew){
+						Current contract term ends on @contract.lastDay() and will auto-renew for 
+						@contract.autoRenewPeriod.map{arp =>  
+							@arp.length @arp.units.asString(arp.length)
+						}
+					} else {
+						Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()
+					}
+					</p>
+
 						<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
 					}
 				}
@@ -56,13 +65,22 @@
 							}
 							}</td></tr>
 					<tr> <td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td></tr>
-					<tr><td>MRC</td><td>@monetary(contract.cost.mrc, contract.cost.currency.abbreviation))</td></tr>
-					<tr><td>NRC</td><td>@monetary(contract.cost.nrc, contract.cost.currency.abbreviation))</td></tr>
+					<tr><td>MRC</td><td>@monetary(contract.cost.mrc, contract.cost.currency.abbreviation)</td></tr>
+					<tr><td>NRC</td><td>@monetary(contract.cost.nrc, contract.cost.currency.abbreviation)</td></tr>
 					<tr><td>Budget</td><td>@contract.cost.budget.name</td></tr>
 					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Status</td><td>@contract.status.name</td></tr>
 					<tr><td>Start date</td><td>@contract.startDate</td></tr>
-					<tr><td>Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
+					<tr><td>Initial Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
+					<tr><td>Auto Renew</td><td>
+						@if(contract.willAutoRenew){
+							@contract.autoRenewPeriod.map{arp =>  
+								every @arp.length @arp.units.asString(arp.length)
+							}
+						} else {
+							No
+						}
+					</td></tr>
 					<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
 					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>

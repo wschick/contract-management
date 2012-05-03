@@ -12,7 +12,7 @@ insert into currency(id, abbreviation) values (3, 'GBP');
 insert into currency(id, abbreviation) values (4, 'JPY');
 insert into currency(id, abbreviation) values (5, 'DKK');
 
-insert into location(id, code, description) values (1, ' NA', 'None'); 
+insert into location(id, code, description) values (1, 'NA', 'None'); 
 insert into location(id, code, description, address) values (2, 'WDC1', 'DC office', '529 14th Street NW, Washington, DC 2xsxx');
 insert into location(id, code, description) values (3, 'WDC2', 'Dept. of Labor Lockup');
 insert into location(id, code, description, address) values (4, 'WDC3', 'Dept. of Commerce Lockup', '200 14th Street NW, Washtingon, DC');
@@ -34,7 +34,7 @@ insert into contract(id, vendor_contract_id, billing_account, name, description,
 	cancellation_period, cancellation_period_units,
 	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
 	values (1, '138209f8', '34803', 'Acme Singapore line 1', 'Line between Sydney and Singapore', 
-		1000, 1000, 1, 2, 1, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1, 1, 2);
+		1000, 1000, 1, 2, 3, '2012-03-01', 1, 1, 90, 0, 'wrk', '2012-03-20', 1, 1, 2);
 
 insert into contract(id, vendor_contract_id, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
@@ -48,7 +48,7 @@ insert into contract(id, vendor_contract_id, billing_account, name, description,
 	cancellation_period, cancellation_period_units,
 	last_modifying_user, last_modified_time, company_id, contract_type_id, budget_id)
 	values (3, '1146378', '370999', 'Acme Dalls line 3', 'near warning', 
-		11000, 2333, 3, 2, 1, '2012-01-01', 4, 1, 10, 0, 'wrk', '2012-03-20', 1, 1, 1);
+		11000, 2333, 3, 2, 4, '2012-01-01', 4, 1, 10, 0, 'wrk', '2012-03-20', 1, 1, 1);
 
 insert into contract(id, vendor_contract_id, billing_account, name, description, mrc, nrc, currency_id, 
 	a_end_id, z_end_id, start_date, term, term_units,
