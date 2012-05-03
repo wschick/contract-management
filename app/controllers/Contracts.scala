@@ -20,6 +20,7 @@ import models.Contract
 import models.ContractCosts
 import models.ContractFilter
 import models.ContractType
+import models.DateUtil
 import models.Location
 import models.Term
 import models.TimePeriodUnits
@@ -77,14 +78,14 @@ object Contracts extends Controller {
 				"currencyId" -> longNumber, "budgetId" -> longNumber)
 				((mrc, nrc, currencyId, budgetId) => ContractCosts.create(mrc, nrc, currencyId, budgetId))
 				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currency.id, cc.budget.id.get))),
-			"startDate" -> date,
+			"startDate" -> date(DateUtil.dateFmtString),
 			"term" -> mapping("termLength" -> number, "termUnits" -> number)
 				((termLength, termUnits) => Term(termLength, TimePeriodUnits.create(termUnits)))
 				((t: Term) => Some((t.length, t.units.value))),
 			"cancellation" -> mapping("len" -> number, "units" -> number)
 				((len, units) => Term(len, TimePeriodUnits.create(units)))
 				((t: Term) => Some((t.length, t.units.value))),
-			"cancelledDate" -> optional(date),
+			"cancelledDate" -> optional(date(DateUtil.dateFmtString)),
 			"autoRenewPeriod" -> mapping("len" -> optional(number), "units" -> optional(number))
 				((len, units) => {
 					if (len == None || units == None) None 
@@ -117,6 +118,7 @@ object Contracts extends Controller {
 				autoRenewPeriod,
 				attention, 
 				None, None /*lastModifyingUser, lastModifiedTime,*/ )
+				//TODO handle lastmodifying user and lastmodified time better
 				//TODO handle error condiditions better. The findByIds could blow up
 		)
 		(
@@ -145,6 +147,7 @@ object Contracts extends Controller {
 				contract.attention
 				//contract.lastModifyingUser,
 				//contract.lastModifiedTime
+				//TODO handle lastmodifying user and lastmodified time better
 				))
 		)
 	)

@@ -19,7 +19,6 @@ Views
 * Add paging to contracts table
 * Make new company popup on people page look better
 * On contract view, make link back to list retain filtering
-* Have a consistent format for dates.
 
 Forms
 =====
@@ -38,4 +37,3 @@ Internals
 * Consider using either Int or BigDecimal for the mrc and nrc. If there is never a fractional part, just use Int.
 * In contract, make member data a Company, not a CompanyId
 * Make a print stylesheet
-* Fix warning in code.

@@ -9,6 +9,7 @@ import org.joda.time._
 import anorm._
 
 import models.Contract
+import models.DateUtil
 import models.Reminder
 import models.ReminderAndPeople
 
@@ -97,7 +98,7 @@ object Reminders extends Controller {
 		)*/
 		mapping (
 			"id" -> ignored(NotAssigned:Pk[Long]),
-			"reminder_date" -> date,
+			"reminder_date" -> date(DateUtil.dateFmtString),
 			"contract_id" -> longNumber,
 			"sent" -> boolean,
 			//"people" -> of[List[Long]](ChoiceList)

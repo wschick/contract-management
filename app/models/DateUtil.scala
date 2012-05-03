@@ -1,13 +1,30 @@
 package models
 
 import org.joda.time._
+import org.joda.time.format._
 import java.util.Date
 import play.api._
+import play.api.Play.current
 
 /** 
 	Object that does calculations on dates 
 */
 object DateUtil {
+
+	val dateFmtString = Play.configuration.getString("date.format").getOrElse("yyyy-MM-dd")
+	val dateTimeFmtString = Play.configuration.getString("datetime.format").getOrElse("yyyy-MM-dd")
+
+	val dateFmt = DateTimeFormat.forPattern(dateFmtString)
+	val dateTimeFmt = DateTimeFormat.forPattern(dateTimeFmtString)
+
+	def format(d: LocalDate): String = dateFmt.print(d)
+	def format(d: Option[LocalDate]): String = d.map(date => format(date)).getOrElse("")
+
+	def formatDT(dt: LocalDateTime): String = dateTimeFmt.print(dt)
+	def formatDT(dt: Option[LocalDateTime]): String = dt.map(dateTime => formatDT(dateTime)).getOrElse("")
+
+	def parseDate(s: String): LocalDate = dateFmt.parseLocalDate(s)
+	def parseDateTime(s: String): LocalDateTime = dateTimeFmt.parseLocalDateTime(s)
 
 	def termToPeriod(term: Term): ReadablePeriod = {
 		term.units match {
@@ -55,7 +72,6 @@ object DateUtil {
 
 		val daysSinceFirstEnd = Days.daysBetween(firstEndDate, today).getDays;
 
-		Logger.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		Logger.debug("Calculate start " + startDate + ", term " + term + ", arp " + autoRenewPeriod + ", today " + today)
 		Logger.debug("First renewal " + firstRenewalDate + ", first end date "  + firstEndDate + ", " + daysSinceFirstEnd + " days since then");
 

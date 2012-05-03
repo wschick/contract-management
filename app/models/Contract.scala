@@ -32,7 +32,7 @@ case class Contract(
 	autoRenewPeriod: Option[Term],
 	attention: Option[String],
 	lastModifyingUser: Option[String] = None,
-	lastModifiedTime: Option[LocalDate] = Some(LocalDate.now())
+	lastModifiedTime: Option[LocalDateTime] = Some(LocalDateTime.now())
 	) 
 {
 
@@ -43,11 +43,19 @@ case class Contract(
 		Company.findById(companyId).get.name + " " + vendorContractId
 	}
 
+	def startDateStr(): String = DateUtil.format(startDate)
+
+	def cancelledDateStr(): String = cancelledDate.map(cd => DateUtil.format(cd)).getOrElse("")
+
 	def lastDay(): LocalDate = DateUtil.calculateLastDay(startDate, term, autoRenewPeriod)
+
+	def lastDayStr(): String = DateUtil.format(lastDay)
 
 	def cancellationDate(): LocalDate = {
 		lastDay.minus(cancellationPeriod.period)
 	}
+
+	def cancellationDateStr(): String = DateUtil.format(cancellationDate)
 
 	def daysUntilCancellationDate(): Int = {
 		Days.daysBetween(new LocalDate(), cancellationDate()).getDays
@@ -73,6 +81,7 @@ case class Contract(
 
 	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(companyId).get.name, vendorContractId)
 
+	def lastModifiedTimeStr(): String = DateUtil.formatDT(lastModifiedTime)
 }
 
 object Contract {
@@ -124,7 +133,7 @@ object Contract {
 						else Some(Term(autoRenewPeriod.get, TimePeriodUnits.create(autoRenewPeriodUnits.get))) }, 
 					attention, 
 					lastModifyingUser, 
-					lastModifiedTime.map(lmt => Some(new LocalDate(lmt))).getOrElse(None)
+					lastModifiedTime.map(lmt => Some(new LocalDateTime(lmt))).getOrElse(None)
 					)
 				//TODO this will blow up if it can't find the contract type or budget
 		}
@@ -217,8 +226,8 @@ object Contract {
 					'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
 					'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
 					'attention -> contract.attention,
-					'last_modifying_user -> "unknown user",
-					'last_modified_time -> new Date()
+					'last_modifying_user -> contract.lastModifyingUser,
+					'last_modified_time -> contract.lastModifiedTime.map(lmt => lmt.toDate)
 				).executeUpdate()
 				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 			}
@@ -269,8 +278,8 @@ object Contract {
 				'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
 				'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
 				'attention -> contract.attention,
-				'last_modifying_user -> "unknown user",
-				'last_modified_time -> new Date
+				'last_modifying_user -> contract.lastModifyingUser,
+				'last_modified_time -> contract.lastModifiedTime.map(lmt => lmt.toDate)
 				).executeUpdate()
 		}
 	}

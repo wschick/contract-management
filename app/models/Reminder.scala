@@ -17,6 +17,9 @@ case class Reminder(
 	//contractId: Long, 
 	contract: Contract,
 	sent: Boolean)
+{
+	def reminderDateStr(): String = DateUtil.format(reminderDate)
+}
 
 object Reminder {
 	  

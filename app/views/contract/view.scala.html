@@ -14,26 +14,26 @@
 			@cs match {
 
 				case models.CANCELLED => {
-					<p>Contract was cancelled on @contract.cancelledDate</p>
+					<p>Contract was cancelled on @contract.cancelledDateStr</p>
 				}
 				case TOOLATE => {
 					@notice(contract.status) {
-						The cancellation date @contract.cancellationDate has passed.
+						The cancellation date @contract.cancellationDateStr has passed.
 					}
 				}
 				case _ => {
 					@notice(contract.status) {
 					<p>@if(contract.willAutoRenew){
-						Current contract term ends on @contract.lastDay() and will auto-renew for 
+						Current contract term ends on @contract.lastDayStr and will auto-renew for 
 						@contract.autoRenewPeriod.map{arp =>  
 							@arp.length @arp.units.asString(arp.length)
 						}
 					} else {
-						Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDay()
+						Contract ends in @contract.term.periodUntilTermEndString(contract.startDate), on @contract.lastDayStr
 					}
 					</p>
 
-						<p>Contract must be cancelled by @contract.cancellationDate, @contract.daysUntilCancellationDate days from now.</p>
+						<p>Contract must be cancelled by @contract.cancellationDateStr, @contract.daysUntilCancellationDate days from now.</p>
 					}
 				}
 			}
@@ -70,8 +70,8 @@
 					<tr><td>Budget</td><td>@contract.cost.budget.name</td></tr>
 					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Status</td><td>@contract.status.name</td></tr>
-					<tr><td>Start date</td><td>@contract.startDate</td></tr>
-					<tr><td>Initial Term</td><td>@contract.term (ending @contract.lastDay)</td></tr>
+					<tr><td>Start date</td><td>@contract.startDateStr</td></tr>
+					<tr><td>Initial Term</td><td>@contract.term (ending @contract.lastDayStr)</td></tr>
 					<tr><td>Auto Renew</td><td>
 						@if(contract.willAutoRenew){
 							@contract.autoRenewPeriod.map{arp =>  
@@ -84,7 +84,7 @@
 					<tr><td>Cancellation Period</td><td>@contract.cancellationPeriod</td></tr>
 					<tr><td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td>
 					<tr><td>Last modified by</td><td>@contract.lastModifyingUser</td></tr>
-					<tr><td>Last modified on</td><td>@contract.lastModifiedTime</td></tr>
+					<tr><td>Last modified on</td><td>@contract.lastModifiedTimeStr</td></tr>
 				</tbody>
 			</table>
 		</div>

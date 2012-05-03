@@ -19,7 +19,7 @@
 			<tr @if(reminder.sent) {
 				class="sent"
 				}>
-					<td class="reminder_date"> @reminder.reminderDate</td>
+					<td class="reminder_date"> @reminder.reminderDateStr</td>
 					<td class="inner_display_column reminder_contract">@Contract.nameById(reminder.contract.id.get)</td>
 					<td class="inner_display_column reminder_sent">@reminder.sent</td>
 					<td class="inner_display_column reminder_persons">@Reminder.personNamesForReminder(reminder.id)</td>
