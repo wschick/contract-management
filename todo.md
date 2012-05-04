@@ -2,8 +2,6 @@ Current status: Everything is functional, but there are still features to add.
 
 To do:
 
-* Is the contract name field useless now?
-
 Filtering
 =========
 * In filter form, get filtering by status working
@@ -15,7 +13,6 @@ Filtering
 Views
 =====
 * Mark required fields consistently, and use a star or some color
-* Possibly have 2 view of front page, one general, one with contract details. The other could have circuit id, contract id, cable id
 * Add paging to contracts table
 * Make new company popup on people page look better
 * On contract view, make link back to list retain filtering
