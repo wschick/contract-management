@@ -10,21 +10,17 @@ import java.util.Date
 
 case class Contract(
 	id: Pk[Long] = NotAssigned,
-	companyId: Long,
+	vendor: Company,
 	vendorContractId: String, // Used for filing
 	billingAccount: Option[String],
 	isMSA: Boolean,
 	MSAId: Option[Long], // Points to contract that is MSA.
-	name: String, 
+	extraInfo: Option[String], 
 	description: Option[String],
 	contractType: ContractType,
 	aEnd: Location, 
 	zEnd: Location,
 	cost: ContractCosts,
-	/*mrc: Double, 
-	nrc: Double,
-	currencyId: Long,
-	budget: Budget,*/
 	startDate: LocalDate,
 	term: Term,
 	cancellationPeriod: Term,
@@ -40,8 +36,10 @@ case class Contract(
 		@returns company name and vendor's contract id, concatenated
 	*/
 	def vendorIdString(): String = {
-		Company.findById(companyId).get.name + " " + vendorContractId
+		Company.findById(vendor.id).get.name + " " + vendorContractId
 	}
+
+	def name(): String = vendorIdString
 
 	def startDateStr(): String = DateUtil.format(startDate)
 
@@ -77,9 +75,9 @@ case class Contract(
 		}
 	}
 
-	def hasAttachments: Boolean = Attachment.contractHasAttachments(Company.findById(companyId).get.name, vendorContractId)
+	def hasAttachments: Boolean = Attachment.contractHasAttachments(Company.findById(vendor.id).get.name, vendorContractId)
 
-	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(companyId).get.name, vendorContractId)
+	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(vendor.id).get.name, vendorContractId)
 
 	def lastModifiedTimeStr(): String = DateUtil.formatDT(lastModifiedTime)
 }
@@ -88,12 +86,12 @@ object Contract {
 
 	val contract = {
 		get[Pk[Long]]("id") ~ 
-		get[Long]("company_id") ~
+		get[Long]("vendor_id") ~
 		get[String]("vendor_contract_id") ~ 
 		get[Option[String]]("billing_account") ~ 
 		get[Boolean]("is_msa") ~
 		get[Option[Long]]("msa_id") ~
-		get[String]("name") ~
+		get[Option[String]]("extra_info") ~
 		get[Option[String]]("description") ~
 		get[Long]("contract_type_id") ~
 		get[Long]("a_end_id") ~
@@ -113,16 +111,16 @@ object Contract {
 		get[Option[String]]("attention") ~
 		get[Option[String]]("last_modifying_user") ~
 		get[Option[Date]]("last_modified_time") map {
-			case id~companyId~vendorContractId~billingAccount~isMSA~msa_id~
-				name~description~contractTypeId~aEndId~zEndId~
+			case id~vendorId~vendorContractId~billingAccount~isMSA~msa_id~
+				extraInfo~description~contractTypeId~aEndId~zEndId~
 				mrc~nrc~currencyId~budgetId~
 				startDate~term~termUnits~
 				cancellationPeriod~cancellationPeriodUnits~cancelledDate~
 				autoRenewPeriod~autoRenewPeriodUnits~
 				attention~
 				lastModifyingUser~lastModifiedTime => 
-				Contract(id, companyId, vendorContractId, billingAccount, isMSA, msa_id, 
-					name, description, ContractType.findById(contractTypeId).get, 
+				Contract(id, Company.findById(vendorId).get, vendorContractId, billingAccount, isMSA, msa_id, 
+					extraInfo, description, ContractType.findById(contractTypeId).get, 
 					Location.findById(aEndId).get, Location.findById(zEndId).get, 
 					ContractCosts.create(mrc, nrc, currencyId, budgetId),
 					new LocalDate(startDate), 
@@ -183,8 +181,8 @@ object Contract {
 				SQL(
 					"""
 						insert into contract (
-							company_id, vendor_contract_id, billing_account, is_msa, msa_id,
-							name, description, contract_type_id, a_end_id, z_end_id, 
+							vendor_id, vendor_contract_id, billing_account, is_msa, msa_id,
+							extra_info, description, contract_type_id, a_end_id, z_end_id, 
 							mrc, nrc, currency_id, budget_id, 
 							start_date, term, term_units, 
 							cancellation_period, cancellation_period_units, cancelled_date,
@@ -193,8 +191,8 @@ object Contract {
 							last_modifying_user, last_modified_time
 							) 
 						values (
-							{companyId}, {vendorContractId}, {billing_account}, {is_msa}, {msa_id},
-							{name}, {description}, {contract_type_id}, {a_end_id}, {z_end_id}, 
+							{vendorId}, {vendorContractId}, {billing_account}, {is_msa}, {msa_id},
+							{extra_info}, {description}, {contract_type_id}, {a_end_id}, {z_end_id}, 
 							{mrc}, {nrc}, {currency_id}, {budget_id}, 
 							{start_date}, {term}, {term_units},
 							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
@@ -203,12 +201,12 @@ object Contract {
 							{last_modifying_user}, {last_modified_time} )
 					"""
 					).on(
-					'companyId -> contract.companyId,
+					'vendorId -> contract.vendor.id,
 					'vendorContractId -> contract.vendorContractId,
 					'billing_account -> contract.billingAccount,
 					'is_msa -> contract.isMSA,
 					'msa_id -> contract.MSAId,
-					'name -> contract.name,
+					'extra_info -> contract.extraInfo,
 					'description -> contract.description,
 					'contract_type_id -> contract.contractType.id,
 					'mrc -> contract.cost.mrc,
@@ -240,9 +238,9 @@ object Contract {
 				SQL(
 				"""
 					update contract set 
-					company_id={companyId}, vendor_contract_id={vendorContractId}, billing_account={billingAccount}, 
+					vendor_id={vendorId}, vendor_contract_id={vendorContractId}, billing_account={billingAccount}, 
 					is_msa={is_msa}, msa_id={msa_id},
-					name={name}, description={description}, contract_type_id={contract_type_id}, 
+					extra_info={extra_info}, description={description}, contract_type_id={contract_type_id}, 
 					a_end_id={a_end_id}, z_end_id={z_end_id}, 
 					mrc={mrc}, nrc={nrc}, currency_id={currency_id}, budget_id={budget_id}, 
 					start_date={start_date}, term={term}, term_units={term_units},
@@ -255,12 +253,12 @@ object Contract {
 				"""
 				).on(
 				'id -> id,
-				'companyId -> contract.companyId,
+				'vendorId -> contract.vendor.id,
 				'vendorContractId -> contract.vendorContractId,
 				'billingAccount -> contract.billingAccount,
 				'is_msa -> contract.isMSA,
 				'msa_id -> contract.MSAId,
-				'name -> contract.name,
+				'extra_info -> contract.extraInfo,
 				'description -> contract.description,
 				'contract_type_id -> contract.contractType.id,
 				'a_end_id -> contract.aEnd.id,
@@ -287,7 +285,6 @@ object Contract {
 	/** Delete a contract
 
 		@param id the id of the contract
-		@return the contract name, if the contact exists.
 
 		*/
 	def delete(id: Long) {
@@ -300,15 +297,18 @@ object Contract {
 	/** Make Map[String, String] needed for contract select options in a form. 
 			This uses the name of the contract as the visible text.
 		*/
-	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from contract order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
+	def options(msaOnly: Boolean = false): Seq[(String, String)] = DB.withConnection { implicit connection => 
+		val select = SQL("select c.id,v.name,c.vendor_contract_id from contract c inner join company v " +
+			"where c.vendor_id=v.id " + 
+			//{if (msaOnly) "and c.is_msa=1 "; else ""} +
+			{msaOnly match { case true => "and c.is_msa=1 "; case false => " "}} +
+			"order by v.name,c.vendor_contract_id")
+		select().map(row => row[Int]("id").toString -> (row[String]("name") + " " + row[String]("vendor_contract_id"))).toList
 	}
 
 	/** Make Map[String, String] needed for MSA select options in a form. 
 			This uses the name of the contract as the visible text.
 		*/
-	def MSAOptions: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from contract where is_msa=1 order by name").as(Contract.contract *).map(c => c.id.toString -> (c.name))
-	}
+	def MSAOptions: Seq[(String, String)] = options(true)
 
 }

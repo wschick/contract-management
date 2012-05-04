@@ -64,12 +64,12 @@ object Contracts extends Controller {
 	val contractForm: Form[Contract] = Form(
 		mapping(
 			"id" -> ignored(NotAssigned:Pk[Long]),
-			"companyId" -> longNumber,
+			"vendorId" -> longNumber,
 			"vendorContractId" -> nonEmptyText,
 			"billingAccount" -> optional(text),
 			"isMSA" -> boolean,
 			"MSAId" -> optional(longNumber),
-			"name" -> nonEmptyText,
+			"extraInfo" -> optional(text),
 			"description" -> optional(text),
 			"contractTypeId" -> longNumber,
 			"aEnd" -> longNumber,
@@ -98,15 +98,15 @@ object Contracts extends Controller {
 			"attention" -> optional(text)
 		)
 		(
-			(id, companyId, vendorContractId, billingAccount, isMSA, MSAId,
-			name, description, contractTypeId, 
+			(id, vendorId, vendorContractId, billingAccount, isMSA, MSAId,
+			extraInfo, description, contractTypeId, 
 			aEnd, zEnd,
 			cost, 
 			startDate, term, cancellation, cancelledDate, autoRenewPeriod,
 			attention 
 			) => 
-				Contract(NotAssigned, companyId, vendorContractId, billingAccount, isMSA, MSAId,
-				name, description, ContractType.findById(contractTypeId).get, 
+				Contract(NotAssigned, Company.findById(vendorId).get, vendorContractId, billingAccount, isMSA, MSAId,
+				extraInfo, description, ContractType.findById(contractTypeId).get, 
 				Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				cost,
 				/*cost.mrc, cost.nrc, cost.currencyId, Budget.findById(budgetId).get,*/
@@ -124,12 +124,12 @@ object Contracts extends Controller {
 		(
 			(contract: Contract) => Some((
 				contract.id, 
-				contract.companyId,
+				contract.vendor.id,
 				contract.vendorContractId, 
 				contract.billingAccount,
 				contract.isMSA,
 				contract.MSAId,
-				contract.name, 
+				contract.extraInfo, 
 				contract.description, 
 				contract.contractType.id.get,
 				contract.aEnd.id, 
@@ -212,8 +212,8 @@ object Contracts extends Controller {
 						try {
 							Contract.update(id, contract)
 							// If you changed the vendorContractId (used for filing), change the location of attachments.
-							// TODO handle missing company better
-							Attachments.changeVendorContractId(Company.findById(existingContract.companyId).get.name, existingContract.vendorContractId, contract.vendorContractId)
+							// TODO handle missing vendor better
+							Attachments.changeVendorContractId(Company.findById(existingContract.vendor.id).get.name, existingContract.vendorContractId, contract.vendorContractId)
 							//TODO should redirect to view page or list, depending on where you came from
 							Redirect(routes.Contracts.all)
 							//Ok(views.html.contract.list(Contract.all(), filterForm))
@@ -238,7 +238,7 @@ object Contracts extends Controller {
 		println("Delete " + id)
 		Contract.findById(id).map { existingContract =>
 			{
-				val result = Attachments.deleteAll(existingContract.companyId, existingContract.vendorContractId)
+				val result = Attachments.deleteAll(existingContract.vendor.id, existingContract.vendorContractId)
 				if (result == None) {
 					Contract.delete(id)
 					Redirect(routes.Contracts.filtered)

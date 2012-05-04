@@ -57,12 +57,12 @@ CREATE TABLE reminder_person (
 -- For period units, 0 = day, 1 = month, 2 = year
 CREATE TABLE contract (
 	id integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	company_id integer NOT NULL,
+	vendor_id integer NOT NULL,
 	vendor_contract_id varchar(30) NOT NULL,
 	billing_account varchar(20),
 	is_msa boolean NOT NULL default 0,
 	msa_id integer,
-	name varchar(200) NOT NULL,
+	extra_info varchar(200),
 	description varchar(255),
 	contract_type_id integer NOT NULL,
 	a_end_id bigint NOT NULL, 

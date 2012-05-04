@@ -28,7 +28,7 @@
 				@defining(contract.status.name) { status => 
 
 				<tr class="@status">
-					<td class="vendor">@Company.findById(contract.companyId).get.name</td>
+					<td class="vendor">@contract.vendor.name</td>
 					<td class="inner_display_column vendor_contract_id">@contract.vendorContractId</td>
 					<!--td class="inner_display_column billing_account">@contract.billingAccount</td-->
 					<td class="inner_display_column contract_type">@contract.contractType.name</td>

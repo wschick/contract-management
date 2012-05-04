@@ -17,7 +17,7 @@ object Email {
 
 	def bodyText(dayString: String, contract: Contract, contractURL: String): String = {
 		dayString + " left before cancelling contract " + contract.name + "\n\n" +
-		"Contract " + Company.findById(contract.companyId).get.name + " " + contract.vendorContractId + "\n" +
+		"Contract " + Company.findById(contract.vendor.id).get.name + " " + contract.vendorContractId + "\n" +
 		"Ends on " + contract.lastDay + ". Cancel by " + contract.cancellationDate + ", " +
 		contract.cancellationPeriod + " before its end." + "\n\n" + 
 		"View contract at " + contractURL

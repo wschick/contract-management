@@ -23,9 +23,9 @@
 		<legend>General information</legend>
 
 		@select(
-			contractForm("companyId"),
+			contractForm("vendorId"),
 			Company.options,
-			'_label -> "Company", '_default -> "-- Choose a company --",
+			'_label -> "Vendor", '_default -> "-- Choose a vendor --",
 			'_showConstraints -> false
 		)
 
@@ -40,8 +40,8 @@
 		)
 
 		@inputText(
-			contractForm("name"),
-			'_label -> "Name", 'size -> 40
+			contractForm("extraInfo"),
+			'_label -> "Extra Info", 'size -> 40
 		)
 
 		@textarea(
@@ -83,7 +83,7 @@
 		@select(
 			contractForm("MSAId"),
 			Contract.MSAOptions,
-			'_label -> "MSA", '_default -> "MSA",
+			'_label -> "MSA", '_default -> "-- Choose a MSA --",
 			'_showConstraints -> false
 		)
 
