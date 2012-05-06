@@ -22,6 +22,7 @@ import models.ContractFilter
 import models.ContractType
 import models.DateUtil
 import models.Location
+import models.OptionList
 import models.Term
 import models.TimePeriodUnits
 
@@ -41,22 +42,40 @@ object Contracts extends Controller {
 			"showCancelled" -> boolean,
 			"earliestStartDate" -> optional(date),
 			"lastestStartDate" -> optional(date),
-			"contractTypes_" -> list(longNumber)
+			"contractTypes_" -> optional(list(longNumber)),
+			"vendorIds" -> optional(list(longNumber)),
+			"budgetIds" -> optional(list(longNumber)),
+			"locationIds" -> optional(list(longNumber)),
+			"showMSA" -> optional(longNumber),
+			"vendorContractIdMatches" -> optional(text),
+			"extraInfoMatches" -> optional(text),
+			"maximumDaysToCancel" -> optional(number)
 			)
 		(
 			(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, 
-				earliestStartDate, latestStartDate, contractTypes_) =>
-			{println(contractTypes_); ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
+				earliestStartDate, latestStartDate, contractTypes_, vendorIds, budgetIds, locationIds,
+				showMSA, vendorContractIdMatches, extraInfoMatches, maximumDaysToCancel) =>
+			{ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
 				earliestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None), 
 				latestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None),
-				contractTypes_)}
+				new OptionList(contractTypes_, "contract_type_id"), 
+				new OptionList(vendorIds, "vendor_id"),
+				new OptionList(budgetIds, "budget_id"),
+				new OptionList(locationIds, "a_end_id"),
+				showMSA, vendorContractIdMatches, extraInfoMatches, maximumDaysToCancel)}
 		)
 		(
 			(filter: ContractFilter) => Some((
 			filter.showOk, filter.showNearWarning, filter.showFarWarning,
 			filter.showTooLate, filter.showActive, filter.showCancelled,
 			filter.earliestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
-			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None), filter.contractTypeIds))
+			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
+			filter.contractTypeIds.list,
+			filter.vendorIds.list, 
+			filter.budgetIds.list, 
+			filter.locationIds.list,
+			filter.showMSA, filter.vendorContractIdMatches, filter.extraInfoMatches, filter.maximumDaysToCancel
+			))
 		)
 	)
 
@@ -157,8 +176,9 @@ object Contracts extends Controller {
   }
 
 	def all = Action {
-		val filter = new ContractFilter
-    Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
+		//val filter = new ContractFilter
+    //Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
+		Ok("deleteme")
 	}
 
 	def filtered = Action { implicit request =>
