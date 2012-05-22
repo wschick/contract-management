@@ -20,5 +20,7 @@ object ApplicationBuild extends Build {
 			publishTo := Some("Artifactory Realm" at "http://build.ntkn.com/artifactory/libs-release-local/")
 
     )
+
+		parallelExecution in Test := false
 }
 

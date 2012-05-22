@@ -1,0 +1,27 @@
+@(errors: List[String], fileName: String, numImports: Int)
+
+@main("Import", "Result of saving imports", "import") {
+
+			@if(errors.length != 0) {
+				<div id="import-status">
+					Errors in "@fileName:"
+					<ul>
+					@errors.map { error =>
+						<li>@error</li>
+					}
+					</ul>
+				</div>
+			}
+
+			@if(numImports > 0) {
+
+				<p>Imported @numImports contracts from @fileName.</p>
+
+			} else {
+
+				<p>Couldn't import any contracts.</p>
+
+			}
+
+			<a href="@routes.Imports.start">Import another file</a>
+}

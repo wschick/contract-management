@@ -6,6 +6,7 @@ import play.api.db._
 import play.api.data._
 import play.api.data.Forms._
 */
+import play.api._
 import play.api.Play
 import play.api.Play.current
 import javax.mail._
@@ -33,7 +34,7 @@ object Email {
 		}
 		val body = bodyText(dayString, reminder.contract, contractURL)
 
-		println("Body is\n" + body)
+		Logger.debug("Body is\n" + body)
 		send(to, from, dayString + " to cancel " + reminder.contract.name, body)
 
 	}

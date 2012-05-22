@@ -30,6 +30,7 @@ Emails
 
 Internals
 =========
+* Set up data constraints, so you can't delete an MSA without deleting the other contracts.
 * Get login working.
 * Consider using either Int or BigDecimal for the mrc and nrc. If there is never a fractional part, just use Int.
 * In contract, make member data a Company, not a CompanyId

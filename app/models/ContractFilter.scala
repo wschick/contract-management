@@ -18,14 +18,14 @@ case class ContractFilter(
 	showCancelled: Boolean = false, // Cancelled contracts
 	earliestStartDate: Option[LocalDate] = None,
 	latestStartDate: Option[LocalDate] = None,
-	contractTypeIds: OptionList[Long],//List[Long](),
-	vendorIds: OptionList[Long],
-	budgetIds: OptionList[Long],
-	locationIds: OptionList[Long],
-	showMSA: Option[Long],
-	vendorContractIdMatches: Option[String], // Substring of vendor contract id
-	extraInfoMatches: Option[String], // Substring of extra info field
-	maximumDaysToCancel: Option[Int]
+	contractTypeIds: OptionList[Long] = new OptionList,
+	vendorIds: OptionList[Long] = new OptionList,
+	budgetIds: OptionList[Long] = new OptionList,
+	locationIds: OptionList[Long] = new OptionList,
+	showMSA: Option[Long] = None,
+	vendorContractIdMatches: Option[String] = None, // Substring of vendor contract id
+	extraInfoMatches: Option[String] = None, // Substring of extra info field
+	maximumDaysToCancel: Option[Int] = None
 	) 
 {
 
@@ -39,16 +39,16 @@ case class ContractFilter(
 		//if (showTooLate) { conditionList = "status=" + TOOLATE.value :: conditionList }
 
 		// Need to OR the show conditions, and AND everything else, so figure out the OR condition now.
-		//println(">>>>>>>>>>>>>>>>>After initial conditions:  " + conditionList)
+		//Logger.debug(">>>>>>>>>>>>>>>>>After initial conditions:  " + conditionList)
 		//conditionList = List("(" + makeConditionString(conditionList, "OR") + ")")
-		//println(">>>>>>>>>>>>>>>>>Make into list:  " + conditionList)
+		//Logger.debug(">>>>>>>>>>>>>>>>>Make into list:  " + conditionList)
 
 		// Make contract type condition
-		conditionList :::= contractTypeIds.makeConditionString()
-		conditionList :::=  vendorIds.makeConditionString()
-		conditionList :::= budgetIds.makeConditionString()
-		conditionList :::= locationIds.makeConditionString()
-		/*println("Contract type ids: " + contractTypeIds);
+		contractTypeIds.makeConditionString().map(c => conditionList +:= c)
+		vendorIds.makeConditionString().map(c => conditionList +:= c)
+		budgetIds.makeConditionString().map(c => conditionList +:= c)
+		locationIds.makeConditionString().map(c => conditionList +:= c)
+		/*Logger.debug("Contract type ids: " + contractTypeIds);
 		val contractTypeCondition: String = 
 			contractTypeIds.map(ctis => {
 				
@@ -57,15 +57,15 @@ case class ContractFilter(
 			}
 		
 
-		if (!showActive) { println("don't show showactive"); conditionList = "cancelled_date IS NOT NULL" :: conditionList }
-		if (!showCancelled) { println("don't show cancelled"); conditionList = "cancelled_date IS NULL" :: conditionList }
+		if (!showActive) { Logger.debug("don't show showactive"); conditionList = "cancelled_date IS NOT NULL" :: conditionList }
+		if (!showCancelled) { Logger.debug("don't show cancelled"); conditionList = "cancelled_date IS NULL" :: conditionList }
 		earliestStartDate.map(date => conditionList ::= "start_date>'" + date + "'")
-		println("latest start date " + latestStartDate)
+		Logger.debug("latest start date " + latestStartDate)
 		latestStartDate.map(date => conditionList ::= "start_date<'" + date + "'")
-		println("The final coniditon list is " + conditionList)
+		Logger.debug("The final coniditon list is " + conditionList)
 
 		val conditionString = ContractFilter.makeConditionString(conditionList, "AND")
-		println("Condition string: " + conditionString)
+		Logger.debug("Condition string: " + conditionString)
 			*/
 		if (conditionString != "") return "WHERE " + conditionString
 		else return ""
@@ -89,7 +89,7 @@ object ContractFilter {
 	@param prefix Any prefix that should appear before each value in the string.
 
 	*/
-class OptionList[T](aList: Option[List[T]], prefix: String = "") {
+class OptionList[T](aList: Option[List[T]] = None, prefix: String = "") {
 
 	val list = aList
 
@@ -97,14 +97,15 @@ class OptionList[T](aList: Option[List[T]], prefix: String = "") {
 		@param operator What to put between the prefixed strings. Typically a boolean like OR or AND
 		@param actualPrefix Use if you need to override the default prefix.
 		@returns A string concatenating the prefix with each value, and then putting the operator between
-		those strings.
+		those strings, or None if there is no condition.
 	*/
-	def makeConditionString(operator: String = "OR", actualPrefix: String = prefix): List[String] = {
+	def makeConditionString(operator: String = "OR", actualPrefix: String = prefix): Option[String] = {
 		list.map(l => {
-			if (l.isEmpty) return Nil
+			// l is now a list of something
+			if (l.isEmpty) return None
 			// Make list of prefixed strings, then reduceLeft to get operator between them.
 			val stringList = l.map(actualPrefix + _.toString)
-			List(stringList.reduceLeft[String]{(str, item) => str + " " + operator + " " + item})
-		}).getOrElse(Nil
+			Some(stringList.reduceLeft[String]{(str, item) => str + " " + operator + " " + item})
+		}).getOrElse(None)
 	}
 }

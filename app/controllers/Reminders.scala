@@ -24,10 +24,10 @@ object ChoiceList extends Formatter[List[Long]]
 	// Look at format/Format.scala
 	// Given form data, make a List[Long]
 	def bind(key: String, data: Map[String, String]) = {
-		println("Data " + data)
-		println("Got bind for key " + key + ", data " + data.get(key).get)
+		Logger.debug("Data " + data)
+		Logger.debug("Got bind for key " + key + ", data " + data.get(key).get)
 		//val p: List[Long] = data.get(key).get
-		//println("The size is " + p.length)
+		//Logger.debug("The size is " + p.length)
 		stringFormat.bind(key, data).right.flatMap { s =>
 			scala.util.control.Exception.allCatch[List[Long]]
 				.either(List[Long](1,2)) // TODO put in real list
@@ -142,12 +142,12 @@ object Reminders extends Controller {
 
 
 	def create = Action { implicit request =>
-		println(">>>> Start of request")
-		println("the request: " +request.body)
-		println("url encoded: " +request.body.asFormUrlEncoded)
-		println("translated: " + RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get))
-		println("------")
-		println(reminderForm.bindFromRequest)
+		Logger.debug(">>>> Start of request")
+		Logger.debug("the request: " +request.body)
+		Logger.debug("url encoded: " +request.body.asFormUrlEncoded)
+		Logger.debug("translated: " + RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get))
+		Logger.debug("------")
+		Logger.debug(reminderForm.bindFromRequest.toString)
 		// Alternative binding
 		
 		reminderForm.bind(RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
@@ -155,7 +155,7 @@ object Reminders extends Controller {
 			formWithErrors => BadRequest(views.html.reminder.list(Reminder.all(), formWithErrors)),
 			reminder => {
 				// TODO create the reminder people entries, too
-				println("Got " + reminder.people.length + " people: " + reminder.people)
+				Logger.debug("Got " + reminder.people.length + " people: " + reminder.people)
 				Reminder.create(reminder.reminder)
 				Redirect(routes.Reminders.all)
 			}
@@ -163,7 +163,7 @@ object Reminders extends Controller {
 	}
 
   def edit(id: Long) = Action { implicit request =>
-		println(request.body)
+		Logger.debug(request.body.toString)
 		Reminder.findById(id).map { reminder =>
 			//Ok(views.html.reminder.edit(reminder, reminderForm.fill((reminder.reminderDate.toDate, reminder.contractId))))
 			// TODO handle person list.
@@ -182,7 +182,7 @@ object Reminders extends Controller {
 			},
 			reminder => {
 				//TODO handle people list
-				println(reminder)
+				Logger.debug(reminder.toString)
 				Reminder.update(id, reminder.reminder)
 				Ok(views.html.reminder.list(Reminder.all(), reminderForm))
 			}

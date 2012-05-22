@@ -27,6 +27,14 @@ object Person {
 		}
 	}	
 
+	def findByName(name: String): Option[Person] = {
+		DB.withConnection { implicit c =>
+			SQL("select * from person where name = {name}")
+				.on('name -> name)
+				.as(Person.person.singleOpt)
+		}
+	}
+
 	def findById(id: Long): Option[Person] = {
 		DB.withConnection { implicit c =>
 			SQL("select * from person where id = {id}")
@@ -52,7 +60,13 @@ object Person {
 		SQL("select * from person order by name").as(person *)
 	}
 			  
-	def create(name: String, email: String, telephone: Option[String], companyId: Long) {
+	/**
+		Create a person
+
+		@return The id of the new person
+
+		*/
+	def create(name: String, email: String, telephone: Option[String], companyId: Long): Long = {
 		DB.withConnection { implicit c =>
 			SQL("insert into person (name, email, telephone, company_id) values ({name}, {email}, {telephone}, {company_id})").on(
 				'name -> name,
@@ -60,6 +74,7 @@ object Person {
 				'telephone -> telephone,
 				'company_id -> companyId
 			).executeUpdate()
+			return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 		}
 	}
 

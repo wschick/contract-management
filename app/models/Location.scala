@@ -32,6 +32,13 @@ object Location {
 		}
 	}
 
+	/** Given location code, find Location object */
+	def findByCode(code: String): Option[Location] = {
+		DB.withConnection { implicit c =>
+			SQL("select * from location where code = {code}").on('code -> code).as(Location.location.singleOpt)
+		}
+	}
+
 	/** Given an id, return the location code. */
 	def codeById(id: Long): String = {
 		val c = findById(id);

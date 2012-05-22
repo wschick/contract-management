@@ -67,7 +67,7 @@ object DateUtil {
 		if (term.units != TimePeriodUnits.DAY && firstRenewalDate.getDayOfMonth != startDate.getDayOfMonth) {
 			firstRenewalDate = firstRenewalDate.plus(Days.ONE)
 		}
-		println("Start " + startDate + ", term " + term + ", first renewal " + firstRenewalDate)
+		Logger.debug("Start " + startDate + ", term " + term + ", first renewal " + firstRenewalDate)
 		val firstEndDate = firstRenewalDate.minus(Days.ONE)
 
 		val daysSinceFirstEnd = Days.daysBetween(firstEndDate, today).getDays;

@@ -31,6 +31,15 @@ object Company {
 		}
 	}
 
+	/** Given a name, return a company. This does exact match. */
+	def findByName(name: String): Option[Company] = {
+		DB.withConnection { implicit c =>
+			SQL("select * from company where name = {name}")
+				.on('name -> name)
+				.as(Company.company.singleOpt)
+		}
+	}
+
 	def nameById(id: Long): String = {
 		val c = findById(id);
 
@@ -51,12 +60,13 @@ object Company {
 		SQL("select * from company order by name").as(company *)
 	}
 			  
-	def create(name: String, primaryContactId: Option[Long]) {
+	def create(name: String, primaryContactId: Option[Long]): Long = {
 		DB.withConnection { implicit c =>
 			SQL("insert into company (name, primary_contact_id) values ({name}, {primary_contact_id})").on(
 				'name -> name,
 				'primary_contact_id -> primaryContactId
 			).executeUpdate()
+			return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
 		}
 	}
 					  

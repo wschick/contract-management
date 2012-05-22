@@ -56,16 +56,10 @@ object Attachments extends Controller {
   
 	def upload(companyId: Long, vendorContractId: String) = Action(parse.temporaryFile) { implicit request =>
 		val fileName = request.queryString("qqfile").head
-	/*
-	def upload(contact: Contract) = Action(parse.temporaryFile) { implicit request =>
-		// TODO remove these last 2 when we know we want to pass in a contract.
-		val companyId = contract.companyId
-		val vendorContractId = contract.vendorContractId
-		*/
 		// TODO handle missing company
 		val company = Company.findById(companyId).get
 		try {
-			println("Moving new attachment to " + Attachment.attachmentPath(company.name, vendorContractId, fileName))
+			Logger.debug("Moving new attachment to " + Attachment.attachmentPath(company.name, vendorContractId, fileName))
 			request.body.moveTo(new File(Attachment.attachmentPath(company.name, vendorContractId, fileName)))
 			Ok("{\"success\": true}")
 		} catch {
@@ -96,10 +90,10 @@ object Attachments extends Controller {
 		val company= Company.findById(companyId)
 		if (company!= None) {
 			val cn = company.get.name
-			println("Deleting all attachments for " + cn + " "  + vendorContractId)
+			Logger.debug("Deleting all attachments for " + cn + " "  + vendorContractId)
 			try {
 				Attachment.contractDir(cn, vendorContractId).deleteAll
-				println("Deletion worked ok")
+				Logger.debug("Deletion worked ok")
 				return None
 			} catch {
 				case e => return Some(e.getMessage())

@@ -47,6 +47,19 @@ object ContractType {
 		findById(id).map(contractType => Some(contractType.name)).getOrElse(None)
 	}
 			  
+
+	/** Get a contact using its name
+
+		@param name the name of the contract type
+		@return the contract, if it exists.
+
+		*/
+	def findByName(name: String): Option[ContractType] = {
+		DB.withConnection { implicit connection =>
+			SQL("select * from contract_type where name = {name}").on('name -> name).as(ContractType.contractType.singleOpt)
+		}
+	}
+
 	/** Create a contract type in the database.
 
 		@param contractType A ContractType object to be persisted. 

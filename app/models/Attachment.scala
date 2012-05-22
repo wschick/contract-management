@@ -65,12 +65,12 @@ object Attachment {
 		if (attachmentNames != null) {
 			attachmentNames.foreach { name =>
 				{
-					//println("Attachment name is " + name)
+					//Logger.debug("Attachment name is " + name)
 					attachments ::= Attachment(companyName, vendorContractId, name)
 				}
 			}
 		}
-		//println(attachments)
+		//Logger.debug(attachments)
 		return attachments.sortBy(_.fileName)
 	}
 

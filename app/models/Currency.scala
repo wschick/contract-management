@@ -36,6 +36,12 @@ object Currency {
 		}
 	}
 
+	def findByAbbreviation(abbrev: String): Option[Currency] = {
+		DB.withConnection { implicit c =>
+			SQL("select * from currency where abbreviation = {abbrev}").on('abbrev -> abbrev).as(Currency.currency.singleOpt)
+		}
+	}
+
 	def stringById(id: Long): String = {
 		val c = findById(id);
 

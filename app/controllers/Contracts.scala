@@ -176,21 +176,21 @@ object Contracts extends Controller {
   }
 
 	def all = Action {
-		//val filter = new ContractFilter
-    //Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
-		Ok("deleteme")
+		val filter = new ContractFilter
+    Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
+		//Ok("deleteme")
 	}
 
 	def filtered = Action { implicit request =>
     //Ok(views.html.contract.list(Contract.all(), filterForm))
-		println("<><><><> The request <><><><><>")
-		println(request.body)
-		println("<><><><> End request <><><><><>")
+		Logger.debug("<><><><> The request <><><><><>")
+		Logger.debug(request.body.toString)
+		Logger.debug("<><><><> End request <><><><><>")
 		filterForm.bind(RequestProcessing.translateToPlayInput(request.body.asFormUrlEncoded.get)).fold(
 		//filterForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(html.contract.list(Contract.all(), formWithErrors)),
 			filter => {
-				println("In Contracts, the filter is " + filter)
+				Logger.debug("In Contracts, the filter is " + filter)
     		Ok(views.html.contract.list(Contract.filtered(filter), filterForm.fill(filter)))
 			}
 		)
@@ -199,7 +199,7 @@ object Contracts extends Controller {
 	// After creating a contract, go to the view page for what you just created.
 	def create = Action { implicit request =>
 		contractForm.bindFromRequest.fold(
-			formWithErrors => { println(formWithErrors); BadRequest(html.contract.new_form(formWithErrors))},
+			formWithErrors => { Logger.debug(formWithErrors.toString); BadRequest(html.contract.new_form(formWithErrors))},
 			contract => {
 				val newId = Contract.create(contract)
 				Contract.findById(newId).map { existingContract =>
@@ -255,7 +255,7 @@ object Contracts extends Controller {
 	}
 
 	def delete(id: Long) = Action {
-		println("Delete " + id)
+		Logger.debug("Delete " + id)
 		Contract.findById(id).map { existingContract =>
 			{
 				val result = Attachments.deleteAll(existingContract.vendor.id, existingContract.vendorContractId)

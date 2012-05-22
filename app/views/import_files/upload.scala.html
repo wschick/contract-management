@@ -1,0 +1,31 @@
+@(numHeadingLinesInFile: Int = 2)
+
+@main("Import", "Import from file", "import") {
+
+	<div id="file-uploader">
+		<noscript>
+			<p>Please enable JavaScript to use file uploader.</p>
+		</noscript>
+
+		<script>
+			function createUploader(){
+				var uploader = new qq.FileUploader({
+					element: document.getElementById('file-uploader'),
+					action: '/import',
+					debug: true,
+					onComplete: function(id, fileName, responseJSON) {
+						if (responseJSON.success) {
+							window.location = "@routes.Imports.resultsOfRead";
+						}
+					},
+					params: {
+						numHeadingLines: '@numHeadingLinesInFile'
+					}
+				});
+			}
+
+			window.onload = createUploader;
+		</script>
+	</div>
+
+}

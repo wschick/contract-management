@@ -1,0 +1,54 @@
+@(errors: List[String], lastFileName: String, linesFromFile: List[CSVLine])
+
+@main("Import", "Result of reading file", "import") {
+
+	@if(lastFileName  != "") {
+			@if(errors.length == 0) {
+				<p>Import of "@lastFileName" was successful</p>
+			} else {
+				<div id="import-status">
+					Errors in "@lastFileName:"
+					<ul>
+					@errors.map { error =>
+						<li>@error</li>
+					}
+					</ul>
+				</div>
+			}
+
+			@if(linesFromFile.length > 0) {
+
+				<p>There are @linesFromFile.length contracts that you can save.</p>
+
+				<table class="csv_lines">
+					<tr>
+						<th>Vendor</th>
+						<th>Lines</th>
+						<th>A side</th>
+						<th>Z side</th>
+					</tr>
+					@linesFromFile.map{ csvLine => 
+						<tr>
+							<td>@csvLine.vendor</td>
+							<td>@csvLine.lines</td>
+							<td>@csvLine.aSite</td>
+							<td>@if(csvLine.zSite == None) {
+									--
+								} else {
+									@csvLine.zSite</td>
+								}
+						</tr>
+					}
+				</table>
+
+				<ul id="edit_controls">
+						<li><a href="@routes.Imports.save">Save these</a></li>
+						<li id="delete"><a 
+						onClick="return confirm('Are you sure you want to start again?')"
+						href="@routes.Imports.start">Start again</a></li>
+				</ul>
+
+		}
+	}
+	
+}
