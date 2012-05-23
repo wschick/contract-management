@@ -49,11 +49,18 @@
 						href="@routes.Imports.start">Start again</a></li>
 				</ul>
 			</div>
+			} else {
+				<p>No contracts available to import.</p>
+				<div>
+				<ul id="edit_controls">
+						<li><a href="@routes.Imports.start">Start again</a></li>
+				</ul>
+			</div>
+			}
 
 			<div style="clear: both">
 			</div>
 
-		}
 	}
 	
 }

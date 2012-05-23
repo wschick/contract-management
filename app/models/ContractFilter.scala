@@ -106,7 +106,7 @@ class OptionList[T](aList: Option[List[T]] = None, prefix: String = "") {
 			// Make list of prefixed strings, then reduceLeft to get operator between them.
 			//val stringList = l.map(actualPrefix + _.toString)
 			//Some(stringList.reduceLeft[String]{(str, item) => str + " " + operator + " " + item})
-			Some(l.map(acutalPrefix + _.toString).mkString(" " + operator + " "))
+			Some(l.map(actualPrefix + _.toString).mkString(" " + operator + " "))
 		}).getOrElse(None)
 	}
 }

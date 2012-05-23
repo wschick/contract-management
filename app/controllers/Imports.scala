@@ -7,6 +7,7 @@ import play.api.Play.current
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.json._
 import anorm._
 
 import java.io.File
@@ -173,7 +174,7 @@ object Imports extends Controller {
 			if (tempLoc != None) tempLoc.get
 			else {
 				val msg = "Can't find A side code \"" + info.aSite + "\""
-				shortErrors += ErrorInfo(fileName, lineNum, "A (" + info.aSite + ")")
+				shortErrors += ErrorInfo(fileName, lineNum, "Ai loc (" + info.aSite + ")")
 				errors += ErrorInfo(fileName, lineNum, msg)
 				Logger.warn(msg)
 				NA_LOCATION
@@ -187,7 +188,7 @@ object Imports extends Controller {
 				if (tempLoc != None) tempLoc.get
 				else {
 					val msg = "Can't find Z side code \"" + tempLoc + "\""
-					shortErrors += ErrorInfo(fileName, lineNum, "Z (" + info.zSite.get + ")")
+					shortErrors += ErrorInfo(fileName, lineNum, "Z loc (" + info.zSite.get + ")")
 					errors += ErrorInfo(fileName, lineNum, msg)
 					Logger.warn(msg)
 					NA_LOCATION
@@ -316,13 +317,15 @@ object Imports extends Controller {
 				val l = CSVLine.parseLine(line, lastFileName, lineCounter)
 				Logger.info("Got a line from vendor " + l.vendor)
 				// Check for errors on dates
-				if (checkDateErrors("Start date", l.startDate) &&
-					checkDateErrors("End date", l.endDate) &&
-					checkDateErrors("Renewal date", l.renewalDate) &&
-					checkDateErrors("Earliest cancellation date", l.earliestCancellationDate)
+				if (checkDateErrors("Start date", l.startDate) 
+					// These checks commented out because we don't need them for our import
+					//&& checkDateErrors("End date", l.endDate) &&
+					//checkDateErrors("Renewal date", l.renewalDate) &&
+					//checkDateErrors("Earliest cancellation date", l.earliestCancellationDate)
 					) linesFromFile ::= l
 			} catch {
 				case e: Exception => {
+					println(e)
 					Logger.error(e.getMessage)
 					errors ::= "Line " + lineCounter + ": " + e.getMessage
 					Logger.debug("Now " + errors.length + " errors")
@@ -335,8 +338,11 @@ object Imports extends Controller {
 			Ok("{\"success\": true}")
 		} else {
 			Logger.debug(errors.length + " errors")
-			val result = "{\"success\": true,\n\"errors\": [\"" + 
-			errors.reduceLeft[String]{(str, item) => str + "\", \"" + item } + "\"]}"
+			//val result = "{\"success\": true,\n\"errors\": [\"" + 
+			//errors.reduceLeft[String]{(str, item) => str + "\", \"" + item } + "\"]}"
+			val result = Json.stringify(Json.toJson(
+				Map("success" -> Json.toJson(true),
+				"errors" -> Json.toJson(errors))))
 			Logger.debug(result)
 			Ok(result)
 		}

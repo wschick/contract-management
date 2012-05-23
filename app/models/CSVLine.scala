@@ -166,32 +166,38 @@ object CSVLine {
 	def parseCost(str: String, fileName: String, lineNum: Int): (Double, Option[String])  = {
 
 		Logger.debug("Parsing \"" + str + "\"")
-		val costPattern(_, _, frontCurrency, _, noCost, amount, _, rearCurrency) = trimString(str)
 
-		val currency = (frontCurrency, rearCurrency) match 
-		{
-			case (null, null) => None
-			case (c: String, null) => Some(c)
-			case (null,c:String) => Some(c)
-			case (c1: String, c2: String) => {
-				Logger.error("Found 2 currencies, " + c1 + " and " + c2 + " in \"" + str + "\"")
-				Some("???")
-			}
-		}
-
-		if (noCost != null) return (0.0, currency)
+		if (str == "") return(0, None)
 
 		try {
 
-			val value = NumberFormat.getNumberInstance().parse(amount)
+			val costPattern(_, _, frontCurrency, _, noCost, amount, _, rearCurrency) = trimString(str)
 
-			return (value.doubleValue, currency)
+			val currency = (frontCurrency, rearCurrency) match 
+			{
+				case (null, null) => None
+				case (c: String, null) => Some(c)
+				case (null,c:String) => Some(c)
+				case (c1: String, c2: String) => {
+					Logger.error("Found 2 currencies, " + c1 + " and " + c2 + " in \"" + str + "\"")
+					Some("???")
+				}
+			}
+
+			if (noCost != null) return (0.0, currency)
+
+			try {
+				val value = NumberFormat.getNumberInstance().parse(amount)
+				return (value.doubleValue, currency)
+			} catch {
+				case pe: ParseException => {
+					Logger.error("Couldn't parse number \"" + amount + "\" in \"" + str + "\"")
+					return (-99999.0, currency)
+				}
+			}
 
 		} catch {
-			case pe: ParseException => {
-				Logger.error("Couldn't parse number \"" + amount + "\" in \"" + str + "\"")
-				return (-99999.0, currency)
-			}
+			case me: MatchError => throw new Exception("Couldn't parse " + str + " as a cost.")
 		}
 
 	}
@@ -211,57 +217,66 @@ object CSVLine {
 	
 	def parseLine(line: String, fileName: String, lineNum: Int): CSVLine = {
 
-		Logger.debug("\n======================================\n" + line)
+		Logger.debug("======================================\n" + line)
 
 		val item = line.split("\t", -1)
+		Logger.debug(item.length + " items split out")
 
-		val (aSite, zSite) = parseSites(trimString(item(4), 4))
+		try {
+			val (aSite, zSite) = parseSites(trimString(item(4), 4))
 
-		val (nrc, nrcCountry) = parseCost(item(13), fileName, lineNum)
-		val (mrc, mrcCountry) = parseCost(item(14), fileName, lineNum)
-		val (yearlyCost, yearlyCostCountry) = parseCost(item(15), fileName, lineNum)
+			val (nrc, nrcCountry) = parseCost(item(13), fileName, lineNum)
+			val (mrc, mrcCountry) = parseCost(item(14), fileName, lineNum)
+			val (yearlyCost, yearlyCostCountry) = parseCost(item(15), fileName, lineNum)
 
-		val currency = (nrcCountry, mrcCountry) match {
-			case (None, None) => "USD"
-			case (n, None) => n.get
-			case (None, m) => m.get
-			case (n, m) => {
-				val ng = n.get
-				val mg = m.get
-				if (ng == mg) ng
-				else {
-					Logger.error(fileName + ":" + lineNum + " Conflicting currency codes \"" + ng + "\" and \"" + mg + "\" in line \n" + line + "\n")
-					ng
+			val currency = (nrcCountry, mrcCountry) match {
+				case (None, None) => "USD"
+				case (n, None) => n.get
+				case (None, m) => m.get
+				case (n, m) => {
+					val ng = n.get
+					val mg = m.get
+					if (ng == mg) ng
+					else {
+						Logger.error(fileName + ":" + lineNum + " Conflicting currency codes \"" + ng + "\" and \"" + mg + "\" in line \n" + line + "\n")
+						ng
+					}
 				}
 			}
+
+			Logger.debug("There are " + item.length + " items")
+
+			CSVLine(
+				trimString(item(0), 0),
+				trimString(item(1), 1),
+				trimString(item(2), 2),
+				parseMaybeInt(trimString(item(3), 3)),
+				aSite,
+				zSite,
+				DateOrMTM.parseDate(trimString(item(5), 5)),
+				DateOrMTM.parseDate(trimString(item(6), 6)),
+				DateOrMTM.parseDate(trimString(item(7), 7)),
+				DateOrMTM.parseDate(trimString(item(8), 8)),
+				MaybeTerm.parseTerm(trimString(item(9), 9)),
+				MaybeTerm.parseTerm(trimString(item(10), 10)),
+				trimString(item(11), 11),
+				trimString(item(12), 12),
+				nrc,
+				mrc,
+				currency,
+				// skipping yearly contract costs
+				trimString(item(16), 16),
+				trimString(item(17), 17),
+				trimString(item(18), 18),
+				parseBoolean(trimString(item(19), 19)),
+				parseBoolean(trimString(item(20), 20))
+			)
+		} catch {
+			case e: ArrayIndexOutOfBoundsException => {
+				val msg = fileName + ":" + lineNum + " Not enough fields. Couldn't read item " + e.getMessage + ". Read " + item.length + " items."
+				//Logger.error(msg)
+				throw new ArrayIndexOutOfBoundsException(msg)
+			}
 		}
-
-		Logger.debug("There are " + item.length + " items")
-
-		CSVLine(
-			trimString(item(0), 0),
-			trimString(item(1), 1),
-			trimString(item(2), 2),
-			parseMaybeInt(trimString(item(3), 3)),
-			aSite,
-			zSite,
-			DateOrMTM.parseDate(trimString(item(5), 5)),
-			DateOrMTM.parseDate(trimString(item(6), 6)),
-			DateOrMTM.parseDate(trimString(item(7), 7)),
-			DateOrMTM.parseDate(trimString(item(8), 8)),
-			MaybeTerm.parseTerm(trimString(item(9), 9)),
-			MaybeTerm.parseTerm(trimString(item(10), 10)),
-			trimString(item(11), 11),
-			trimString(item(12), 12),
-			nrc,
-			mrc,
-			currency,
-			// skipping yearly contract costs
-			trimString(item(16), 16),
-			trimString(item(17), 17),
-			trimString(item(18), 18),
-			parseBoolean(trimString(item(19), 19)),
-			parseBoolean(trimString(item(20), 20))
-		)
 	}
 }
