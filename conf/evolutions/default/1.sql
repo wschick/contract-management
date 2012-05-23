@@ -62,8 +62,8 @@ CREATE TABLE contract (
 	billing_account varchar(20),
 	is_msa boolean NOT NULL default 0,
 	msa_id integer,
-	extra_info varchar(200),
-	description varchar(255),
+	extra_info varchar(500),
+	description varchar(1000),
 	contract_type_id integer NOT NULL,
 	a_end_id bigint NOT NULL, 
 	z_end_id bigint,
@@ -79,8 +79,8 @@ CREATE TABLE contract (
 	cancelled_date date,
 	auto_renew_period integer,
 	auto_renew_period_units integer,
-	attention varchar(300),
-	last_modifying_user varchar(40),
+	attention varchar(500),
+	last_modifying_user varchar(80),
 	last_modified_time datetime
 );
 

@@ -104,8 +104,9 @@ class OptionList[T](aList: Option[List[T]] = None, prefix: String = "") {
 			// l is now a list of something
 			if (l.isEmpty) return None
 			// Make list of prefixed strings, then reduceLeft to get operator between them.
-			val stringList = l.map(actualPrefix + _.toString)
-			Some(stringList.reduceLeft[String]{(str, item) => str + " " + operator + " " + item})
+			//val stringList = l.map(actualPrefix + _.toString)
+			//Some(stringList.reduceLeft[String]{(str, item) => str + " " + operator + " " + item})
+			Some(l.map(acutalPrefix + _.toString).mkString(" " + operator + " "))
 		}).getOrElse(None)
 	}
 }
