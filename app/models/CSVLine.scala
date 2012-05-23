@@ -76,6 +76,8 @@ object MaybeTerm {
 	val daysRegex = """^(\d+)(()|( [Dd]ays)|( [Mm]onths?)|( [Yy]ears?))$""".r
 
 	def parseTerm(termString: String): MaybeTerm = {
+		// If M-T-M, just return a 1 month term
+		if (termString == "M-T-M") return MaybeTerm(Some(Term(1, TimePeriodUnits.MONTH)), None)
 		Logger.debug("Parsing term \"" + termString + "\"")
 		try {
 			val daysRegex(len, _, _, days, months, years ) = termString

@@ -115,7 +115,9 @@ object Imports extends Controller {
 			val msg = "Created person \"" + name + "\" with email " + email
 			val id = Person.create(name, email, None, companyId)
 			Logger.info("Created person " + name + " with id " + id)
-			return (Person(id, name, email, None, companyId), Some(msg))
+			//return (Person(id, name, email, None, companyId), Some(msg))
+			// Decided not to flag person creation as an error. Usually it is what we want.
+			return (Person(id, name, email, None, companyId), None)
 		}
 	}
 
@@ -152,11 +154,11 @@ object Imports extends Controller {
 		val billingAccount = Some("???")
 		val isMSA: Boolean = false
 		val MSAId: Option[Long] = None
-		val extraInfo = {
+		val extraInfo: Option[String] = None
+		val description: Option[String] = {
 			if (info.lines == "") None
 			else Some(info.lines)
 		}
-		val description: Option[String] = None
 
 		val contractType = ContractType.findByName(DEFAULT_CONTRACT_TYPE)
 		if (contractType == None) {
@@ -171,7 +173,7 @@ object Imports extends Controller {
 			if (tempLoc != None) tempLoc.get
 			else {
 				val msg = "Can't find A side code \"" + info.aSite + "\""
-				shortErrors += ErrorInfo(fileName, lineNum, "A Side")
+				shortErrors += ErrorInfo(fileName, lineNum, "A (" + info.aSite + ")")
 				errors += ErrorInfo(fileName, lineNum, msg)
 				Logger.warn(msg)
 				NA_LOCATION
@@ -185,7 +187,7 @@ object Imports extends Controller {
 				if (tempLoc != None) tempLoc.get
 				else {
 					val msg = "Can't find Z side code \"" + tempLoc + "\""
-					shortErrors += ErrorInfo(fileName, lineNum, "Z Side")
+					shortErrors += ErrorInfo(fileName, lineNum, "Z (" + info.zSite.get + ")")
 					errors += ErrorInfo(fileName, lineNum, msg)
 					Logger.warn(msg)
 					NA_LOCATION
@@ -240,9 +242,14 @@ object Imports extends Controller {
 
 
 		val cancelledDate: Option[LocalDate] = None
-		val autoRenewPeriod: Option[Term] = None
-		val attentionText = shortErrors.foldLeft[String](""){(str, err) => err.message + "," + str}
-		Logger.info(attentionText)
+		val autoRenewPeriod: Option[Term] = info.contractTerm.term
+		val attentionText = {
+			if (shortErrors.length > 0) {
+				val txt = Some("Problems: " + shortErrors.map(_.message).mkString(", "))
+				Logger.debug(txt.get)
+				txt
+			} else None
+		}
 
 		if (!fatalError) {
 			Logger.info("Creating contract")
@@ -264,7 +271,7 @@ object Imports extends Controller {
 				earliestCancellationNotice,
 				cancelledDate,
 				autoRenewPeriod,
-				Some(attentionText)
+				attentionText
 				)), None)
 		} else {
 			Logger.info("Fatal error for contract")
