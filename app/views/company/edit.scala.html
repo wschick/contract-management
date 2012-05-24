@@ -4,7 +4,7 @@
 
 	@form_html(theForm, 
 		routes.Companies.update(company.id), 
-		Some(routes.Companies.all), 
+		Some(routes.Companies.all(None)), 
 		formLegend = "Update " + company.name, 
 		submitButtonName = "Update")
 

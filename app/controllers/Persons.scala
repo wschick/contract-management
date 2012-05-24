@@ -18,17 +18,17 @@ object Persons extends Controller {
 		)
 	)
   
-	def all = Action {
-    Ok(views.html.person.list(Person.all(), personForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.person.list(Person.all(), personForm, error))
 	}
 
 	def create = Action { implicit request =>
 		personForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(views.html.person.list(Person.all(), formWithErrors)),
+			formWithErrors => BadRequest(views.html.person.list(Person.all(), formWithErrors, None)),
 			person => {
 				val (name, email, telephone, companyId) = person
 				Person.create(name, email, telephone, companyId)
-				Redirect(routes.Persons.all)
+				Redirect(routes.Persons.all(None))
 			}
 		)
 	}
@@ -51,14 +51,13 @@ object Persons extends Controller {
 			person => {
 				val (name, email, telephone, companyId) = person
 				Person.update(id, name, email, telephone, companyId)
-				Ok(views.html.person.list(Person.all(), personForm))
+				Ok(views.html.person.list(Person.all(), personForm, None))
 			}
 		)
 	}
 					  
 	def delete(id: Long) = Action {
-		Person.delete(id)
-		Redirect(routes.Persons.all)
+		Redirect(routes.Persons.all(Person.delete(id)))
 	}
 
 }

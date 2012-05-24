@@ -6,31 +6,31 @@
 GET     /                           controllers.Contracts.all
 GET     /settings                   controllers.Application.settings
 
-GET			/budget											controllers.Budgets.all
+GET			/budget											controllers.Budgets.all(error: Option[String])
 GET			/budget/:id/edit						controllers.Budgets.edit(id: Long)
 POST		/budget/:id/edit						controllers.Budgets.update(id: Long)
 POST		/budget/new									controllers.Budgets.create
 GET			/budget/:id/delete					controllers.Budgets.delete(id: Long)
 
-GET			/currencies									controllers.Currencies.all
+GET			/currencies									controllers.Currencies.all(error: Option[String])
 POST		/currencies									controllers.Currencies.create
 GET			/currencies/:id/edit				controllers.Currencies.edit(id: Long)
 POST		/currencies/:id/edit				controllers.Currencies.update(id: Long)
 GET			/currencies/:id/delete			controllers.Currencies.delete(id: Long)
 
-GET			/locations									controllers.Locations.all
+GET			/locations									controllers.Locations.all(error: Option[String])
 POST		/locations/new							controllers.Locations.create
 GET			/locations/:id/edit					controllers.Locations.edit(id: Long)
 POST		/locations/:id/edit					controllers.Locations.update(id: Long)
 GET			/locations/:id/delete				controllers.Locations.delete(id: Long)
 
-GET			/persons										controllers.Persons.all
+GET			/persons										controllers.Persons.all(error: Option[String])
 POST		/persons										controllers.Persons.create
 GET			/persons/:id/edit						controllers.Persons.edit(id: Long)
 POST		/persons/:id/edit						controllers.Persons.update(id: Long)
 GET			/persons/:id/delete					controllers.Persons.delete(id: Long)
 
-GET			/companies									controllers.Companies.all
+GET			/companies									controllers.Companies.all(error: Option[String])
 POST		/companies									controllers.Companies.create
 POST		/companies/popup						controllers.Companies.popupCreate
 GET			/companies/:id/edit					controllers.Companies.edit(id: Long)
@@ -46,7 +46,7 @@ GET			/reminders/:id/delete				controllers.Reminders.delete(id: Long)
 GET			/rp													controllers.ReminderPersons.all
 GET			/rp/:reminderId/:personId/delete				controllers.ReminderPersons.delete(reminderId: Long, personId: Long)
 
-GET			/contract_types							controllers.ContractTypes.all
+GET			/contract_types							controllers.ContractTypes.all(error: Option[String])
 GET			/contract_types/:id/edit		controllers.ContractTypes.edit(id: Long)
 POST		/contract_types/:id/edit		controllers.ContractTypes.update(id: Long)
 POST		/contract_types/new					controllers.ContractTypes.create

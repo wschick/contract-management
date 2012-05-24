@@ -13,16 +13,16 @@ object Currencies extends Controller {
 		"abbreviation" -> nonEmptyText
 	)
   
-	def all = Action {
-    Ok(views.html.currency.list(Currency.all(), currencyForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.currency.list(Currency.all(), currencyForm, error))
 	}
 
 	def create = Action { implicit request =>
 		currencyForm.bindFromRequest.fold(
-			errors => BadRequest(views.html.currency.list(Currency.all(), errors)),
+			errors => BadRequest(views.html.currency.list(Currency.all(), errors, None)),
 			abbreviation => {
 				Currency.create(abbreviation)
-				Redirect(routes.Currencies.all)
+				Redirect(routes.Currencies.all(None))
 			}
 		)
 	}
@@ -46,14 +46,13 @@ object Currencies extends Controller {
 			},
 			currency => {
 				Currency.update(id, currency)
-				Ok(views.html.currency.list(Currency.all(), currencyForm))
+				Ok(views.html.currency.list(Currency.all(), currencyForm, None))
 			}
 		)
 	}
 
 	def delete(id: Long) = Action {
-		Currency.delete(id)
-		Redirect(routes.Currencies.all)
+		Redirect(routes.Currencies.all(Currency.delete(id)))
 	}
 
 }

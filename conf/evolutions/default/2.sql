@@ -11,6 +11,7 @@ insert into currency(id, abbreviation) values (2, 'EUR');
 insert into currency(id, abbreviation) values (3, 'GBP');
 insert into currency(id, abbreviation) values (4, 'JPY');
 insert into currency(id, abbreviation) values (5, 'DKK');
+insert into currency(id, abbreviation) values (5, 'AUD');
 
 insert into location(id, code, description) values (1, 'NA', 'None'); 
 insert into location(id, code, description, address) values (2, 'WDC1', 'DC office', '529 14th Street NW, Washington, DC 2xsxx');

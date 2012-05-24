@@ -16,17 +16,18 @@ object Companies extends Controller {
 		)
 	)
 
-	def all = Action {
-    Ok(views.html.company.list(Company.all(), companyForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.company.list(Company.all(), companyForm, error))
 	}
 
+	/** Popup used for on-the-fly company creation when editing a person. */ 
 	def popupCreate = Action { implicit request =>
 		companyForm.bindFromRequest.fold(
 			formWithErrors => BadRequest(views.html.company.list(Company.all(), formWithErrors)),
 			companyTuple => {
 				val (name, primaryContactId) = companyTuple
 				Company.create(name, primaryContactId)
-				Redirect(routes.Persons.all)
+				Redirect(routes.Persons.all(None))
 			}
 		)
 	}
@@ -37,7 +38,7 @@ object Companies extends Controller {
 			companyTuple => {
 				val (name, primaryContactId) = companyTuple
 				Company.create(name, primaryContactId)
-				Redirect(routes.Companies.all)
+				Redirect(routes.Companies.all(None))
 			}
 		)
 	}
@@ -71,8 +72,8 @@ object Companies extends Controller {
 	}
 
 	def delete(id: Long) = Action {
-		Company.delete(id)
-		Redirect(routes.Companies.all)
+		val err  =Company.delete(id)
+		Redirect(routes.Companies.all(err))
 	}
 
 }

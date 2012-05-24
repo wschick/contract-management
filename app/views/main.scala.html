@@ -37,8 +37,8 @@
 				<ul>
 					<li><a class="@if(nav=="contracts"){selected}else{}" href="@routes.Contracts.all">Contracts</a></li>
 					<li><a class="@if(nav=="reminders"){selected}else{}" href="@routes.Reminders.all">Reminders</a></li>
-					<li><a class="@if(nav=="companies"){selected}else{}" href="@routes.Companies.all">Companies</a></li>
-					<li><a class="@if(nav=="people"){selected}else{}" href="@routes.Persons.all">People</a></li>
+					<li><a class="@if(nav=="companies"){selected}else{}" href="@routes.Companies.all(None)">Companies</a></li>
+					<li><a class="@if(nav=="people"){selected}else{}" href="@routes.Persons.all(None)">People</a></li>
 					<li><a class="@if(nav=="settings"){selected}else{}" href="@routes.Application.settings">Other Settings</a></li>
 					<li><a class="@if(nav=="import"){selected}else{}" href="@routes.Imports.start">Import</a></li>
 				</ul>

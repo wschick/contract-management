@@ -6,6 +6,8 @@ import play.api.db._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
+import com.mysql.jdbc.exceptions.jdbc4._
+import java.sql.SQLException
 
 case class Currency(id: Long, abbreviation: String)
 
@@ -65,11 +67,28 @@ object Currency {
 	}
 					  
 
-	def delete(id: Long) {
-		DB.withConnection { implicit c =>
-			SQL("delete from currency where id = {id}").on(
-				'id -> id
-			).executeUpdate()
+	/**
+		Delete a currency
+
+		@passed: id The id of the currency to delete
+		@return: None if everything was ok, or a String if the operation failed.
+	*/
+	def delete(id: Long): Option[String] = {
+		try {
+			DB.withConnection { implicit c =>
+				SQL("delete from currency where id = {id}").on(
+					'id -> id
+				).executeUpdate()
+			}
+			return None
+		} catch {
+			// Sorry this is mysql specific, but I don't think there is a general way to 
+			// catch a constraint violation exception.
+			case e: MySQLIntegrityConstraintViolationException => 
+				Some("Can't delete this because something else depends upon it.")
+			case e: SQLException =>
+				println(e)
+				Some("Couldn't delete this currency: " + e.getMessage)
 		}
 	}
 	

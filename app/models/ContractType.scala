@@ -4,6 +4,8 @@ import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
+import com.mysql.jdbc.exceptions.jdbc4._
+import java.sql.SQLException
 
 case class ContractType(
 	id: Pk[Long] = NotAssigned,
@@ -94,15 +96,28 @@ object ContractType {
 		}
 	}
 					  
-	/** Delete a contract type
+	/**
+		Delete a contract type
 
-		@param id the id of the ContractType
-
-		*/
-	def delete(id: Long) {
-		DB.withConnection { implicit connection =>
-			SQL("delete from contract_type where id = {id}").on(
-				'id -> id).executeUpdate()
+		@passed: id The id of the contract type to delete
+		@return: None if everything was ok, or a String if the operation failed.
+	*/
+	def delete(id: Long): Option[String] = {
+		try {
+			DB.withConnection { implicit c =>
+				SQL("delete from contract_type where id = {id}").on(
+					'id -> id
+				).executeUpdate()
+			}
+			return None
+		} catch {
+			// Sorry this is mysql specific, but I don't think there is a general way to 
+			// catch a constraint violation exception.
+			case e: MySQLIntegrityConstraintViolationException => 
+				Some("Can't delete this because something else depends upon it.")
+			case e: SQLException =>
+				println(e)
+				Some("Couldn't delete this contract type: " + e.getMessage)
 		}
 	}
 							  

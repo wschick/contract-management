@@ -1,8 +1,14 @@
-@(currencies: List[Currency], currencyForm: Form[String])
+@(currencies: List[Currency], currencyForm: Form[String], error: Option[String])
 
 @import helper._
 
 @main("Currencies", "Currencies", "settings") {
+
+	@error.map { errorString =>
+		<div class="error-message">
+			<p>@errorString</p>
+		</div>
+	}
 
 	@if(currencies.isEmpty) {
 		<h3>No contract types.</h3>

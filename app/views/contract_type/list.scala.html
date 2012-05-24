@@ -1,6 +1,12 @@
-@(contractTypes: List[ContractType], contractTypeForm: Form[ContractType])
+@(contractTypes: List[ContractType], contractTypeForm: Form[ContractType], error: Option[String])
 
 @main("Contract Types", "Contract Types", "settings") {
+
+	@error.map { errorString =>
+		<div class="error-message">
+			<p>@errorString</p>
+		</div>
+	}
 
 	@if(contractTypes.isEmpty) {
 		<h3>No contract types.</h3>

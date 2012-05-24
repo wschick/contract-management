@@ -21,17 +21,17 @@ object Budgets extends Controller {
 
 
 	/** Show all the budgets. */
-	def all = Action {
-    Ok(views.html.budget.list(Budget.all(), budgetForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.budget.list(Budget.all(), budgetForm, error))
 	}
 
 	/** Handle a request to make a new budget */
 	def create = Action { implicit request =>
 		budgetForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(html.budget.list(Budget.all(), formWithErrors)),
+			formWithErrors => BadRequest(html.budget.list(Budget.all(), formWithErrors, None)),
 			budget => {
 				Budget.create(budget)
-				Ok(html.budget.list(Budget.all(), budgetForm))
+				Ok(html.budget.list(Budget.all(), budgetForm, None))
 			}
 		)
 	}
@@ -53,15 +53,14 @@ object Budgets extends Controller {
 			},
 			budget => {
 				Budget.update(id, budget)
-				Ok(html.budget.list(Budget.all(), budgetForm))
+				Ok(html.budget.list(Budget.all(), budgetForm, None))
 			}
 		)
 	}
 
 	/** Handle a budget delete */
 	def delete(id: Long) = Action {
-		Budget.delete(id)
-		Redirect(routes.Budgets.all)
+		Redirect(routes.Budgets.all(Budget.delete(id)))
 	}
   
 }

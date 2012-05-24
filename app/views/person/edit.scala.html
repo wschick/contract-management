@@ -4,7 +4,7 @@
 
 	@form_html(theForm, 
 		routes.Persons.update(person.id), 
-		Some(routes.Persons.all), 
+		Some(routes.Persons.all(None)), 
 		formLegend = "Update " + person.name, 
 		submitButtonName = "Update")
 

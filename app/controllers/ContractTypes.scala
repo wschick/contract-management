@@ -21,8 +21,8 @@ object ContractTypes extends Controller {
 
 
 	/** Show all the contract types. */
-	def all = Action {
-    Ok(views.html.contract_type.list(ContractType.all(), contractTypeForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.contract_type.list(ContractType.all(), contractTypeForm, error))
 	}
 
   //def form = Action {
@@ -32,10 +32,10 @@ object ContractTypes extends Controller {
 	/** Handle a request to make a new contract type */
 	def create = Action { implicit request =>
 		contractTypeForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(html.contract_type.list(ContractType.all(), formWithErrors)),
+			formWithErrors => BadRequest(html.contract_type.list(ContractType.all(), formWithErrors, None)),
 			contractType => {
 				ContractType.create(contractType)
-				Ok(html.contract_type.list(ContractType.all(), contractTypeForm))
+				Ok(html.contract_type.list(ContractType.all(), contractTypeForm, None))
 			}
 		)
 	}
@@ -57,21 +57,20 @@ object ContractTypes extends Controller {
 			},
 			contractType => {
 				ContractType.update(id, contractType)
-				Ok(html.contract_type.list(ContractType.all(), contractTypeForm))
+				Ok(html.contract_type.list(ContractType.all(), contractTypeForm, None))
 			}
 		)
 	}
 
 	//def viewContractType(id: Long) = Action { implicit request =>
 //		ContractType.findById(id).map { existingcontractType =>
-//			Ok(html.contract_type.contract_types_list(ContractType.all(), contractTypeForm))
+//			Ok(html.contract_type.contract_types_list(ContractType.all(), contractTypeForm, None))
 //		}.getOrElse(NotFound)
 //	}
 
 	/** Handle a contract type delete */
 	def delete(id: Long) = Action {
-		ContractType.delete(id)
-		Redirect(routes.ContractTypes.all)
+		Redirect(routes.ContractTypes.all(ContractType.delete(id)))
 	}
   
 }

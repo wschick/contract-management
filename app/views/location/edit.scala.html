@@ -4,7 +4,7 @@
 
 	@form_html(locationForm, 
 		routes.Locations.update(location.id), 
-		Some(routes.Locations.all), 
+		Some(routes.Locations.all(None)), 
 		formLegend = "Update " + location.code, 
 		submitButtonName = "Update")
 

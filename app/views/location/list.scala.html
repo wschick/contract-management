@@ -1,8 +1,14 @@
-@(locations: List[Location], locationForm: Form[(String, String, Option[String])])
+@(locations: List[Location], locationForm: Form[(String, String, Option[String])], error: Option[String])
 
 @import helper._
 
 @main("Locations", "Locations", "settings") {
+
+	@error.map { errorString =>
+		<div class="error-message">
+			<p>@errorString</p>
+		</div>
+	}
 
 	@if(locations.isEmpty) {
 	<h3>No locations.</h3>

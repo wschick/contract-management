@@ -4,7 +4,7 @@
 
 	@form_html(currencyForm, 
 		routes.Currencies.update(currency.id), 
-		Some(routes.Currencies.all), 
+		Some(routes.Currencies.all(None)), 
 		formLegend = "Update " + currency.abbreviation, 
 		submitButtonName = "Update")
 

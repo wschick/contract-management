@@ -18,18 +18,18 @@ object Locations extends Controller {
 	)
 
 	/** Show everything */
-	def all = Action {
-    Ok(views.html.location.list(Location.all(), locationForm))
+	def all(error: Option[String] = None) = Action {
+    Ok(views.html.location.list(Location.all(), locationForm, error))
 	}
 
 	/** Create a location with the form values. */
 	def create = Action { implicit request =>
 		locationForm.bindFromRequest.fold(
-			formWithErrors => BadRequest(views.html.location.list(Location.all(), formWithErrors)),
+			formWithErrors => BadRequest(views.html.location.list(Location.all(), formWithErrors, None)),
 			locationTuple => {
 				val (code, description, address) = locationTuple
 				Location.create(code, description, address)
-				Redirect(routes.Locations.all)
+				Redirect(routes.Locations.all(None))
 			}
 		)
 	}
@@ -54,15 +54,14 @@ object Locations extends Controller {
 			locationTuple => {
 				val (code, description, address) = locationTuple
 				Location.update(id, code, description, address)
-				Ok(views.html.location.list(Location.all(), locationForm))
+				Ok(views.html.location.list(Location.all(), locationForm, None))
 			}
 		)
 	}
 
 	/** Delete the location. */
 	def delete(id: Long) = Action {
-		Location.delete(id)
-		Redirect(routes.Locations.all)
+		Redirect(routes.Locations.all(Location.delete(id)))
 	}
 
 }

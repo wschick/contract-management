@@ -4,6 +4,8 @@ import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
+import com.mysql.jdbc.exceptions.jdbc4._
+import java.sql.SQLException
 
 
 case class Budget(
@@ -83,17 +85,31 @@ object Budget {
 		}
 	}
 					  
-	/** Delete a budget
+	/**
+		Delete a budget
 
-		@param id the id of the Budget
-
-		*/
-	def delete(id: Long) {
-		DB.withConnection { implicit connection =>
-			SQL("delete from budget where id = {id}").on(
-				'id -> id).executeUpdate()
+		@passed: id The id of the budget to delete
+		@return: None if everything was ok, or a String if the operation failed.
+	*/
+	def delete(id: Long): Option[String] = {
+		try {
+			DB.withConnection { implicit c =>
+				SQL("delete from budget where id = {id}").on(
+					'id -> id
+				).executeUpdate()
+			}
+			return None
+		} catch {
+			// Sorry this is mysql specific, but I don't think there is a general way to 
+			// catch a constraint violation exception.
+			case e: MySQLIntegrityConstraintViolationException => 
+				Some("Can't delete this because something else depends upon it.")
+			case e: SQLException =>
+				println(e)
+				Some("Couldn't delete this budget: " + e.getMessage)
 		}
 	}
+	
 							  
 	/** Make Map[String, String] needed for budget select options in a form. 
 			This uses the name of the Budget as the visible text.

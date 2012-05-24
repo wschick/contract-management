@@ -1,6 +1,12 @@
-@(budgets: List[Budget], budgetForm: Form[Budget])
+@(budgets: List[Budget], budgetForm: Form[Budget], error: Option[String])
 
 @main("budgets", "budgets", "settings") {
+
+	@error.map { errorString =>
+		<div class="error-message">
+			<p>@errorString</p>
+		</div>
+	}
 
 	@if(budgets.isEmpty) {
 		<h3>No budgets.</h3>

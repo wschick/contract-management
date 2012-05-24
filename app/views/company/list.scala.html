@@ -1,8 +1,14 @@
-@(companies: List[Company], companyForm: Form[(String, Option[Long])])
+@(companies: List[Company], companyForm: Form[(String, Option[Long])], error: Option[String] = None)
 
 @import helper._
 
 @main("Companies", "Companies", "companies") {
+
+	@error.map { errorString =>
+		<div class="error-message">
+			<p>@errorString</p>
+		</div>
+	}
 
 	@if(companies.isEmpty) {
 		<h3>No companies.</h3>
