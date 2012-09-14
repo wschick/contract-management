@@ -52,11 +52,11 @@ object Reminder {
 	}
 
 
- val personName = {
-	 get[String]("name") map {
-		 case name => name
-	 }
- }
+	val personName = {
+		get[String]("name") map {
+			case name => name
+		}
+	}
 
 	def personNamesForReminder(reminderId: Pk[Long], maxPersons: Int = 1): List[String] = {
 		DB.withConnection { implicit c =>
