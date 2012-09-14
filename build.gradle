@@ -11,7 +11,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath( group: 'com.ntkn', name: 'build-PackagingPlugin', version: '1.0-SNAPSHOT'){
+		classpath( group: 'com.ntkn', name: 'build-PackagingPlugin', version: '1.+'){
 			changing = true
 		}
 	}
