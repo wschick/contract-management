@@ -61,7 +61,7 @@
 							val msaId = contract.MSAId.get
 							val msaName = Contract.nameById(msaId).get
 							if (msaName == None) "Bad MSA - no MSA for Id " + msaId
-							else new Html("<a href=\"" + routes.Contracts.view(msaId) + "\">" + msaName + "</a>")
+							else new Html(new StringBuilder("<a href=\"" + routes.Contracts.view(msaId) + "\">" + msaName + "</a>"))
 							}
 							}</td></tr>
 					<tr> <td class="blank-line">&nbsp;</td><td class="blank-line">&nbsp;</td></tr>

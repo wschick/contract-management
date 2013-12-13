@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import PlayProject._
+import play.Project._
 
 object ApplicationBuild extends Build {
 
@@ -14,7 +14,9 @@ object ApplicationBuild extends Build {
 			"javax.mail" % "mail" % "1.4.5"
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+    
+
+    val main = play.Project(appName, appVersion, appDependencies).settings(
 			coffeescriptOptions := Seq("bare"),
 			credentials += Credentials(Path.userHome / ".credentials"),
 			publishTo := Some("Artifactory Realm" at "http://build.ntkn.com/artifactory/libs-release-local/")
