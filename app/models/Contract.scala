@@ -144,6 +144,7 @@ object Contract {
 
 	def filtered(filter: ContractFilter): List[Contract] = {
 		DB.withConnection { implicit connection =>
+      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
 			SQL("select * from contract " + filter.sqlCondition).as(contract *)
 		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
 	}

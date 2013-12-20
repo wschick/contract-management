@@ -31,8 +31,8 @@ case class ContractFilter(
 
 
 	def sqlCondition: String = {
-		var conditionList = List[String]()
-		var conditionString: String = ""
+//		var conditionList = List[String]()
+//		var conditionString: String = ""
 		//if (showOk) { conditionList ::= " status=" + OK.value }
 		//if (showNearWarning) { conditionList = "status=" + NEARWARNING.value :: conditionList }
 		//if (showFarWarning) { conditionList = "status=" + FARWARNING.value :: conditionList }
@@ -44,10 +44,10 @@ case class ContractFilter(
 		//Logger.debug(">>>>>>>>>>>>>>>>>Make into list:  " + conditionList)
 
 		// Make contract type condition
-		contractTypeIds.makeConditionString().map(c => conditionList +:= c)
-		vendorIds.makeConditionString().map(c => conditionList +:= c)
-		budgetIds.makeConditionString().map(c => conditionList +:= c)
-		locationIds.makeConditionString().map(c => conditionList +:= c)
+//		contractTypeIds.makeConditionString().map(c => conditionList +:= c)
+//		vendorIds.makeConditionString().map(c => conditionList +:= c)
+//		budgetIds.makeConditionString().map(c => conditionList +:= c)
+//		locationIds.makeConditionString().map(c => conditionList +:= c)
 		/*Logger.debug("Contract type ids: " + contractTypeIds);
 		val contractTypeCondition: String = 
 			contractTypeIds.map(ctis => {
@@ -67,8 +67,35 @@ case class ContractFilter(
 		val conditionString = ContractFilter.makeConditionString(conditionList, "AND")
 		Logger.debug("Condition string: " + conditionString)
 			*/
-		if (conditionString != "") return "WHERE " + conditionString
-		else return ""
+
+    // where clause to be refactor by slick api
+    var statusList = List[String]()
+    if (showNearWarning){
+      statusList = "(CASE term_units WHEN 0 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term DAY), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 1 AND 29 WHEN 1 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term MONTH), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 1 AND 29 ELSE DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term YEAR), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 1 AND 29 END)"::statusList
+    }
+
+    if (showFarWarning){
+      statusList = "(CASE term_units WHEN 0 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term DAY), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 31 AND 59 WHEN 1 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term MONTH), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 31 AND 59 ELSE DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term YEAR), INTERVAL cancellation_period DAY), CURDATE()) BETWEEN 31 AND 59 END)"::statusList
+    }
+
+    if (showTooLate){
+      statusList = "(CASE term_units WHEN 0 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term DAY), INTERVAL cancellation_period DAY), CURDATE()) <= 0 WHEN 1 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term MONTH), INTERVAL cancellation_period DAY), CURDATE()) <= 0 ELSE DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term YEAR), INTERVAL cancellation_period DAY), CURDATE()) <=0 END)"::statusList
+    }
+
+    if (showOk){
+      statusList = "(CASE term_units WHEN 0 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term DAY), INTERVAL cancellation_period DAY), CURDATE()) >= 60 WHEN 1 THEN DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term MONTH), INTERVAL cancellation_period DAY), CURDATE()) >= 60 ELSE DATEDIFF(DATE_SUB(DATE_ADD(start_date,INTERVAL term YEAR), INTERVAL cancellation_period DAY), CURDATE()) >= 60  END)"::statusList
+    }
+
+    if (showActive){
+      statusList = "(cancelled_date IS NULL)"::statusList
+    }
+
+    if (showCancelled){
+      statusList = "(cancelled_date IS NOT NULL)"::statusList
+    }
+
+    if (statusList.size==0) return ""
+    else return "WHERE " + statusList.reduceLeft((s1, s2)=> s1 + " OR " + s2)
 	}
 	  
 }
@@ -96,7 +123,7 @@ class OptionList[T](aList: Option[List[T]] = None, prefix: String = "") {
 	/**
 		@param operator What to put between the prefixed strings. Typically a boolean like OR or AND
 		@param actualPrefix Use if you need to override the default prefix.
-		@returns A string concatenating the prefix with each value, and then putting the operator between
+		@return A string concatenating the prefix with each value, and then putting the operator between
 		those strings, or None if there is no condition.
 	*/
 	def makeConditionString(operator: String = "OR", actualPrefix: String = prefix): Option[String] = {
