@@ -13,7 +13,11 @@ libraryDependencies ++= Seq(
   javaCore,  // The core Java API
   // WebJars pull in client-side web libraries
   "org.webjars" %% "webjars-play" % "2.2.0",
-  "org.webjars" % "bootstrap" % "2.3.1"
+  "org.webjars" % "bootstrap" % "2.3.1",
+  "com.typesafe.slick" %% "slick" % "1.0.1",
+  "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
+  "mysql" % "mysql-connector-java" % "5.1.19",
+  "javax.mail" % "mail" % "1.4.5"
   // Add your own project dependencies in the form:
   // "group" % "artifact" % "version"
 )
