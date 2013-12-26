@@ -1,124 +1,57 @@
 package models
 
-import anorm._
-import anorm.SqlParser._
-import play.api.db._
-import play.api.Play.current
 import com.mysql.jdbc.exceptions.jdbc4._
 import java.sql.SQLException
 
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
 
-case class Budget(
-	id: Pk[Long] = NotAssigned,
-	name: String
-) 
+case class Budget(id: Option[Long],
+                 name: String)
 
+object Budget extends Table[Budget]("budget") with DbUtils{
+  def id = column[Long]("id")
+  def name = column[String]("name")
+  def * = id.? ~ name <> (Budget.apply _, Budget.unapply _)
 
-object Budget {
+  def all(): List[Budget] = withSession {
+    Query(Budget).sortBy(_.name) list
+  }
 
-	val budget = {
-		get[Pk[Long]]("id") ~ 
-		get[String]("name") map {
-			case id~name => Budget(id, name)
-		}
-	}	
+  def findById(id: Long): Option[Budget] =withSession {
+    (for (a <- Budget if a.id === id) yield a).list.headOption
+  }
 
-	/** Get a list of all contracts. */
-	def all(): List[Budget] = DB.withConnection { implicit connection =>
-		SQL("select * from budget order by name").as(budget *)
-	}
+  def nameById(id: Long): Option[String] = withSession {
+    findById(id).map(budget => Some(budget.name)).getOrElse(None)
+  }
 
+  def create(newBudget: Budget) = withSession{
+    (Budget.name).insert(newBudget.name)
+  }
 
-	/** Get a specific budget.
+  def update(id: Long, budget: Budget) = withSession {
+    val q = for { b <- Budget if b.id === id } yield b.name
+    q.update(budget.name)
+  }
 
-		@param id the id of the budget
-		@return the budget, if it exists.
+  def delete(id: Long): Option[String] = withSession{
+    try {
+      val q = for { b <- Budget if b.id === id } yield b
+      q.delete
+      return None
+    } catch {
+      // Sorry this is mysql specific, but I don't think there is a general way to
+      // catch a constraint violation exception.
+      case e: MySQLIntegrityConstraintViolationException =>
+        Some("Can't delete this because something else depends upon it.")
+      case e: SQLException =>
+        println(e)
+        Some("Couldn't delete this budget: " + e.getMessage)
+    }
+  }
 
-		*/
-	def findById(id: Long): Option[Budget] = {
-		DB.withConnection { implicit connection =>
-			SQL("select * from budget where id = {id}").on('id -> id).as(Budget.budget.singleOpt)
-		}
-	}
-
-	/** Get the name of a specific budget.
-
-		@param id the id of the budget
-		@return the budget name, if it exists.
-
-		*/
-	def nameById(id: Long): Option[String] = {
-		findById(id).map(budget => Some(budget.name)).getOrElse(None)
-	}
-			  
-	/** Create a budget in the database.
-
-		@param budget A Budget object to be persisted. 
-			The unique database key will be provided automatically.
-		*/
-	def create(newBudget: Budget) {
-		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					insert into budget (name) values ({name})
-				"""
-				).on(
-				'name -> newBudget.name
-			).executeUpdate()
-		}
-	}
-
-	/** Update a contract type in the database.
-
-		@param budget A Budget object to be updated with the values provided 
-		*/
-	def update(id: Long, budget: Budget) = {
-		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					update budget set name={name} where id={id}
-				"""
-				).on(
-				'id -> id,
-				'name -> budget.name
-			).executeUpdate()
-		}
-	}
-					  
-	/**
-		Delete a budget
-
-		@passed: id The id of the budget to delete
-		@return: None if everything was ok, or a String if the operation failed.
-	*/
-	def delete(id: Long): Option[String] = {
-		try {
-			DB.withConnection { implicit c =>
-				SQL("delete from budget where id = {id}").on(
-					'id -> id
-				).executeUpdate()
-			}
-			return None
-		} catch {
-			// Sorry this is mysql specific, but I don't think there is a general way to 
-			// catch a constraint violation exception.
-			case e: MySQLIntegrityConstraintViolationException => 
-				Some("Can't delete this because something else depends upon it.")
-			case e: SQLException =>
-				println(e)
-				Some("Couldn't delete this budget: " + e.getMessage)
-		}
-	}
-	
-							  
-	/** Make Map[String, String] needed for budget select options in a form. 
-			This uses the name of the Budget as the visible text.
-		*/
-	def options: Seq[(String, String)] = DB.withConnection { 
-		implicit connection => 
-		SQL("select * from budget order by name")
-			.as(Budget.budget *).map(c => c.id.toString -> (c.name))
-	}
-
+  def options: Seq[(String, String)] = withSession {
+    Query(Budget).sortBy(_.name).list.map(b => b.id.toString -> (b.name))
+  }
 }
-
