@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.2.0",
   "org.webjars" % "bootstrap" % "2.3.1",
   "com.typesafe.slick" %% "slick" % "1.0.1",
+  "com.github.tototoshi" %% "slick-joda-mapper" % "0.4.0",
   "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
   "mysql" % "mysql-connector-java" % "5.1.19",
   "javax.mail" % "mail" % "1.4.5"
