@@ -13,7 +13,7 @@ object ContractTypes extends Controller {
   
 	val contractTypeForm: Form[ContractType] = Form(
 		mapping(
-			"id" -> ignored(NotAssigned:Pk[Long]),
+			"id" -> ignored(None: Option[Long]),
 			"name" -> nonEmptyText
 		)
 		(ContractType.apply)(ContractType.unapply)
