@@ -1,48 +1,34 @@
 package models
 
-import anorm._
-import anorm.SqlParser._
-import play.api.db._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.Play.current
 import com.mysql.jdbc.exceptions.jdbc4._
 import java.sql.SQLException
 
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
+
 case class Currency(id: Long, abbreviation: String)
 
-object Currency {
-	  
-	val currency = {
-		get[Long]("id") ~ 
-		get[String]("abbreviation") map {
-			case id~abbreviation => Currency(id, abbreviation)
-		}
-	}	
+object Currency extends Table[Currency]("currency") with DbUtils {
 
-	def all(): List[Currency] = DB.withConnection { implicit c =>
-		SQL("select * from currency order by abbreviation").as(currency *)
-	}
-			  
-	def create(abbreviation: String) {
-		DB.withConnection { implicit c =>
-			SQL("insert into currency (abbreviation) values ({abbreviation})").on(
-				'abbreviation -> abbreviation
-			).executeUpdate()
-		}
-	}
-					  
-	def findById(id: Long): Option[Currency] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from currency where id = {id}").on('id -> id).as(Currency.currency.singleOpt)
-		}
-	}
+  def id = column[Long]("id")
+  def abbreviation = column[String]("abbreviation")
+  def * = id ~ abbreviation <> (Currency.apply _, Currency.unapply _)
 
-	def findByAbbreviation(abbrev: String): Option[Currency] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from currency where abbreviation = {abbrev}").on('abbrev -> abbrev).as(Currency.currency.singleOpt)
-		}
-	}
+  def all(): List[Currency] = withSession {
+    Query(Currency).sortBy(_.abbreviation) list
+  }
+
+  def create(abbreviation: String) = withSession{
+    (Currency.abbreviation).insert(abbreviation)
+  }
+
+  def findById(id: Long): Option[Currency] =withSession {
+    (for (a <- Currency if a.id === id) yield a).list.headOption
+  }
+
+  def findByAbbreviation(abbrev: String): Option[Currency] = withSession{
+    (for (c <- Currency if c.abbreviation === abbrev) yield c).list.headOption
+  }
 
 	def stringById(id: Long): String = {
 		val c = findById(id);
@@ -53,49 +39,28 @@ object Currency {
 		}
 	}
 
-	def update(id: Long, abbreviation: String) {
-		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					update currency set abbreviation={abbreviation} where id={id}
-				"""
-				).on(
-				'id -> id,
-				'abbreviation -> abbreviation
-			).executeUpdate()
-		}
-	}
-					  
+  def update(id: Long, abbreviation: String) = withSession {
+    val q = for { c <- Currency if c.id === id } yield c.abbreviation
+    q.update(abbreviation)
+  }
 
-	/**
-		Delete a currency
+  def delete(id: Long): Option[String] = withSession{
+    try {
+      val q = for { c <- Currency if c.id === id } yield c
+      q.delete
+      return None
+    } catch {
+      // Sorry this is mysql specific, but I don't think there is a general way to
+      // catch a constraint violation exception.
+      case e: MySQLIntegrityConstraintViolationException =>
+        Some("Can't delete this because something else depends upon it.")
+      case e: SQLException =>
+        println(e)
+        Some("Couldn't delete this contract type: " + e.getMessage)
+    }
+  }
 
-		@passed: id The id of the currency to delete
-		@return: None if everything was ok, or a String if the operation failed.
-	*/
-	def delete(id: Long): Option[String] = {
-		try {
-			DB.withConnection { implicit c =>
-				SQL("delete from currency where id = {id}").on(
-					'id -> id
-				).executeUpdate()
-			}
-			return None
-		} catch {
-			// Sorry this is mysql specific, but I don't think there is a general way to 
-			// catch a constraint violation exception.
-			case e: MySQLIntegrityConstraintViolationException => 
-				Some("Can't delete this because something else depends upon it.")
-			case e: SQLException =>
-				println(e)
-				Some("Couldn't delete this currency: " + e.getMessage)
-		}
-	}
-	
-	// Make Map[String, String] needed for select options in a form.
-	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from currency order by abbreviation").as(Currency.currency *).map(c => c.id.toString -> c.abbreviation)
-	}
+  def options: Seq[(String, String)] = withSession {
+    Query(Currency).sortBy(_.abbreviation).list.map(c => c.id.toString -> (c.abbreviation))
+  }
 }
-
-// From http://danieldietrich.net/?p=26
