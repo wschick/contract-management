@@ -56,7 +56,7 @@ object Currency extends Table[Currency]("currency") with DbUtils {
         Some("Can't delete this because something else depends upon it.")
       case e: SQLException =>
         println(e)
-        Some("Couldn't delete this contract type: " + e.getMessage)
+        Some("Couldn't delete this Currency: " + e.getMessage)
     }
   }
 
