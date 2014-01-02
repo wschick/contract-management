@@ -1,13 +1,10 @@
 package models
 
-import anorm._
-import anorm.SqlParser._
-import play.api.db._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.Play.current
 import com.mysql.jdbc.exceptions.jdbc4._
 import java.sql.SQLException
+
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
 
 case class Person(
 	id: Long, 
@@ -16,33 +13,20 @@ case class Person(
 	telephone: Option[String], 
 	companyId: Long)
 
-object Person {
-	  
-	val person = {
-		get[Long]("id") ~ 
-		get[String]("name") ~
-		get[String]("email") ~
-		get[Option[String]]("telephone") ~
-		get[Long]("company_id") map {
-			case id~name~email~telephone~company_id => 
-				Person(id, name, email, telephone, company_id)
-		}
-	}	
+object Person extends Table[Person]("person") with DbUtils {
+  def id = column[Long]("id")
+  def name = column[String]("name")
+  def email = column[String]("email")
+  def telephone = column[String]("telephone")
+  def companyId = column[Long]("company_id")
+  def * = id ~ name ~ email ~ telephone.? ~ companyId <> (Person.apply _, Person.unapply _)
 
-	def findByName(name: String): Option[Person] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from person where name = {name}")
-				.on('name -> name)
-				.as(Person.person.singleOpt)
-		}
+	def findByName(name: String): Option[Person] = withSession{
+    (for(p <- Person if p.name === name) yield p).firstOption
 	}
 
-	def findById(id: Long): Option[Person] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from person where id = {id}")
-				.on('id -> id)
-				.as(Person.person.singleOpt)
-		}
+	def findById(id: Long): Option[Person] = withSession{
+    (for(p<- Person if p.id===id) yield p).firstOption
 	}
 
 	def nameById(id: Option[Long]): String = {
@@ -58,74 +42,39 @@ object Person {
 	}
 
 
-	def all(): List[Person] = DB.withConnection { implicit c =>
-		SQL("select * from person order by name").as(person *)
-	}
-			  
-	/**
-		Create a person
-
-		@return The id of the new person
-
-		*/
-	def create(name: String, email: String, telephone: Option[String], companyId: Long): Long = {
-		DB.withConnection { implicit c =>
-			SQL("insert into person (name, email, telephone, company_id) values ({name}, {email}, {telephone}, {company_id})").on(
-				'name -> name,
-				'email -> email,
-				'telephone -> telephone,
-				'company_id -> companyId
-			).executeUpdate()
-			return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
-		}
+	def all(): List[Person] = withSession {
+    Query(Person).sortBy(_.name).list
 	}
 
+  def create(name: String, email: String, telephone: Option[String], companyId: Long): Long = withSession{
+    (Person.name ~ Person.email ~ Person.telephone.? ~ Person.companyId).insert(name, email, telephone, companyId)
+    val lastInsertId = SimpleFunction.nullary[Long]("LAST_INSERT_ID")
+    return (for (p <- Person if p.id === lastInsertId) yield p).list.head.id
+  }
 
-	def update(id: Long, name: String, email: String, telephone: Option[String], companyId: Long) {
-		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					update person set name={name}, email={email}, telephone={telephone}, company_id={company_id} where id={id}
-				"""
-				).on(
-				'id -> id,
-				'name -> name,
-				'email -> email,
-				'telephone -> telephone,
-				'company_id -> companyId
-			).executeUpdate()
-		}
-	}
+  def update(id: Long, name: String, email: String, telephone: Option[String], companyId: Long) = withSession {
+    val q = for (p <- Person if p.id===id) yield (p.name ~ p.email ~ p.telephone.? ~ p.companyId)
+    q.update(name, email, telephone, companyId)
+  }
 
-	/**
-		Delete a person
+  def delete(id: Long): Option[String] = withSession{
+    try {
+      val q = for(p <- Person if p.id===id) yield p
+      q.delete
+      return None
+    } catch {
+      // Sorry this is mysql specific, but I don't think there is a general way to
+      // catch a constraint violation exception.
+      case e: MySQLIntegrityConstraintViolationException =>
+        Some("Can't delete this because something else depends upon it.")
+      case e: SQLException =>
+        println(e)
+        Some("Couldn't delete this person: " + e.getMessage)
+    }
+  }
 
-		@passed: id The id of the person to delete
-		@return: None if everything was ok, or a String if the operation failed.
-	*/
-	def delete(id: Long): Option[String] = {
-		try {
-			DB.withConnection { implicit c =>
-				SQL("delete from person where id = {id}").on(
-					'id -> id
-				).executeUpdate()
-			}
-			return None
-		} catch {
-			// Sorry this is mysql specific, but I don't think there is a general way to 
-			// catch a constraint violation exception.
-			case e: MySQLIntegrityConstraintViolationException => 
-				Some("Can't delete this because something else depends upon it.")
-			case e: SQLException =>
-				println(e)
-				Some("Couldn't delete this person: " + e.getMessage)
-		}
-	}
-	
-	// Make Map[String, String] needed for select options in a form.
-	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from person order by name").as(Person.person *)
-			.map(p => p.id.toString -> (p.name + " [" + Company.nameById(p.companyId) + "]"))
-	}
+  def options: Seq[(String, String)] = withSession {
+    Query(Person).sortBy(_.name).list.map(p => p.id.toString -> (p.name + " [" + Company.nameById(p.companyId) + "]"))
+  }
 }
 
