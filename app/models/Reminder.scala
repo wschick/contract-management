@@ -1,127 +1,81 @@
 package models
 
-import anorm._
-import anorm.SqlParser._
-import play.api.db._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.Play.current
-import java.util.{Date}
+import java.sql.Date
 import org.joda.time._
 
-case class ReminderAndPeople(reminder: Reminder, people: List[Long]);
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
+
+case class ReminderAndPeople(reminder: Reminder, people: List[Long])
 
 case class Reminder(
-	id: Pk[Long], 
-	reminderDate: LocalDate, 
-	//contractId: Long, 
-	contract: Contract,
-	sent: Boolean)
+                     id: Option[Long],
+                     reminderDate: Date,
+                     contractId: Long,
+                     sent: Boolean)
 {
-	def reminderDateStr(): String = DateUtil.format(reminderDate)
+  def reminderDateStr(): String = DateUtil.format(new LocalDate(reminderDate))
+  def contract = Contract.findById(contractId).get
 }
 
-object Reminder {
-	  
-	val reminder = {
-		get[Pk[Long]]("id") ~ 
-		get[Date]("reminder_date") ~
-		get[Long]("contract_id") ~
-		get[Boolean]("sent") map {
-			case id~reminder_date~contract_id~sent => 
-				Reminder(id, new LocalDate(reminder_date), Contract.findById(contract_id).get, sent)
-				// Note: should never get contract_id that isn't in database
-		}
-	}	
+object Reminder extends Table[Reminder]("reminder") with DbUtils {
 
-	def findById(id: Long): Option[Reminder] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from reminder where id = {id}")
-				.on('id -> id)
-				.as(Reminder.reminder.singleOpt)
-		}
-	}
+  def id = column[Long]("id")
+  def reminderDate = column[Date]("reminder_date")
+  def contractId = column[Long]("contract_id")
+  def sent = column[Boolean]("sent")
 
-	def reminderDateById(id: Long): Option[LocalDate] = {
-		val c = findById(id);
+  def * = id.? ~ reminderDate ~ contractId ~ sent <> (Reminder.apply _, Reminder.unapply _)
 
-		c match {
-			case Some(reminderObj) => Some(reminderObj.reminderDate)
-			case None => None
-		}
-	}
+  def findById(id: Long): Option[Reminder] = withSession {
+    (for(r<- Reminder if r.id===id) yield r).firstOption
+  }
 
+  def reminderDateById(id: Long): Option[LocalDate] = {
+    val c = findById(id);
 
-	val personName = {
-		get[String]("name") map {
-			case name => name
-		}
-	}
+    c match {
+      case Some(reminderObj) => Some(new LocalDate(reminderObj.reminderDate))
+      case None => None
+    }
+  }
 
-	def personNamesForReminder(reminderId: Pk[Long], maxPersons: Int = 1): List[String] = {
-		DB.withConnection { implicit c =>
-			SQL("select person.name from reminder INNER JOIN reminder_person INNER JOIN person where reminder.id = {id} AND reminder_person.reminder_id = reminder.id AND reminder_person.person_id = person.id LIMIT 0," + maxPersons)
-				.on('id -> reminderId).as(personName *)
-		}
-	}
+  def personNamesForReminder(reminderId: Long, maxPersons: Int = 1): List[String] = withSession {
+    val q = for{
+      r <- Reminder
+      rp <- ReminderPerson
+      p <- Person
+      if ( r.id===reminderId && r.id === rp.reminderId && rp.personId===p.id)
+    } yield p.name
+    q.list.take(maxPersons)
+  }
 
+  def all(): List[Reminder] = withSession {
+    Query(Reminder).sortBy(_.reminderDate).list
+  }
 
+  def create(reminder: Reminder) = withSession {
+    (Reminder.reminderDate ~ Reminder.contractId).insert(reminder.reminderDate, reminder.contractId)
+  }
 
+  //def update(id: Long, reminderDate: LocalDate, contractId: Long) {
+  def update(id: Long, reminder: Reminder)  = withSession {
+    val q = for(r <- Reminder if r.id===id) yield (r.reminderDate ~ r.contractId ~ r.sent)
+    q.update(reminder.reminderDate, reminder.contractId, reminder.sent)
+  }
 
-	def all(): List[Reminder] = DB.withConnection { implicit c =>
-		SQL("select * from reminder order by reminder_date").as(reminder *)
-	}
-			  
+  def delete(id: Long) = withSession {
+    val q = for(r <- Reminder if r.id ===id) yield r
+    q.delete
+  }
 
-	def create(reminder: Reminder) {
-		DB.withConnection { implicit c =>
-			SQL("insert into reminder (reminder_date, contract_id) values ({reminder_date}, {contract_id})").on(
-				'reminder_date -> reminder.reminderDate.toString,
-				'contract_id -> reminder.contract.id.get
-			).executeUpdate()
-		}
-	}
+  val dateFormatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
 
-	/*def update(id: Long, reminderDate: Date, contractId: Long) {
-		update(id, new LocalDate(reminderDate), contractId)
-	}*/
+  def formatDate(d: Date): String = {
+    dateFormatter.format(d)
+  }
 
-	//def update(id: Long, reminderDate: LocalDate, contractId: Long) {
-	def update(id: Long, reminder: Reminder) {
-		DB.withConnection { implicit connection =>
-			SQL(
-				"""
-					update reminder set reminder_date={reminder_date}, contract_id={contract_id}, sent={sent} where id={id}
-				"""
-				).on(
-				'id -> id,
-				'reminder_date -> reminder.reminderDate.toString,
-				'contract_id -> reminder.contract.id.get,
-				'sent -> reminder.sent
-			).executeUpdate()
-		}
-	}
-
-	def delete(id: Long) {
-		DB.withConnection { implicit c =>
-			SQL("delete from reminder where id = {id}").on(
-				'id -> id
-			).executeUpdate()
-		}
-	}
-	
-	val dateFormatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
-
-	def formatDate(d: Date): String = {
-		dateFormatter.format(d)
-	}
-
-	// Make Map[String, String] needed for select options in a form.
-	def options: Seq[(String, String)] = DB.withConnection { implicit connection => 
-		SQL("select * from reminder order by reminderDate")
-			.as(Reminder.reminder *)
-			.map(c => c.id.toString -> c.reminderDate.toString())
-			//.map(c => c.id.toString -> (formatDate(c.reminderDate)))
-	}
+  def options: Seq[(String, String)] = withSession {
+    Query(Reminder).sortBy(_.reminderDate).list.map(r=>(r.id.toString-> r.reminderDate.toString()))
+  }
 }
-

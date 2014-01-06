@@ -1,43 +1,30 @@
 package models
-
-import anorm._
-import anorm.SqlParser._
-import play.api.db._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.Play.current
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
 
 case class ReminderPerson(reminderId: Long, personId: Long) {
-
 }
 
-object ReminderPerson {
-	  
-	val reminderPerson = {
-		get[Long]("reminder_id") ~ 
-		get[Long]("person_id") map {
-			case reminder_id~person_id => ReminderPerson(reminder_id, person_id)
-		}
-	}	
+object ReminderPerson  extends Table[ReminderPerson]("reminder_person") with DbUtils {
+  def reminderId = column[Long]("reminder_id")
+  def personId = column[Long]("person_id")
 
-	def findByReminderId(id: Long): List[ReminderPerson] = {
-		DB.withConnection { implicit c =>
-			SQL("select * from reminder_person where reminder_id = {id}").on('id -> id).as(reminderPerson *)
-		}
+  def * = reminderId ~ personId  <> (ReminderPerson.apply _, ReminderPerson.unapply _)
+
+	def findByReminderId(id: Long): List[ReminderPerson] = withSession{
+    val q = for( rp <- ReminderPerson if rp.reminderId===id) yield rp
+    q.list
 	}
 
-	/** Return a list of all reminder-person entries. */
-	def all(): List[ReminderPerson] = DB.withConnection { implicit c =>
-		SQL("select * from reminder_person order by reminder_id").as(reminderPerson *)
+	def all(): List[ReminderPerson] = withSession {
+    val q = for(rp <- ReminderPerson) yield rp
+    q.sortBy(_.reminderId).list
 	}
 			  
-	def delete(reminderId: Long, personId: Long) {
-		DB.withConnection { implicit c =>
-			SQL("delete from reminder_person where reminder_id = {reminder_id} and person_id = {person_id}").on(
-				'reminder_id -> reminderId,
-				'person_id -> personId
-			).executeUpdate()
-		}
+	def delete(reminderId: Long, personId: Long) = withSession{
+    val q = for(rp <- ReminderPerson
+                if rp.reminderId===reminderId && rp.personId===personId) yield rp
+    q.delete
 	}
 }
 

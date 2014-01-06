@@ -97,7 +97,7 @@ object Reminders extends Controller {
 			"contract_id" -> longNumber
 		)*/
 		mapping (
-			"id" -> ignored(NotAssigned:Pk[Long]),
+			"id" -> ignored(None: Option[Long]),
 			"reminder_date" -> date(DateUtil.dateFmtString),
 			"contract_id" -> longNumber,
 			"sent" -> boolean,
@@ -106,13 +106,14 @@ object Reminders extends Controller {
 		)
 		(
 			(id, reminder_date, contract_id, sent, people) =>
-					ReminderAndPeople(new Reminder(id, new LocalDate(reminder_date), Contract.findById(contract_id).get, sent), people)
+        ReminderAndPeople(new Reminder(id, new java.sql.Date(reminder_date.getYear, reminder_date.getMonth, reminder_date.getDay), contract_id, sent), people)
+//					ReminderAndPeople(new Reminder(id, java.sql.Date.valueOf(reminder_date.toString), contract_id, sent), people)
 					// TODO handle error can't find contract better
 		)
 		(
 			(rp: ReminderAndPeople) => Some ((
 				rp.reminder.id,
-				rp.reminder.reminderDate.toDate,
+				rp.reminder.reminderDate,
 				rp.reminder.contract.id.get,
 				rp.reminder.sent,
 				rp.people
