@@ -22,7 +22,7 @@
 					<td class="reminder_date"> @reminder.reminderDateStr</td>
 					<td class="inner_display_column reminder_contract">@Contract.nameById(reminder.contract.id.get)</td>
 					<td class="inner_display_column reminder_sent">@reminder.sent</td>
-					<td class="inner_display_column reminder_persons">@Reminder.personNamesForReminder(reminder.id)</td>
+					<td class="inner_display_column reminder_persons">@Reminder.personNamesForReminder(reminder.id.get)</td>
 					<td><a class="edit_link" href="@routes.Reminders.edit(reminder.id.get)">edit</a>
 						<a onClick="return confirmDelete()" class="delete_link" href="@routes.Reminders.delete(reminder.id.get)">delete</a></td>
 				</tr>
