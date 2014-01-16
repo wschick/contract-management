@@ -1,15 +1,16 @@
 package models
 
-import anorm._
-import anorm.SqlParser._
 import play.api._
 import play.api.db._
 import play.api.Play.current
 import org.joda.time._
-import java.util.Date
+import java.sql.{Date, Time}
+
+import scala.slick.driver.MySQLDriver.simple._
+import Database.threadLocalSession
 
 case class Contract(
-	id: Pk[Long] = NotAssigned,
+	id: Option[Long],
 	vendor: Company,
 	vendorContractId: String, // Used for filing
 	billingAccount: Option[String],
@@ -31,10 +32,6 @@ case class Contract(
 	lastModifiedTime: Option[LocalDateTime] = Some(LocalDateTime.now())
 	) 
 {
-
-	/**
-		@returns company name and vendor's contract id, concatenated
-	*/
 	def vendorIdString(): String = {
 		Company.findById(vendor.id).get.name + " " + vendorContractId
 	}
@@ -80,236 +77,288 @@ case class Contract(
 	def attachments(): Seq[Attachment] = Attachment.getContractAttachments(Company.findById(vendor.id).get.name, vendorContractId)
 
 	def lastModifiedTimeStr(): String = DateUtil.formatDT(lastModifiedTime)
+
+  def getContract22:Contract22 = Contract22(id,
+    vendor.id,
+    vendorContractId,
+    billingAccount,
+    isMSA,
+    MSAId,
+    extraInfo,
+    contractType.id.get,
+    aEnd.id,
+    zEnd.id,
+    cost.mrc,
+    cost.nrc,
+    cost.currency.id,
+    cost.budget.id.get,
+    new java.sql.Date(startDate.toDate.getTime),
+    term.length,
+    term.units.value,
+    cancellationPeriod.length,
+    cancellationPeriod.units.value,
+    cancelledDate.map(localDate=>Option(new java.sql.Date(localDate.toDate.getTime))).getOrElse(None),
+    autoRenewPeriod.map(term=>Option(term.length)).getOrElse(None),
+    autoRenewPeriod.map(term=>Option(term.units.value)).getOrElse(None))
+
+  def getContract4:Contract4 = Contract4(id,
+    description,
+    attention,
+    lastModifyingUser,
+    lastModifiedTime.map(localDateTime=>Option(new java.sql.Time(localDateTime.toDateTime.getMillis))).getOrElse(None)
+  )
+
+//  def fromRow(id: Long, vendor_id: Long, vendor_contract_id: String, billing_account: String, is_msa: Boolean,
+//              msa_id: Long, extra_info: String, description: String, contract_type_id: Long, a_end_id: Long,
+//              z_end_id: Long, mrc: Double, nrc: Double, currency_id: Long, budget_id: Long,
+//              start_date: Date, term: Int, term_units: Int, cancellation_period: Int, cancellation_period_units: Int,
+//              cancelled_date: Date, auto_renew_period: Int, auto_renew_period_units: Int, attention: String, last_modifying_user: String,
+//              last_modified_time: Date): Contract =
+//    Contract(Some(id), Company.findById(vendor_id).get, vendor_contract_id, Some(billing_account), is_msa, Some(msa_id),
+//             Some(extra_info), Some(description), ContractType.findById(contract_type_id).get, Location.findById(a_end_id).get, Location.findById(z_end_id).get,
+//             ContractCosts.create(mrc, nrc, currency_id, budget_id), new LocalDate(start_date), Term(term, TimePeriodUnits.create(term_units)),
+//             Term(cancellation_period, TimePeriodUnits.create(cancellation_period_units)),
+//             cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
+//             { if (auto_renew_period == None || auto_renew_period_units == None) None
+//               else Some(Term(auto_renew_period, TimePeriodUnits.create(auto_renew_period_units))) },
+//             Some(attention),
+//             Some(last_modifying_user),
+//             Some(new LocalDateTime(last_modified_time)))
+//
+//  def toRow(c: Contract) = None//Some((c.id, c.myBar.myInt, c.myBar.myString))
 }
 
 object Contract {
+  def all(): List[Contract] =  {
+    for{
+      c22 <- Contract22.all
+      c4 <- Contract4.all
+      if c22.id==c4.id
+    } yield combine(Some(c22), Some(c4)).get
+  }
 
-	val contract = {
-		get[Pk[Long]]("id") ~ 
-		get[Long]("vendor_id") ~
-		get[String]("vendor_contract_id") ~ 
-		get[Option[String]]("billing_account") ~ 
-		get[Boolean]("is_msa") ~
-		get[Option[Long]]("msa_id") ~
-		get[Option[String]]("extra_info") ~
-		get[Option[String]]("description") ~
-		get[Long]("contract_type_id") ~
-		get[Long]("a_end_id") ~
-		get[Long]("z_end_id") ~
-		get[Double]("mrc") ~
-		get[Double]("nrc") ~
-		get[Long]("currency_id") ~
-		get[Long]("budget_id") ~
-		get[Date]("start_date") ~
-		get[Int]("term") ~
-		get[Int]("term_units") ~
-		get[Int]("cancellation_period") ~
-		get[Int]("cancellation_period_units") ~
-		get[Option[Date]]("cancelled_date") ~
-		get[Option[Int]]("auto_renew_period") ~
-		get[Option[Int]]("auto_renew_period_units") ~
-		get[Option[String]]("attention") ~
-		get[Option[String]]("last_modifying_user") ~
-		get[Option[Date]]("last_modified_time") map {
-			case id~vendorId~vendorContractId~billingAccount~isMSA~msa_id~
-				extraInfo~description~contractTypeId~aEndId~zEndId~
-				mrc~nrc~currencyId~budgetId~
-				startDate~term~termUnits~
-				cancellationPeriod~cancellationPeriodUnits~cancelledDate~
-				autoRenewPeriod~autoRenewPeriodUnits~
-				attention~
-				lastModifyingUser~lastModifiedTime => 
-				Contract(id, Company.findById(vendorId).get, vendorContractId, billingAccount, isMSA, msa_id, 
-					extraInfo, description, ContractType.findById(contractTypeId).get, 
-					Location.findById(aEndId).get, Location.findById(zEndId).get, 
-					ContractCosts.create(mrc, nrc, currencyId, budgetId),
-					new LocalDate(startDate), 
-					Term(term, TimePeriodUnits.create(termUnits)), 
-					Term(cancellationPeriod, TimePeriodUnits.create(cancellationPeriodUnits)), 
-					cancelledDate.map(date => Option(new LocalDate(date))).getOrElse(None),
-					{ if (autoRenewPeriod == None || autoRenewPeriodUnits == None) None
-						else Some(Term(autoRenewPeriod.get, TimePeriodUnits.create(autoRenewPeriodUnits.get))) }, 
-					attention, 
-					lastModifyingUser, 
-					lastModifiedTime.map(lmt => Some(new LocalDateTime(lmt))).getOrElse(None)
-					)
-				//TODO this will blow up if it can't find the contract type or budget
-		}
-	}	
-
-	/** Get a list of all contracts. */
-	def all(): List[Contract] = DB.withConnection { implicit connection =>
-		SQL("select * from contract").as(contract *)
-	}
+  def combine(c22:Option[Contract22], c4:Option[Contract4]):Option[Contract] = {
+    if(c22==None || c4==None) None
+    else{
+      val a = c22.get
+      val b = c4.get
+      Some(Contract(a.id, Company.findById(a.vendor_id).get, a.vendor_contract_id, a.billing_account, a.is_msa, a.msa_id,
+      a.extra_info, b.description, ContractType.findById(a.contract_type_id).get, Location.findById(a.a_end_id).get, Location.findById(a.z_end_id).get,
+      ContractCosts.create(a.mrc, a.nrc, a.currency_id, a.budget_id), new LocalDate(a.start_date), Term(a.term, TimePeriodUnits.create(a.term_units)),
+      Term(a.cancellation_period, TimePeriodUnits.create(a.cancellation_period_units)),
+      a.cancelled_date.map(date => Option(new LocalDate(date))).getOrElse(None),
+      { if (a.auto_renew_period == None || a.auto_renew_period_units == None) None
+      else Some(Term(a.auto_renew_period.get, TimePeriodUnits.create(a.auto_renew_period_units.get))) },
+      b.attention,
+      b.last_modifying_user,
+      {
+        if(b.last_modified_time==None) None
+        else Some(new LocalDateTime(b.last_modified_time.get.getTime))
+      }))
+    }
+  }
 
 	def filtered(filter: ContractFilter): List[Contract] = {
-		DB.withConnection { implicit connection =>
-      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
-			SQL("select * from contract " + filter.sqlCondition).as(contract *)
-		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
+    this.all()
+//		DB.withConnection { implicit connection =>
+//      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
+//			SQL("select * from contract " + filter.sqlCondition).as(contract *)
+//		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
 	}
 
-	/** Return a contract.
-
-		@param id the id of the contract
-		@return the contract, if it exists.
-
-		*/
 	def findById(id: Long): Option[Contract] = {
-		DB.withConnection { implicit connection =>
-			SQL("select * from contract where id = {id}").on('id -> id).as(Contract.contract.singleOpt)
-		}
+    combine(Contract22.findById(id), Contract4.findById(id))
 	}
 
-	/** Return the name of a contract.
-
-		@param id the id of the contract
-		@return the contract name, if the contact exists.
-
-		*/
 	def nameById(id: Long): Option[String] = {
 		findById(id).map(contract => Some(contract.name)).getOrElse(None)
 	}
 
-	/** Create a contract in the database.
-
-		@param contract A contract object to be persisted. The unique database key will be provided automatically.
-		@return The id of the contract just created.
-		*/
 	def create(contract: Contract): Long = {
-		DB.withConnection { implicit connection =>
-			{
-				SQL(
-					"""
-						insert into contract (
-							vendor_id, vendor_contract_id, billing_account, is_msa, msa_id,
-							extra_info, description, contract_type_id, a_end_id, z_end_id, 
-							mrc, nrc, currency_id, budget_id, 
-							start_date, term, term_units, 
-							cancellation_period, cancellation_period_units, cancelled_date,
-							auto_renew_period, auto_renew_period_units,
-							attention,
-							last_modifying_user, last_modified_time
-							) 
-						values (
-							{vendorId}, {vendorContractId}, {billing_account}, {is_msa}, {msa_id},
-							{extra_info}, {description}, {contract_type_id}, {a_end_id}, {z_end_id}, 
-							{mrc}, {nrc}, {currency_id}, {budget_id}, 
-							{start_date}, {term}, {term_units},
-							{cancellation_period}, {cancellation_period_units}, {cancelled_date},
-							{auto_renew_period}, {auto_renew_period_units},
-							{attention},
-							{last_modifying_user}, {last_modified_time} )
-					"""
-					).on(
-					'vendorId -> contract.vendor.id,
-					'vendorContractId -> contract.vendorContractId,
-					'billing_account -> contract.billingAccount,
-					'is_msa -> contract.isMSA,
-					'msa_id -> contract.MSAId,
-					'extra_info -> contract.extraInfo,
-					'description -> contract.description,
-					'contract_type_id -> contract.contractType.id,
-					'mrc -> contract.cost.mrc,
-					'nrc -> contract.cost.nrc,
-					'currency_id -> contract.cost.currency.id,
-					'budget_id -> contract.cost.budget.id,
-					'a_end_id -> contract.aEnd.id,
-					'z_end_id -> contract.zEnd.id,
-					'start_date -> contract.startDate.toDate,
-					'term -> contract.term.length,
-					'term_units -> contract.term.units.value,
-					'cancellation_period -> contract.cancellationPeriod.length,
-					'cancellation_period_units -> contract.cancellationPeriod.units.value,
-					'cancelled_date -> contract.cancelledDate.map(date => date.toDate),
-					'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
-					'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
-					'attention -> contract.attention,
-					'last_modifying_user -> contract.lastModifyingUser,
-					'last_modified_time -> contract.lastModifiedTime.map(lmt => lmt.toDate)
-				).executeUpdate()
-				return SQL("select LAST_INSERT_ID()").as(scalar[Long].single)
-			}
-		}
+    val insertedId = Contract22.create(contract.getContract22)
+    Contract4.update(insertedId, contract.getContract4)
+    return insertedId
 	}
 
 	def update(id: Long, contract: Contract) {
-		Logger.debug("updating id " + id)
-		DB.withConnection { implicit connection =>
-				SQL(
-				"""
-					update contract set 
-					vendor_id={vendorId}, vendor_contract_id={vendorContractId}, billing_account={billingAccount}, 
-					is_msa={is_msa}, msa_id={msa_id},
-					extra_info={extra_info}, description={description}, contract_type_id={contract_type_id}, 
-					a_end_id={a_end_id}, z_end_id={z_end_id}, 
-					mrc={mrc}, nrc={nrc}, currency_id={currency_id}, budget_id={budget_id}, 
-					start_date={start_date}, term={term}, term_units={term_units},
-					cancellation_period={cancellation_period}, cancellation_period_units={cancellation_period_units}, 
-					cancelled_date={cancelled_date}, 
-					auto_renew_period={auto_renew_period}, auto_renew_period_units={auto_renew_period_units},
-					attention={attention}, 
-					last_modifying_user={last_modifying_user}, last_modified_time={last_modified_time} 
-					where id={id}
-				"""
-				).on(
-				'id -> id,
-				'vendorId -> contract.vendor.id,
-				'vendorContractId -> contract.vendorContractId,
-				'billingAccount -> contract.billingAccount,
-				'is_msa -> contract.isMSA,
-				'msa_id -> contract.MSAId,
-				'extra_info -> contract.extraInfo,
-				'description -> contract.description,
-				'contract_type_id -> contract.contractType.id,
-				'a_end_id -> contract.aEnd.id,
-				'z_end_id -> contract.zEnd.id,
-				'mrc -> contract.cost.mrc,
-				'nrc -> contract.cost.nrc,
-				'currency_id -> contract.cost.currency.id,
-				'budget_id -> contract.cost.budget.id,
-				'start_date -> contract.startDate.toDate,
-				'term -> contract.term.length,
-				'term_units -> contract.term.units.value,
-				'cancellation_period -> contract.cancellationPeriod.length,
-				'cancellation_period_units -> contract.cancellationPeriod.units.value,
-				'cancelled_date -> contract.cancelledDate.map(date => date.toDate),
-				'auto_renew_period -> contract.autoRenewPeriod.map(arp => arp.length),
-				'auto_renew_period_units -> contract.autoRenewPeriod.map(arp => arp.units.value),
-				'attention -> contract.attention,
-				'last_modifying_user -> contract.lastModifyingUser,
-				'last_modified_time -> contract.lastModifiedTime.map(lmt => lmt.toDate)
-				).executeUpdate()
-		}
+    Contract22.update(id, contract.getContract22)
+    Contract4.update(id, contract.getContract4)
 	}
 					  
-	/** Delete a contract
-
-		@param id the id of the contract
-
-		*/
 	def delete(id: Long) {
-		DB.withConnection { implicit connection =>
-			SQL("delete from contract where id = {id}").on(
-				'id -> id).executeUpdate()
-		}
-	}
-							  
-	/** Make Map[String, String] needed for contract select options in a form. 
-			This uses the name of the contract as the visible text.
-		*/
-	def options(msaOnly: Boolean = false): Seq[(String, String)] = DB.withConnection { implicit connection => 
-		val select = SQL("select c.id,v.name,c.vendor_contract_id from contract c inner join company v " +
-			"where c.vendor_id=v.id " + 
-			//{if (msaOnly) "and c.is_msa=1 "; else ""} +
-			{msaOnly match { case true => "and c.is_msa=1 "; case false => " "}} +
-			"order by v.name,c.vendor_contract_id")
-		select().map(row => row[Int]("id").toString -> (row[String]("name") + " " + row[String]("vendor_contract_id"))).toList
+//    Contract22.delete(id)
+    Contract4.delete(id)
 	}
 
-	/** Make Map[String, String] needed for MSA select options in a form. 
-			This uses the name of the contract as the visible text.
-		*/
+	def options(msaOnly: Boolean = false): Seq[(String, String)] = {
+    Contract22.options(msaOnly)
+  }
+
 	def MSAOptions: Seq[(String, String)] = options(true)
+}
 
+//		get[Pk[Long]]("id") ~
+//		get[Long]("vendor_id") ~
+//		get[String]("vendor_contract_id") ~
+//		get[Option[String]]("billing_account") ~
+//		get[Boolean]("is_msa") ~
+//		get[Option[Long]]("msa_id") ~
+//		get[Option[String]]("extra_info") ~
+//		get[Option[String]]("description") ~
+//		get[Long]("contract_type_id") ~
+//		get[Long]("a_end_id") ~
+//		get[Long]("z_end_id") ~
+//		get[Double]("mrc") ~
+//		get[Double]("nrc") ~
+//		get[Long]("currency_id") ~
+//		get[Long]("budget_id") ~
+//		get[Date]("start_date") ~
+//		get[Int]("term") ~
+//		get[Int]("term_units") ~
+//		get[Int]("cancellation_period") ~
+//		get[Int]("cancellation_period_units") ~
+//		get[Option[Date]]("cancelled_date") ~
+//		get[Option[Int]]("auto_renew_period") ~
+//		get[Option[Int]]("auto_renew_period_units") ~
+//		get[Option[String]]("attention") ~
+//		get[Option[String]]("last_modifying_user") ~
+//		get[Option[Date]]("last_modified_time") map {
+
+case class Contract22(id: Option[Long], vendor_id: Long, vendor_contract_id: String, billing_account: Option[String], is_msa: Boolean,
+                      msa_id: Option[Long], extra_info: Option[String], contract_type_id: Long, a_end_id: Long,
+                      z_end_id: Long, mrc: Double, nrc: Double, currency_id: Long, budget_id: Long,
+                      start_date: Date, term: Int, term_units: Int, cancellation_period: Int, cancellation_period_units: Int,
+                      cancelled_date: Option[Date], auto_renew_period: Option[Int], auto_renew_period_units: Option[Int])
+
+object Contract22 extends Table[Contract22]("contract") with DbUtils
+{
+  def id = column[Long]("id", O.PrimaryKey)
+  def vendor_id = column[Long]("vendor_id")
+  def vendor_contract_id = column[String]("vendor_contract_id")
+  def billing_account = column[String]("billing_account")
+  def is_msa = column[Boolean]("is_msa")
+  def msa_id = column[Long]("msa_id")
+  def extra_info = column[String]("extra_info")
+  def contract_type_id = column[Long]("contract_type_id")
+  def a_end_id = column[Long]("a_end_id")
+  def z_end_id = column[Long]("z_end_id")
+  def mrc = column[Double]("mrc")
+  def nrc = column[Double]("nrc")
+  def currency_id = column[Long]("currency_id")
+  def budget_id = column[Long]("budget_id")
+  def start_date = column[Date]("start_date")
+  def term = column[Int]("term")
+  def term_units = column[Int]("term_units")
+  def cancellation_period = column[Int]("cancellation_period")
+  def cancellation_period_units = column[Int]("cancellation_period_units")
+  def cancelled_date = column[Date]("cancelled_date")
+  def auto_renew_period = column[Int]("auto_renew_period")
+  def auto_renew_period_units = column[Int]("auto_renew_period_units")
+
+
+  def * = id.? ~ vendor_id ~ vendor_contract_id ~ billing_account.? ~ is_msa ~
+    msa_id.? ~ extra_info.? ~ contract_type_id ~ a_end_id ~
+    z_end_id ~ mrc ~ nrc ~ currency_id ~ budget_id ~
+    start_date ~ term ~ term_units ~ cancellation_period ~ cancellation_period_units ~
+    cancelled_date.? ~ auto_renew_period.? ~ auto_renew_period_units.? <> (Contract22.apply _, Contract22.unapply _)
+
+  def all(): List[Contract22] = withSession {
+    Query(Contract22) list
+  }
+
+  def filtered(filter: ContractFilter): List[Contract22] = withSession {
+    this.all()
+    //		DB.withConnection { implicit connection =>
+    //      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
+    //			SQL("select * from contract " + filter.sqlCondition).as(contract *)
+    //		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
+  }
+
+  def findById(id: Long): Option[Contract22] = withSession{
+    val q = for{
+      c22 <- Contract22 if c22.id===id
+    }yield c22
+    q.firstOption
+  }
+
+  def create(contract22: Contract22): Long = withSession {
+    (Contract22.vendor_id ~ Contract22.vendor_contract_id ~ Contract22.billing_account.? ~ Contract22.is_msa ~
+      Contract22.msa_id.? ~ Contract22.extra_info.? ~ Contract22.contract_type_id ~ Contract22.a_end_id ~
+      Contract22.z_end_id ~ Contract22.mrc ~ Contract22.nrc ~ Contract22.currency_id ~ Contract22.budget_id ~
+      Contract22.start_date ~ Contract22.term ~ Contract22.term_units ~ Contract22.cancellation_period ~ Contract22.cancellation_period_units ~
+      Contract22.cancelled_date.? ~ Contract22.auto_renew_period.? ~ Contract22.auto_renew_period_units.?).
+      insert(
+        contract22.vendor_id, contract22.vendor_contract_id, contract22.billing_account, contract22.is_msa,
+        contract22.msa_id, contract22.extra_info, contract22.contract_type_id, contract22.a_end_id,
+        contract22.z_end_id, contract22.mrc, contract22.nrc, contract22.currency_id, contract22.budget_id,
+        contract22.start_date, contract22.term, contract22.term_units, contract22.cancellation_period, contract22.cancellation_period_units,
+        contract22.cancelled_date, contract22.auto_renew_period, contract22.auto_renew_period_units
+      )
+
+    val lastInsertId = SimpleFunction.nullary[Long]("LAST_INSERT_ID")
+    return (for (c <- Contract22 if c.id === lastInsertId) yield c).list.head.id.get
+  }
+
+  def update(id: Long, contract22: Contract22) = withSession{
+    val q = for { c <- Contract22 if c.id===id} yield c
+    q.update(contract22)
+  }
+
+  def delete(id: Long) = withSession{
+    val q = for { c <- Contract22 if c.id===id} yield c
+    q.delete
+  }
+
+  def options(msaOnly: Boolean = false): Seq[(String, String)] = withSession{
+    val q = for{c <- Contract22
+                v <- Company
+                if (c.vendor_id === v.id)
+//                if(msaOnly && c.is_msa===1)
+    } yield(c.id.toString, v.name + " " + c.vendor_contract_id)
+
+    q.list
+  }
+
+  def MSAOptions: Seq[(String, String)] = options(true)
+}
+
+case class Contract4(id:Option[Long], description: Option[String], attention: Option[String], last_modifying_user: Option[String], last_modified_time: Option[Time])
+
+object Contract4 extends Table[Contract4]("contract") with DbUtils{
+  def id = column[Long]("id", O.PrimaryKey)
+  def description = column[String]("description")
+  def attention = column[String]("attention")
+  def last_modifying_user = column[String]("last_modifying_user")
+  def last_modified_time = column[Time]("last_modified_time")
+
+  def * = id.? ~ description.? ~ attention.? ~ last_modifying_user.? ~ last_modified_time.? <> (Contract4.apply _, Contract4.unapply _)
+
+  def all(): List[Contract4] = withSession {
+    Query(Contract4) list
+  }
+
+  def filtered(filter: ContractFilter): List[Contract4] = withSession {
+    this.all()
+    //		DB.withConnection { implicit connection =>
+    //      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
+    //			SQL("select * from contract " + filter.sqlCondition).as(contract *)
+    //		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
+  }
+
+  def findById(id: Long): Option[Contract4] = withSession {
+    val q = for{
+      c4 <- Contract4 if c4.id===id
+    }yield c4
+    q.firstOption
+  }
+
+  def update(id: Long, contract4: Contract4) = withSession {
+    val q = for { c <- Contract4 if c.id===id} yield c
+    q.update(contract4)
+  }
+
+  def delete(id: Long) = withSession{
+    val q = for { c <- Contract4 if c.id===id} yield c
+    q.delete
+  }
 }

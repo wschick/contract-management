@@ -106,7 +106,7 @@ object Reminders extends Controller {
 		)
 		(
 			(id, reminder_date, contract_id, sent, people) =>
-        ReminderAndPeople(new Reminder(id, new java.sql.Date(reminder_date.getYear, reminder_date.getMonth, reminder_date.getDay), contract_id, sent), people)
+        ReminderAndPeople(new Reminder(id, new java.sql.Date(reminder_date.getTime), contract_id, sent), people)
 //					ReminderAndPeople(new Reminder(id, java.sql.Date.valueOf(reminder_date.toString), contract_id, sent), people)
 					// TODO handle error can't find contract better
 		)

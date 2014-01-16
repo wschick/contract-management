@@ -209,7 +209,7 @@ object Imports extends Controller {
 		}
 
 		val startDate = {
-			if (info.startDate != None) info.startDate.date.get
+			if (info.startDate.date != None) info.startDate.date.get
 			else {
 				val msg = "No starting date. I have: " + info.startDate
 				shortErrors += ErrorInfo(fileName, lineNum, "start")
@@ -255,7 +255,7 @@ object Imports extends Controller {
 		if (!fatalError) {
 			Logger.info("Creating contract")
 			return (Some(Contract(
-				NotAssigned,
+				None,
 				vendor,
 				vendorContractId,
 				billingAccount,

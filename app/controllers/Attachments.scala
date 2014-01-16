@@ -96,7 +96,7 @@ object Attachments extends Controller {
 				Logger.debug("Deletion worked ok")
 				return None
 			} catch {
-				case e => return Some(e.getMessage())
+				case e: Throwable => return Some(e.getMessage())
 			}
 		} else 
 			//TODO handle error better. trying to view attachment, but company isn't defined

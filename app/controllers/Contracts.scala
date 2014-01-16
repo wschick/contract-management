@@ -82,7 +82,7 @@ object Contracts extends Controller {
 
 	val contractForm: Form[Contract] = Form(
 		mapping(
-			"id" -> ignored(NotAssigned:Pk[Long]),
+      "id" -> optional(longNumber),
 			"vendorId" -> longNumber,
 			"vendorContractId" -> nonEmptyText,
 			"billingAccount" -> optional(text),
@@ -124,7 +124,7 @@ object Contracts extends Controller {
 			startDate, term, cancellation, cancelledDate, autoRenewPeriod,
 			attention 
 			) => 
-				Contract(NotAssigned, Company.findById(vendorId).get, vendorContractId, billingAccount, isMSA, MSAId,
+				Contract(None, Company.findById(vendorId).get, vendorContractId, billingAccount, isMSA, MSAId,
 				extraInfo, description, ContractType.findById(contractTypeId).get, 
 				Location.findById(aEnd).get, Location.findById(zEnd).get, 
 				cost,
@@ -142,7 +142,7 @@ object Contracts extends Controller {
 		)
 		(
 			(contract: Contract) => Some((
-				contract.id, 
+				contract.id,
 				contract.vendor.id,
 				contract.vendorContractId, 
 				contract.billingAccount,
@@ -238,7 +238,7 @@ object Contracts extends Controller {
 							Redirect(routes.Contracts.all)
 							//Ok(views.html.contract.list(Contract.all(), filterForm))
 						} catch {
-							case e =>
+							case e:Throwable =>
 								Ok(html.contract.edit_form(existingContract, contractForm.bindFromRequest, errorMessage = Some("A problem: " + e.getMessage)))
 						}
 					}
