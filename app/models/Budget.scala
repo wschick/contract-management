@@ -6,13 +6,13 @@ import java.sql.SQLException
 import scala.slick.driver.MySQLDriver.simple._
 import Database.threadLocalSession
 
-case class Budget(id: Option[Long],
+case class Budget(id: Long,
                  name: String)
 
 object Budget extends Table[Budget]("budget") with DbUtils{
-  def id = column[Long]("id")
+  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name")
-  def * = id.? ~ name <> (Budget.apply _, Budget.unapply _)
+  def * = id ~ name <> (Budget.apply _, Budget.unapply _)
 
   def all(): List[Budget] = withSession {
     Query(Budget).sortBy(_.name) list
@@ -52,6 +52,6 @@ object Budget extends Table[Budget]("budget") with DbUtils{
   }
 
   def options: Seq[(String, String)] = withSession {
-    Query(Budget).sortBy(_.name).list.map(b => b.id.toString -> (b.name))
+    Query(Budget).sortBy(_.name).list.map(c=>(c.id.toString, c.name))
   }
 }

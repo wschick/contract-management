@@ -96,7 +96,7 @@ object Contracts extends Controller {
 			"cost" -> mapping("mrc" -> nonEmptyText, "nrc" -> nonEmptyText, 
 				"currencyId" -> longNumber, "budgetId" -> longNumber)
 				((mrc, nrc, currencyId, budgetId) => ContractCosts.create(mrc, nrc, currencyId, budgetId))
-				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currency.id, cc.budget.id.get))),
+				((cc: ContractCosts) => Some((cc.mrc.toString, cc.nrc.toString, cc.currency.id, cc.budget.id))),
 			"startDate" -> date(DateUtil.dateFmtString),
 			"term" -> mapping("termLength" -> number, "termUnits" -> number)
 				((termLength, termUnits) => Term(termLength, TimePeriodUnits.create(termUnits)))
@@ -150,7 +150,7 @@ object Contracts extends Controller {
 				contract.MSAId,
 				contract.extraInfo, 
 				contract.description, 
-				contract.contractType.id.get,
+				contract.contractType.id,
 				contract.aEnd.id, 
 				contract.zEnd.id,
 				contract.cost,

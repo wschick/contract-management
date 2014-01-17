@@ -85,13 +85,13 @@ case class Contract(
     isMSA,
     MSAId,
     extraInfo,
-    contractType.id.get,
+    contractType.id,
     aEnd.id,
     zEnd.id,
     cost.mrc,
     cost.nrc,
     cost.currency.id,
-    cost.budget.id.get,
+    cost.budget.id,
     new java.sql.Date(startDate.toDate.getTime),
     term.length,
     term.units.value,
@@ -102,10 +102,10 @@ case class Contract(
     autoRenewPeriod.map(term=>Option(term.units.value)).getOrElse(None))
 
   def getContract4:Contract4 = Contract4(id,
-    description,
-    attention,
-    lastModifyingUser,
-    lastModifiedTime.map(localDateTime=>Option(new java.sql.Time(localDateTime.toDateTime.getMillis))).getOrElse(None)
+                                         description,
+                                         attention,
+                                         lastModifyingUser,
+                                         lastModifiedTime.map(localDateTime=>Option(new java.sql.Time(localDateTime.toDateTime.getMillis))).getOrElse(None)
   )
 
 //  def fromRow(id: Long, vendor_id: Long, vendor_contract_id: String, billing_account: String, is_msa: Boolean,
@@ -126,6 +126,19 @@ case class Contract(
 //             Some(new LocalDateTime(last_modified_time)))
 //
 //  def toRow(c: Contract) = None//Some((c.id, c.myBar.myInt, c.myBar.myString))
+
+//    val q = for { c <- Contract22 if c.id===id} yield (c.vendor_id ~ c.vendor_contract_id ~ c.billing_account ~ c.is_msa ~
+//      c.msa_id ~ c.extra_info ~ c.contract_type_id ~ c.a_end_id ~
+//      c.z_end_id ~ c.mrc ~ c.nrc ~ c.currency_id ~ c.budget_id ~
+//      c.start_date ~ c.term ~ c.term_units ~ c.cancellation_period ~ c.cancellation_period_units ~
+//      c.cancelled_date ~ c.auto_renew_period ~ c.auto_renew_period_units)
+//
+//    q.update(contract22.vendor_id, contract22.vendor_contract_id, contract22.billing_account, contract22.is_msa,
+//      contract22.msa_id, contract22.extra_info, contract22.contract_type_id, contract22.a_end_id,
+//      contract22.z_end_id, contract22.mrc, contract22.nrc, contract22.currency_id, contract22.budget_id,
+//      contract22.start_date, contract22.term, contract22.term_units, contract22.cancellation_period, contract22.cancellation_period_units,
+//      contract22.cancelled_date, contract22.auto_renew_period, contract22.auto_renew_period_units)
+  
 }
 
 object Contract {
@@ -186,7 +199,6 @@ object Contract {
 	}
 					  
 	def delete(id: Long) {
-//    Contract22.delete(id)
     Contract4.delete(id)
 	}
 
@@ -230,8 +242,7 @@ case class Contract22(id: Option[Long], vendor_id: Long, vendor_contract_id: Str
                       start_date: Date, term: Int, term_units: Int, cancellation_period: Int, cancellation_period_units: Int,
                       cancelled_date: Option[Date], auto_renew_period: Option[Int], auto_renew_period_units: Option[Int])
 
-object Contract22 extends Table[Contract22]("contract") with DbUtils
-{
+object Contract22 extends Table[Contract22]("contract") with DbUtils{
   def id = column[Long]("id", O.PrimaryKey)
   def vendor_id = column[Long]("vendor_id")
   def vendor_contract_id = column[String]("vendor_contract_id")
@@ -254,7 +265,6 @@ object Contract22 extends Table[Contract22]("contract") with DbUtils
   def cancelled_date = column[Date]("cancelled_date")
   def auto_renew_period = column[Int]("auto_renew_period")
   def auto_renew_period_units = column[Int]("auto_renew_period_units")
-
 
   def * = id.? ~ vendor_id ~ vendor_contract_id ~ billing_account.? ~ is_msa ~
     msa_id.? ~ extra_info.? ~ contract_type_id ~ a_end_id ~
@@ -301,7 +311,12 @@ object Contract22 extends Table[Contract22]("contract") with DbUtils
 
   def update(id: Long, contract22: Contract22) = withSession{
     val q = for { c <- Contract22 if c.id===id} yield c
-    q.update(contract22)
+    val newValues = Contract22(Some(id), contract22.vendor_id, contract22.vendor_contract_id, contract22.billing_account, contract22.is_msa,
+            contract22.msa_id, contract22.extra_info, contract22.contract_type_id, contract22.a_end_id,
+            contract22.z_end_id, contract22.mrc, contract22.nrc, contract22.currency_id, contract22.budget_id,
+            contract22.start_date, contract22.term, contract22.term_units, contract22.cancellation_period, contract22.cancellation_period_units,
+            contract22.cancelled_date, contract22.auto_renew_period, contract22.auto_renew_period_units)
+    q.update(newValues)
   }
 
   def delete(id: Long) = withSession{
@@ -354,7 +369,8 @@ object Contract4 extends Table[Contract4]("contract") with DbUtils{
 
   def update(id: Long, contract4: Contract4) = withSession {
     val q = for { c <- Contract4 if c.id===id} yield c
-    q.update(contract4)
+    val newValues = Contract4(Some(id), contract4.description, contract4.attention, contract4.last_modifying_user, contract4.last_modified_time)
+    q.update(newValues)
   }
 
   def delete(id: Long) = withSession{

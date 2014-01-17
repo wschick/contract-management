@@ -11,7 +11,7 @@ object Budgets extends Controller {
   
 	val budgetForm: Form[Budget] = Form(
 		mapping(
-      "id" -> ignored(None: Option[Long]),
+      "id" -> longNumber,
 			"name" -> nonEmptyText
 		)
 		(Budget.apply)(Budget.unapply)

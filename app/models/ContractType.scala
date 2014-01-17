@@ -5,13 +5,13 @@ import java.sql.SQLException
 import scala.slick.driver.MySQLDriver.simple._
 import Database.threadLocalSession
 
-case class ContractType(id: Option[Long], name: String)
+case class ContractType(id: Long, name: String)
 
 object ContractType extends Table[ContractType]("contract_type") with DbUtils{
 
-  def id = column[Long]("id")
+  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name")
-  def * = id.? ~ name <> (ContractType.apply _, ContractType.unapply _)
+  def * = id ~ name <> (ContractType.apply _, ContractType.unapply _)
 
   def all(): List[ContractType] = withSession {
     Query(ContractType).sortBy(_.name) list
@@ -55,7 +55,7 @@ object ContractType extends Table[ContractType]("contract_type") with DbUtils{
 	}
 
   def options: Seq[(String, String)] = withSession {
-    Query(ContractType).sortBy(_.name).list.map(c => c.id.toString -> (c.name))
+    Query(ContractType).sortBy(_.name).list.map(c=>(c.id.toString, c.name))
   }
 
 }
