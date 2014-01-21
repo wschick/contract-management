@@ -8,6 +8,8 @@ import java.sql.{Date, Time}
 
 import scala.slick.driver.MySQLDriver.simple._
 import Database.threadLocalSession
+import models.NEARWARNING
+import com.sun.org.apache.xpath.internal.operations.And
 
 case class Contract(
 	id: Option[Long],
@@ -172,12 +174,15 @@ object Contract {
   }
 
 	def filtered(filter: ContractFilter): List[Contract] = {
-    this.all()
-//		DB.withConnection { implicit connection =>
-//      Logger.debug("My SQL string: " + "select * from contract " + filter.sqlCondition)
-//			SQL("select * from contract " + filter.sqlCondition).as(contract *)
-//		}// and do something here to let the contract filter pick which ones are kept. Have filter method on contract filter object.
+    this.all().filter(contract=>filterPredicate(contract, filter))
 	}
+
+  def filterPredicate(c:Contract, filter: ContractFilter) : Boolean = {
+    filter.toStatusSet.contains(c.status()) ||
+    (filter.contractTypeIds.list !=None && filter.contractTypeIds.list.get.exists(_==c.contractType.id))// ||
+//      ((filter.earliestStartDate!=None && filter.earliestStartDate.get.compareTo(c.startDate)<=0)&&
+//       ((filter.latestStartDate!=None && filter.latestStartDate.get.compareTo(c.startDate)>=0)))
+  }
 
 	def findById(id: Long): Option[Contract] = {
     combine(Contract22.findById(id), Contract4.findById(id))
