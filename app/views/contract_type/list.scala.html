@@ -19,8 +19,8 @@
 			@contractTypes.map { contractType =>
 				<tr>
 					<td class="contract_type_name"> @contractType.name</td>
-					<td><a class="edit_link" href="@routes.ContractTypes.edit(contractType.id.get)">edit</a>
-					<a onClick="return confirmDelete()" class="delete_link" href="@routes.ContractTypes.delete(contractType.id.get)">delete</a></td>
+					<td><a class="edit_link" href="@routes.ContractTypes.edit(contractType.id)">edit</a>
+					<a onClick="return confirmDelete()" class="delete_link" href="@routes.ContractTypes.delete(contractType.id)">delete</a></td>
 				</tr>
 			}
 		</table>

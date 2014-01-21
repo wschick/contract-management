@@ -2,7 +2,7 @@
 
 @main("Edit budget", "Edit budget", "settings") {
 
-@form_html(budgetForm, routes.Budgets.update(budget.id.get), 
+@form_html(budgetForm, routes.Budgets.update(budget.id),
 Some(routes.Budgets.all(None)), formLegend = "Update " + budget.name, 
 submitButtonName = "Update")
 

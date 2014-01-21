@@ -19,8 +19,8 @@
 			@budgets.map { budget =>
 				<tr>
 					<td class="budget_name"> @budget.name</td>
-					<td><a class="edit_link" href="@routes.Budgets.edit(budget.id.get)">edit</a>
-					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Budgets.delete(budget.id.get)">delete</a></td>
+					<td><a class="edit_link" href="@routes.Budgets.edit(budget.id)">edit</a>
+					<a onClick="return confirmDelete()" class="delete_link" href="@routes.Budgets.delete(budget.id)">delete</a></td>
 				</tr>
 			}
 		</table>

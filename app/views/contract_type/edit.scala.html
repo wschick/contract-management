@@ -2,7 +2,7 @@
 
 @main("Edit contract type", "Edit contract type", "settings") {
 
-@form_html(contractTypeForm, routes.ContractTypes.update(contractType.id.get), 
+@form_html(contractTypeForm, routes.ContractTypes.update(contractType.id),
 Some(routes.ContractTypes.all(None)), formLegend = "Update " + contractType.name, 
 submitButtonName = "Update")
 
