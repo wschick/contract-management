@@ -1,4 +1,4 @@
-@(budgetForm: Form[Budget], formAction: Call, cancelAction: Option[Call] = None, formLegend: String = "Form legend", submitButtonName: String = "Insert") 
+@(budgetForm: Form[String], formAction: Call, cancelAction: Option[Call] = None, formLegend: String = "Form legend", submitButtonName: String = "Insert")
 
 	@if(budgetForm.hasErrors) {
 		<div class="alert-message error">

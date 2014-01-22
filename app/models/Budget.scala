@@ -26,13 +26,13 @@ object Budget extends Table[Budget]("budget") with DbUtils{
     findById(id).map(budget => Some(budget.name)).getOrElse(None)
   }
 
-  def create(newBudget: Budget) = withSession{
-    (Budget.name).insert(newBudget.name)
+  def create(newBudget: String) = withSession{
+    (Budget.name).insert(newBudget)
   }
 
-  def update(id: Long, budget: Budget) = withSession {
+  def update(id: Long, budget: String) = withSession {
     val q = for { b <- Budget if b.id === id } yield b.name
-    q.update(budget.name)
+    q.update(budget)
   }
 
   def delete(id: Long): Option[String] = withSession{

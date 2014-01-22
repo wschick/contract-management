@@ -8,13 +8,8 @@ import views._
 import models.Budget
 
 object Budgets extends Controller {
-  
-	val budgetForm: Form[Budget] = Form(
-		mapping(
-      "id" -> longNumber,
+	val budgetForm: Form[String] = Form(
 			"name" -> nonEmptyText
-		)
-		(Budget.apply)(Budget.unapply)
 	)
 
 
@@ -37,7 +32,7 @@ object Budgets extends Controller {
 	/** Put up a form so the user can update the values */
   def edit(id: Long) = Action {
 		Budget.findById(id).map { existingBudget =>
-			Ok(html.budget.edit(existingBudget, budgetForm.fill(existingBudget)))
+			Ok(html.budget.edit(existingBudget, budgetForm.fill(existingBudget.name)))
 		}.getOrElse(NotFound)
 	}
 
