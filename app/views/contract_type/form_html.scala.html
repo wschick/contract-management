@@ -1,4 +1,4 @@
-@(contractTypeForm: Form[ContractType], formAction: Call, cancelAction: Option[Call] = None, formLegend: String = "Form legend", submitButtonName: String = "Insert") 
+@(contractTypeForm: Form[String], formAction: Call, cancelAction: Option[Call] = None, formLegend: String = "Form legend", submitButtonName: String = "Insert")
 
 	@if(contractTypeForm.hasErrors) {
 		<div class="alert-message error">

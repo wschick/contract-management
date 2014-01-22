@@ -9,12 +9,8 @@ import models.ContractType
 
 object ContractTypes extends Controller {
   
-	val contractTypeForm: Form[ContractType] = Form(
-		mapping(
-			"id" -> longNumber,
+	val contractTypeForm: Form[String] = Form(
 			"name" -> nonEmptyText
-		)
-		(ContractType.apply)(ContractType.unapply)
 	)
 
 
@@ -41,7 +37,7 @@ object ContractTypes extends Controller {
 	/** Put up a form so the user can update the values */
   def edit(id: Long) = Action {
 		ContractType.findById(id).map { existingContractType =>
-			Ok(html.contract_type.edit(existingContractType, contractTypeForm.fill(existingContractType)))
+			Ok(html.contract_type.edit(existingContractType, contractTypeForm.fill(existingContractType.name)))
 		}.getOrElse(NotFound)
 	}
 

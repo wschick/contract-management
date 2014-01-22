@@ -29,13 +29,13 @@ object ContractType extends Table[ContractType]("contract_type") with DbUtils{
     (for (c <- ContractType if c.name === name) yield c).list.headOption
   }
 
-  def create(contractType: ContractType) = withSession{
-    (ContractType.name).insert(contractType.name)
+  def create(contractType: String) = withSession{
+    (ContractType.name).insert(contractType)
   }
 
-  def update(id: Long, contractType: ContractType) = withSession {
+  def update(id: Long, contractType: String) = withSession {
     val q = for { c <- ContractType if c.id === id } yield c.name
-    q.update(contractType.name)
+    q.update(contractType)
   }
 
 	def delete(id: Long): Option[String] = withSession{
