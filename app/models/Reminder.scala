@@ -15,7 +15,7 @@ case class Reminder(
                      sent: Boolean)
 {
   def reminderDateStr(): String = DateUtil.format(new LocalDate(reminderDate))
-  def contract = Contract.findById(contractId).get
+  def contract = Contract.findById(contractId)
 }
 
 object Reminder extends Table[Reminder]("reminder") with DbUtils {

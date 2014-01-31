@@ -114,7 +114,7 @@ object Reminders extends Controller {
 			(rp: ReminderAndPeople) => Some ((
 				rp.reminder.id,
 				rp.reminder.reminderDate,
-				rp.reminder.contract.id.get,
+				rp.reminder.contract.get.id.get,
 				rp.reminder.sent,
 				rp.people
 			))

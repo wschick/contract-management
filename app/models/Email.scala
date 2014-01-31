@@ -27,15 +27,15 @@ object Email {
 
 	def sendReminder(reminder: Reminder, to: Iterable[String], contractURL: String): Option[String] = {
 
-		val daysLeft = reminder.contract.daysUntilCancellationDate()
+		val daysLeft = reminder.contract.get.daysUntilCancellationDate()
 		val dayString = daysLeft match {
 			case 1 => "1 day"
 			case i: Int => i + "days"
 		}
-		val body = bodyText(dayString, reminder.contract, contractURL)
+		val body = bodyText(dayString, reminder.contract.get, contractURL)
 
 		Logger.debug("Body is\n" + body)
-		send(to, from, dayString + " to cancel " + reminder.contract.name, body)
+		send(to, from, dayString + " to cancel " + reminder.contract.get.name, body)
 
 	}
 	  

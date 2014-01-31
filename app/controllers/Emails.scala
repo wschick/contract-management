@@ -14,7 +14,7 @@ object Emails extends Controller {
 	def test = Action { implicit request =>
 		//Email.send("wrk,root", "foo@bar.baz", "test subj", "some alert")
 		val reminder = Reminder.findById(1).get
-		val result = Email.sendReminder(reminder, List("wrk"), routes.Contracts.view(reminder.contract.id.get).absoluteURL(false))
+		val result = Email.sendReminder(reminder, List("wrk"), routes.Contracts.view(reminder.contract.get.id.get).absoluteURL(false))
 		Ok(result.getOrElse("Sent ok"))
 	}
 
