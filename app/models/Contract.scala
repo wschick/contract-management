@@ -330,14 +330,25 @@ object Contract22 extends Table[Contract22]("contract") with DbUtils{
   }
 
   def options(msaOnly: Boolean = false): Seq[(String, String)] = withSession{
-    val q = for{c <- Contract22
-                v <- Company
-                if (c.vendor_id === v.id)
-//                if(msaOnly && c.is_msa===1)
-    } yield(c.id.toString, v.name + " " + c.vendor_contract_id)
+    val q = for{
+      (c, v) <- Contract22 innerJoin Company on (_.vendor_id === _.id)
+    //                if(msaOnly && c.is_msa===1)
+    } yield(c.id, v.name, c.vendor_contract_id)
 
-    q.list
+    q.list.map{case (a, b, c) => (a.toString, b.toString + " " +c.toString)}
   }
+
+//    def options(msaOnly: Boolean = false): Seq[(String, String)] = withSession{
+//      val q = for{
+//        (c, v) <- Contract22 innerJoin Company on (_.vendor_id === _.id)
+//      //                if(msaOnly && c.is_msa===1)
+//      } yield(c.id, v.name, c.vendor_contract_id, c.is_msa)
+//
+//      if(!msaOnly)
+//        q.list.map{case (a, b, c, d) => (a.toString, b.toString + " " +c.toString)}
+//      else
+//        q.list.filter{case (a, b, c, d)=>d ==1}.map{case (a, b, c, d) => (a.toString, b.toString + " " +c.toString)}
+//    }
 
   def MSAOptions: Seq[(String, String)] = options(true)
 }
