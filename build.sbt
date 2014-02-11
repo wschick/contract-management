@@ -1,6 +1,9 @@
+import play.Project._
+import scala.Some
+
 name := """contract-management"""
 
-version := "1.0-SNAPSHOT"
+version := "1.0.5"
 
 libraryDependencies ++= Seq(
   // Select Play modules
@@ -22,5 +25,11 @@ libraryDependencies ++= Seq(
   // Add your own project dependencies in the form:
   // "group" % "artifact" % "version"
 )
+
+coffeescriptOptions := Seq("bare")
+
+credentials += Credentials(Path.userHome / ".credentials")
+
+publishTo := Some("Artifactory Realm" at "http://build.ntkn.com/artifactory/libs-release-local/")
 
 play.Project.playScalaSettings
