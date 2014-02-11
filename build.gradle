@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-   compile "contracts:contracts_2.9.1:1.0.5"
+   compile "contract-management:contract-management_2.10:1.0.5"
 }
 
 packages {
