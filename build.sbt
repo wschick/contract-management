@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   javaJdbc,  // Java database API
   filters,   // A set of built-in filters
   javaCore,  // The core Java API
-  "com.typesafe" %% "config" % "1.0.0",
+  "com.typesafe" % "config_2.9.1" % "0.1.2",
   "org.webjars" %% "webjars-play" % "2.2.0",
   "org.webjars" % "bootstrap" % "2.3.1",
   "com.typesafe.slick" %% "slick" % "1.0.1",
