@@ -1,20 +1,13 @@
 package controllers
 
 import play.api._
-import play.api.libs.json._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import org.joda.time._
-import java.io.File
-import java.io.IOException
-import java.sql.SQLException
 
 import views._
-import anorm._
 
-import models.Attachment
-import models.Budget
 import models.Company
 import models.Contract
 import models.ContractCosts

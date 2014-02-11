@@ -5,10 +5,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format._
-import org.joda.time._
-import anorm._
 
-import models.Contract
 import models.DateUtil
 import models.Reminder
 import models.ReminderAndPeople

@@ -8,7 +8,6 @@ version := "1.0.7"
 libraryDependencies ++= Seq(
   // Select Play modules
   jdbc,      // The JDBC connection pool and the play.api.db API
-  anorm,
   javaJdbc,  // Java database API
   filters,   // A set of built-in filters
   javaCore,  // The core Java API
