@@ -3,18 +3,15 @@ import scala.Some
 
 name := """contract-management"""
 
-version := "1.0.6"
+version := "1.0.7"
 
 libraryDependencies ++= Seq(
   // Select Play modules
   jdbc,      // The JDBC connection pool and the play.api.db API
-  anorm,     // Scala RDBMS Library
   javaJdbc,  // Java database API
-  //javaEbean, // Java Ebean plugin
-  //javaJpa,   // Java JPA plugin
   filters,   // A set of built-in filters
   javaCore,  // The core Java API
-  // WebJars pull in client-side web libraries
+  "com.typesafe" % "config" % "1.0.0",
   "org.webjars" %% "webjars-play" % "2.2.0",
   "org.webjars" % "bootstrap" % "2.3.1",
   "com.typesafe.slick" %% "slick" % "1.0.1",
