@@ -3,7 +3,7 @@ import scala.Some
 
 name := """contract-management"""
 
-version := "1.0.10"
+version := "1.0.11"
 
 libraryDependencies ++= Seq(
   // Select Play modules
@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   javaJdbc,  // Java database API
   filters,   // A set of built-in filters
   javaCore,  // The core Java API
-  "com.typesafe" % "config" % "1.2.0",
+  "com.typesafe" % "config" % "1.0.2",
   "org.webjars" %% "webjars-play" % "2.2.0",
   "org.webjars" % "bootstrap" % "2.3.1",
   "com.typesafe.slick" %% "slick" % "1.0.1",
