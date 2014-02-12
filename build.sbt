@@ -3,7 +3,7 @@ import scala.Some
 
 name := """contract-management"""
 
-version := "1.0.9"
+version := "1.0.10"
 
 libraryDependencies ++= Seq(
   // Select Play modules
