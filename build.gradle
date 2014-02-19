@@ -2,7 +2,7 @@ apply plugin:"java"
 apply plugin:"eclipse"
 apply plugin:"packaging"
 
-version="1.0.11"
+version="1.0.12"
 release="1"
 
 buildscript {
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-   compile "contract-management:contract-management_2.10:1.0.11"
+   compile "contract-management:contract-management_2.10:1.0.12"
 }
 
 packages {
