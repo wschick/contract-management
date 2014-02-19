@@ -31,7 +31,8 @@ case class Contract(
 	autoRenewPeriod: Option[Term],
 	attention: Option[String],
 	lastModifyingUser: Option[String] = None,
-	lastModifiedTime: Option[LocalDateTime] = Some(LocalDateTime.now())
+//	lastModifiedTime: Option[LocalDateTime] = Some(LocalDateTime.now())
+  lastModifiedTime: Option[LocalDateTime] = None
 	) 
 {
 	def vendorIdString(): String = {
