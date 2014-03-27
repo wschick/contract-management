@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 case class CSVLine(
 	country: String,
 	vendor: String,
-	lines: String,
+	contractId: String,
 	quantity: Int,
 	aSite: String,
 	zSite: Option[String],
@@ -27,9 +27,9 @@ case class CSVLine(
 	currency: String,
 	ourContact: String,
 	vendorContact: String,
-	vendorEmail: String,
-	digitalContract: Boolean,
-	physicalOriginal: Boolean
+  budget: String,
+  contractType: String,
+  description: String
 	)
 
 /**
@@ -47,6 +47,8 @@ object DateOrMTM {
 	def parseDate(dateString: String): DateOrMTM = {
 
 		if (dateString == "M-T-M") return DateOrMTM(None, true, None)
+    if (dateString == "Monthly") return DateOrMTM(None, true, None)
+    if (dateString == "?") return DateOrMTM(None, false, None)
 		try {
 			val fmt: DateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy")
 			val d = fmt.parseLocalDate(dateString)
@@ -168,6 +170,7 @@ object CSVLine {
 		Logger.debug("Parsing \"" + str + "\"")
 
 		if (str == "") return(0, None)
+    if (str == "?") return(0, Some("???"))
 
 		try {
 
@@ -223,11 +226,11 @@ object CSVLine {
 		Logger.debug(item.length + " items split out")
 
 		try {
-			val (aSite, zSite) = parseSites(trimString(item(4), 4))
+			val (aSite, zSite) = parseSites(trimString(item(3), 3))
 
-			val (nrc, nrcCountry) = parseCost(item(13), fileName, lineNum)
-			val (mrc, mrcCountry) = parseCost(item(14), fileName, lineNum)
-			val (yearlyCost, yearlyCostCountry) = parseCost(item(15), fileName, lineNum)
+			val (nrc, nrcCountry) = parseCost("", fileName, lineNum)
+			val (mrc, mrcCountry) = parseCost(item(9), fileName, lineNum)
+//			val (yearlyCost, yearlyCostCountry) = parseCost(item(10), fileName, lineNum)
 
 			val currency = (nrcCountry, mrcCountry) match {
 				case (None, None) => "USD"
@@ -250,26 +253,26 @@ object CSVLine {
 				trimString(item(0), 0),
 				trimString(item(1), 1),
 				trimString(item(2), 2),
-				parseMaybeInt(trimString(item(3), 3)),
+        parseMaybeInt(""),
 				aSite,
 				zSite,
+				DateOrMTM.parseDate(trimString(item(4), 4)),
 				DateOrMTM.parseDate(trimString(item(5), 5)),
+				DateOrMTM.parseDate(""),
 				DateOrMTM.parseDate(trimString(item(6), 6)),
-				DateOrMTM.parseDate(trimString(item(7), 7)),
-				DateOrMTM.parseDate(trimString(item(8), 8)),
-				MaybeTerm.parseTerm(trimString(item(9), 9)),
-				MaybeTerm.parseTerm(trimString(item(10), 10)),
-				trimString(item(11), 11),
-				trimString(item(12), 12),
+				MaybeTerm.parseTerm(trimString(item(7), 7)),
+				MaybeTerm.parseTerm(trimString(item(8), 8)),
+				"",
+				"",
 				nrc,
 				mrc,
 				currency,
 				// skipping yearly contract costs
-				trimString(item(16), 16),
-				trimString(item(17), 17),
-				trimString(item(18), 18),
-				parseBoolean(trimString(item(19), 19)),
-				parseBoolean(trimString(item(20), 20))
+				"",
+				"",
+        trimString(item(10), 10),
+        trimString(item(11), 11),
+        trimString(item(12), 12)
 			)
 		} catch {
 			case e: ArrayIndexOutOfBoundsException => {

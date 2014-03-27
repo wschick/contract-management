@@ -10,7 +10,7 @@ case class Budget(id: Long,
                  name: String)
 
 object Budget extends Table[Budget]("budget") with DbUtils{
-  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def id = column[Long]("id") //("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name")
   def * = id ~ name <> (Budget.apply _, Budget.unapply _)
 
@@ -20,6 +20,12 @@ object Budget extends Table[Budget]("budget") with DbUtils{
 
   def findById(id: Long): Option[Budget] =withSession {
     (for (a <- Budget if a.id === id) yield a).list.headOption
+  }
+
+  def findByName(Name: String): Option[Budget] = withSession {
+    //(for (l <- Location if l.code===code) yield l).list.headOption
+      (for (b <- Budget if b.name===name) yield b).list.headOption
+//    Query(Budget).where(_.name===name).list.headOption
   }
 
   def nameById(id: Long): Option[String] = withSession {

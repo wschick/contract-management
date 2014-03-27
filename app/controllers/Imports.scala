@@ -55,7 +55,7 @@ object Imports extends Controller {
 
 	val DEFAULT_CONTRACT_TYPE = "Line"
 	
-	val DEFAULT_BUDGET_ID = 1
+	val DEFAULT_BUDGET_ID = 14
 
 	val DEFAULT_BUDGET: Budget = {
 		val b = Budget.findById(DEFAULT_BUDGET_ID)
@@ -117,8 +117,17 @@ object Imports extends Controller {
 	}
 
 
+  def getBudget(name: String):Option[Budget] = {
+      if (Budget.findByName(name) == None){
+        Budget.create(name)
+      }
+      Budget.findByName(name)
+  }
 
-	def importContract(info: CSVLine): (Option[Contract], Option[List[ErrorInfo]]) = {
+
+  val vendorEmail: String = ""
+
+  def importContract(info: CSVLine): (Option[Contract], Option[List[ErrorInfo]]) = {
 		val errors = scala.collection.mutable.ListBuffer.empty[ErrorInfo]
 		val shortErrors = scala.collection.mutable.ListBuffer.empty[ErrorInfo] // Very short error message.
 		var fatalError = false;
@@ -139,29 +148,28 @@ object Imports extends Controller {
 			errors += ErrorInfo(fileName, lineNum, errmsg)
 		})
 
-		val (vendorContact, vendorContactError) = findOrCreatePerson(info.vendorContact, info.vendorEmail, vendor.id)
+		val (vendorContact, vendorContactError) = findOrCreatePerson(info.vendorContact, vendorEmail, vendor.id)
 		vendorContactError.map(errmsg => {
 			shortErrors += ErrorInfo(fileName, lineNum, "Vendor Contact")
 			errors += ErrorInfo(fileName, lineNum, errmsg)
 		})
 
-		val vendorContractId = "???"
+		val vendorContractId = info.contractId
 		val billingAccount = Some("???")
 		val isMSA: Boolean = false
 		val MSAId: Option[Long] = None
-		val extraInfo: Option[String] = None
+		val extraInfo: Option[String] = Some(info.country)
 		val description: Option[String] = {
-			if (info.lines == "") None
-			else Some(info.lines)
+			if (info.contractId == "") None
+			else Some(info.description)
 		}
 
-		val contractType = ContractType.findByName(DEFAULT_CONTRACT_TYPE)
-		if (contractType == None) {
-			val msg = "Can't find contract type \"" + DEFAULT_CONTRACT_TYPE + "\""
-			errors += ErrorInfo(fileName, lineNum, msg, true)
-			Logger.error(msg)
-			fatalError = true
-		}
+		val contractType = {
+    	if (ContractType.findByName(info.contractType) == None) {
+        ContractType.create(info.contractType)
+		  }
+      ContractType.findByName(info.contractType)
+    }
 
 		val aEnd: Location = {
 			val tempLoc = Location.findByCode(info.aSite)
@@ -171,7 +179,10 @@ object Imports extends Controller {
 				shortErrors += ErrorInfo(fileName, lineNum, "Ai loc (" + info.aSite + ")")
 				errors += ErrorInfo(fileName, lineNum, msg)
 				Logger.warn(msg)
-				NA_LOCATION
+        //insert new location into Location table
+        Location.create(info.aSite, "", None)
+        Location.findByCode(info.aSite).get
+//				NA_LOCATION
 			}
 		}
 
@@ -185,12 +196,22 @@ object Imports extends Controller {
 					shortErrors += ErrorInfo(fileName, lineNum, "Z loc (" + info.zSite.get + ")")
 					errors += ErrorInfo(fileName, lineNum, msg)
 					Logger.warn(msg)
-					NA_LOCATION
+          //insert new location into Location table
+          Location.create(info.zSite.get, "", None)
+          Location.findByCode(info.zSite.get).get
+          //				NA_LOCATION
 				}
 			}
 		}
 
+//    var budget = Budget.findByName(info.budget)
+//    if (budget == None){
+//      Budget.create(info.budget)
+//    }
+//    budget = Budget.findByName(info.budget)
+
 		val cost: ContractCosts = {
+
 			val currency = Currency.findByAbbreviation(info.currency)
 			if (currency == None) {
 				val msg = "Can't find currency \"" + info.currency + "\""

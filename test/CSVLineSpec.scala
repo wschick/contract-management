@@ -151,7 +151,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"ATT"	"Circuit - SJDAE"	1	"CHI - LAX"	1/16/2012	1/15/2013	1/16/2013	11/16/2012	"12 Months"	60	" Pro-rated Amount "	0	" $-   "	" $1,000 "	" $12,000 "	"John Doe"	"Scott McGreggor"	"mcg@att.com"		""", "nofile", 1)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "ATT"
-			d.lines must be equalTo "Circuit - SJDAE"
+			d.contractId must be equalTo "Circuit - SJDAE"
 			d.quantity must be equalTo 1
 			d.aSite must be equalTo "CHI"
 			d.zSite must be equalTo Some("LAX")
@@ -178,9 +178,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "USD"
 			d.ourContact must be equalTo "John Doe"
 			d.vendorContact must be equalTo "Scott McGreggor"
-			d.vendorEmail must be equalTo "mcg@att.com"
-			d.digitalContract must be equalTo false
-			d.physicalOriginal must be equalTo false
+//			d.vendorEmail must be equalTo "mcg@att.com"
+//			d.digitalContract must be equalTo false
+//			d.physicalOriginal must be equalTo false
 		}
 
 		"Handle another straightforward line" in {
@@ -188,7 +188,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"Some carrier"	"Circuit - SJDAE"	99	"CHI"	1/16/2012	1/15/2013	1/16/2013	11/16/2012	"1 Year"	"4 months"	" Pro-rated Amount "	43.5	" 123.3 AUD   "	" $1,000 "	" $12,000 "	"John Doe"	"Scott McGreggor"	"mcg@att.com"	No	Yes""", "nofile", 2)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "Some carrier"
-			d.lines must be equalTo "Circuit - SJDAE"
+			d.contractId must be equalTo "Circuit - SJDAE"
 			d.quantity must be equalTo 99
 			d.aSite must be equalTo "CHI"
 			d.zSite must be equalTo None
@@ -215,9 +215,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "AUD"
 			d.ourContact must be equalTo "John Doe"
 			d.vendorContact must be equalTo "Scott McGreggor"
-			d.vendorEmail must be equalTo "mcg@att.com"
-			d.digitalContract must be equalTo false
-			d.physicalOriginal must be equalTo true
+//			d.vendorEmail must be equalTo "mcg@att.com"
+//			d.digitalContract must be equalTo false
+//			d.physicalOriginal must be equalTo true
 		}
 
 		"Handle M-T-M in the dates" in {
@@ -225,7 +225,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"Some carrier"	"Circuit - SJDAE"	99	"CHI"	1/16/2012	M-T-M	M-T-M	M-T-M	"1 Year"	"4 months"	" Pro-rated Amount "	43.5	" 123.3 AUD   "	" $1,000 "	" $12,000 "	"John Doe"	"Scott McGreggor"	"mcg@att.com"	yes	Yes""", "nofile", 3)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "Some carrier"
-			d.lines must be equalTo "Circuit - SJDAE"
+			d.contractId must be equalTo "Circuit - SJDAE"
 			d.quantity must be equalTo 99
 			d.aSite must be equalTo "CHI"
 			d.zSite must be equalTo None
@@ -252,9 +252,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "AUD"
 			d.ourContact must be equalTo "John Doe"
 			d.vendorContact must be equalTo "Scott McGreggor"
-			d.vendorEmail must be equalTo "mcg@att.com"
-			d.digitalContract must be equalTo true
-			d.physicalOriginal must be equalTo true
+//			d.vendorEmail must be equalTo "mcg@att.com"
+//			d.digitalContract must be equalTo true
+//			d.physicalOriginal must be equalTo true
 		}
 
 		"Handle sample line 4" in {
@@ -262,7 +262,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"CME "	"Circuit - XC"	9	"Intra Building XC"	2/13/2010	"M-T-M"	"M-T-M"	"M-T-M"	"M-T-M"	30	" Pro-rated Amount "	0	" $50.00 "	" $150 "	" $3,210 "	"Charlie Chaplin"	"Inky Darkness"	"Inky.Darkness@cmegroup.com"		""", "nofile", 4)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "CME"
-			d.lines must be equalTo "Circuit - XC"
+			d.contractId must be equalTo "Circuit - XC"
 			d.quantity must be equalTo 9
 			d.aSite must be equalTo "Intra Building XC"
 			d.zSite must be equalTo None
@@ -289,9 +289,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "USD"
 			d.ourContact must be equalTo "Charlie Chaplin"
 			d.vendorContact must be equalTo "Inky Darkness"
-			d.vendorEmail must be equalTo "Inky.Darkness@cmegroup.com"
-			d.digitalContract must be equalTo false
-			d.physicalOriginal must be equalTo false
+//			d.vendorEmail must be equalTo "Inky.Darkness@cmegroup.com"
+//			d.digitalContract must be equalTo false
+//			d.physicalOriginal must be equalTo false
 		}
 
 		"Handle sample line 18" in {
@@ -299,7 +299,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"Zow"	"PRI - Phone Line "	1	"HTR4"	9/20/2000	9/19/2001	9/20/2001	6/20/2001	"12 Months"	90	" Pro-rated Amount "	"EUR 305.00"	" EUR 910.00 "	" $401 "	" $4,815 "	"Joe"	"Hank "	"hank@zow.com"		""", "nofile", 5)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "Zow"
-			d.lines must be equalTo "PRI - Phone Line"
+			d.contractId must be equalTo "PRI - Phone Line"
 			d.quantity must be equalTo 1
 			d.aSite must be equalTo "HTR4"
 			d.zSite must be equalTo None
@@ -326,9 +326,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "EUR"
 			d.ourContact must be equalTo "Joe"
 			d.vendorContact must be equalTo "Hank"
-			d.vendorEmail must be equalTo "hank@zow.com"
-			d.digitalContract must be equalTo false
-			d.physicalOriginal must be equalTo false
+//			d.vendorEmail must be equalTo "hank@zow.com"
+//			d.digitalContract must be equalTo false
+//			d.physicalOriginal must be equalTo false
 		}
 
 		"Handle sample line 49" in {
@@ -336,7 +336,7 @@ class CSVLineSpec extends Specification {
 """"USA"	"Verizon"	"01234567"	1	"ORD3 "	4/04/2003	"M-T-M"	"M-T-M"	"M-T-M"	"M-T-M"	"7 Days"	0	0	" $-   "	" $155 "	" $1,860 "	"Tom"	18997499500	"some.person@verizon.com"		""", "nofile", 6)
 			d.country must be equalTo "USA"
 			d.vendor must be equalTo "Verizon"
-			d.lines must be equalTo "01234567"
+			d.contractId must be equalTo "01234567"
 			d.quantity must be equalTo 1
 			d.aSite must be equalTo "ORD3"
 			d.zSite must be equalTo None
@@ -363,9 +363,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "USD"
 			d.ourContact must be equalTo "Tom"
 			d.vendorContact must be equalTo "18997499500"
-			d.vendorEmail must be equalTo "some.person@verizon.com"
-			d.digitalContract must be equalTo false
-			d.physicalOriginal must be equalTo false
+//			d.vendorEmail must be equalTo "some.person@verizon.com"
+//			d.digitalContract must be equalTo false
+//			d.physicalOriginal must be equalTo false
 		}
 
 		"Handle sample line 5, ASI" in {
@@ -373,7 +373,7 @@ class CSVLineSpec extends Specification {
 """"Australia"	"Deb - Rod"				4/4/2004	4/4/2005	"n/a"	"n/a"	"12 months"	0	0	"$1.25 AUD"	0	"n/a"	"n/a"	"Tom"	"?"	"?"	"Yes"	"no"""", "nofile", 7)
 			d.country must be equalTo "Australia"
 			d.vendor must be equalTo "Deb - Rod"
-			d.lines must be equalTo ""
+			d.contractId must be equalTo ""
 			d.quantity must be equalTo 0
 			d.aSite must be equalTo ""
 			d.zSite must be equalTo None
@@ -400,9 +400,9 @@ class CSVLineSpec extends Specification {
 			d.currency must be equalTo "USD"
 			d.ourContact must be equalTo "Tom"
 			d.vendorContact must be equalTo "?"
-			d.vendorEmail must be equalTo "?"
-			d.digitalContract must be equalTo true
-			d.physicalOriginal must be equalTo false
+//			d.vendorEmail must be equalTo "?"
+//			d.digitalContract must be equalTo true
+//			d.physicalOriginal must be equalTo false
 		}
 
 		"Handle line with bad data" in {
