@@ -8,6 +8,7 @@ case class ContractFilter(
 	showTooLate: Boolean = true,
 	showActive: Boolean = true, // Active contracts
 	showCancelled: Boolean = false, // Cancelled contracts
+  showM2M: Boolean = false, // Cancelled contracts
 	earliestStartDate: Option[LocalDate] = None,
 	latestStartDate: Option[LocalDate] = None,
 	contractTypeIds: OptionList[Long] = new OptionList,
@@ -32,6 +33,8 @@ case class ContractFilter(
       statusSet = statusSet + TOOLATE
     if(showCancelled)
       statusSet = statusSet + CANCELLED
+    if(showM2M)
+      statusSet = statusSet + MONTH2MONTH
     if(showActive)
       statusSet = statusSet + OK + NEARWARNING + FARWARNING + TOOLATE
     return statusSet

@@ -33,6 +33,7 @@ object Contracts extends Controller {
 			"showTooLate" -> boolean,
 			"showActive" -> boolean,
 			"showCancelled" -> boolean,
+      "showM2M" -> boolean,
 			"earliestStartDate" -> optional(date),
 			"lastestStartDate" -> optional(date),
 			"contractTypes_" -> optional(list(longNumber)),
@@ -45,10 +46,10 @@ object Contracts extends Controller {
 			"maximumDaysToCancel" -> optional(number)
 			)
 		(
-			(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, 
+			(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, showM2M,
 				earliestStartDate, latestStartDate, contractTypes_, vendorIds, budgetIds, locationIds,
 				showMSA, vendorContractIdMatches, extraInfoMatches, maximumDaysToCancel) =>
-			{ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled,
+			{ContractFilter(showOk, showNearWarning, showFarWarning, showTooLate, showActive, showCancelled, showM2M,
 				earliestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None), 
 				latestStartDate.map(d => Some(new LocalDate(d))).getOrElse(None),
 				new OptionList(contractTypes_, "contract_type_id"), 
@@ -60,7 +61,7 @@ object Contracts extends Controller {
 		(
 			(filter: ContractFilter) => Some((
 			filter.showOk, filter.showNearWarning, filter.showFarWarning,
-			filter.showTooLate, filter.showActive, filter.showCancelled,
+			filter.showTooLate, filter.showActive, filter.showCancelled, filter.showM2M,
 			filter.earliestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
 			filter.latestStartDate.map(d => Some(d.toDate())).getOrElse(None), 
 			filter.contractTypeIds.list,

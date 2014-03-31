@@ -10,6 +10,7 @@ import scala.slick.driver.MySQLDriver.simple._
 import Database.threadLocalSession
 import models.NEARWARNING
 import com.sun.org.apache.xpath.internal.operations.And
+import models.TimePeriodUnits.MONTH
 
 case class Contract(
 	id: Option[Long],
@@ -61,19 +62,33 @@ case class Contract(
 
 	def willAutoRenew(): Boolean = autoRenewPeriod != None
 
-	def status(): ContractStatus = {
-		cancelledDate match {
-			case Some(x) => CANCELLED
-			case None => {
-				daysUntilCancellationDate match {
-					case x if (x <= 0) => TOOLATE
-					case x if (x < 30) => NEARWARNING
-					case x if (x < 60) => FARWARNING
-					case _ => OK
-				}
-			}
-		}
-	}
+  def isM2M: Boolean = {
+    if(lastDay.compareTo(new LocalDate())<0)
+      false
+    else{
+      autoRenewPeriod match {
+        case None => false
+        case Some(x) => x.period.equals(Period.months(1)) || x.period.equals(Period.days(30))
+      }
+    }
+  }
+
+  def status(): ContractStatus = {
+      cancelledDate match {
+        case Some(x) => CANCELLED
+        case None => {
+          if(isM2M)
+            MONTH2MONTH
+          else
+           daysUntilCancellationDate match {
+             case x if (x <= 0) => TOOLATE
+             case x if (x < 30) => NEARWARNING
+             case x if (x < 60) => FARWARNING
+             case _ => OK
+           }
+        }
+      }
+    }
 
 	def hasAttachments: Boolean = Attachment.contractHasAttachments(Company.findById(vendor.id).get.name, vendorContractId)
 

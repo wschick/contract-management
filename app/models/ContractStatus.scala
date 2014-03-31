@@ -8,3 +8,4 @@ case object FARWARNING extends ContractStatus { val value = 1 ; val name = "far-
 case object NEARWARNING extends ContractStatus { val value = 2 ; val name = "near-warning";}
 case object TOOLATE extends ContractStatus { val value = 3 ; val name = "too-late";}
 case object CANCELLED extends ContractStatus { val value = 4 ; val name = "cancelled";}
+case object MONTH2MONTH extends ContractStatus { val value = 5 ; val name = "month2month";}
