@@ -8,7 +8,7 @@ case class ContractFilter(
 	showTooLate: Boolean = true,
 	showActive: Boolean = true, // Active contracts
 	showCancelled: Boolean = false, // Cancelled contracts
-  showM2M: Boolean = false, // Cancelled contracts
+  showM2M: Boolean = true, // Cancelled contracts
 	earliestStartDate: Option[LocalDate] = None,
 	latestStartDate: Option[LocalDate] = None,
 	contractTypeIds: OptionList[Long] = new OptionList,
