@@ -114,5 +114,12 @@ object DateUtil {
 			}
 		}
 	}
-
+  def calculateFirstTerminationDate(startDate: LocalDate, term: Term): LocalDate = {
+    val termPeriod = termToPeriod(term)
+    var firstRenewalDate = startDate.plus(termPeriod)
+    if (term.units != TimePeriodUnits.DAY && firstRenewalDate.getDayOfMonth != startDate.getDayOfMonth) {
+      firstRenewalDate = firstRenewalDate.plus(Days.ONE)
+    }
+    firstRenewalDate.minus(Days.ONE)
+  }
 }

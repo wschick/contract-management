@@ -60,10 +60,12 @@ case class Contract(
 		Days.daysBetween(new LocalDate(), cancellationDate()).getDays
 	}
 
+  def firstTerminationDate(): LocalDate = DateUtil.calculateFirstTerminationDate(startDate, term)
+
 	def willAutoRenew(): Boolean = autoRenewPeriod != None
 
   def isM2M: Boolean = {
-    if(lastDay.compareTo(new LocalDate())<0)
+    if(firstTerminationDate.compareTo(new LocalDate())>0)
       false
     else{
       autoRenewPeriod match {
