@@ -30,7 +30,7 @@
 					@linesFromFile.map{ csvLine => 
 						<tr>
 							<td>@csvLine.vendor</td>
-							<td>@csvLine.lines</td>
+							<td>@csvLine.contractId</td>
 							<td>@csvLine.aSite</td>
 							<td>@if(csvLine.zSite == None) {
 									--
